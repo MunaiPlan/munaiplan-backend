@@ -16,6 +16,7 @@ func Run(configPath string) {
 
 		return
 	}
+	fmt.Println(cfg.Mongo.URI)
 
 	// Dependencies
 	mongoClient, err := mongo.NewClient(cfg.Mongo.URI, cfg.Mongo.User, cfg.Mongo.Password)
@@ -24,6 +25,7 @@ func Run(configPath string) {
 
 		return
 	}
+	fmt.Println("client est")
 
 	db := mongoClient.Database(cfg.Mongo.Name)
 

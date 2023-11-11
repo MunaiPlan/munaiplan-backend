@@ -1,0 +1,11 @@
+http:
+  port: 80
+  maxHeaderBytes: 1
+  readTimeout: 10s
+  writeTimeout: 10s
+
+cache:
+  ttl: 3600s
+
+mongo:
+  databaseName: testDatabase

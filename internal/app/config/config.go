@@ -4,6 +4,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -21,7 +22,6 @@ const (
 	EnvLocal = "local"
 	Prod     = "prod"
 )
-
 
 type (
 	Config struct {
@@ -49,6 +49,11 @@ type (
 // Init populates Config struct with values from config file
 // located at filepath and environment variables.
 func Init(configsDir string) (*Config, error) {
+	if err := godotenv.Load(); err != nil {
+		return nil, err
+	}
+
+	viper.AutomaticEnv()
 	populateDefaults()
 
 	if err := parseConfigFile(configsDir, os.Getenv("APP_ENV")); err != nil {
@@ -78,6 +83,7 @@ func setFromEnv(cfg *Config) {
 	cfg.Mongo.URI = os.Getenv("MONGO_URI")
 	cfg.Mongo.User = os.Getenv("MONGO_USER")
 	cfg.Mongo.Password = os.Getenv("MONGO_PASS")
+	cfg.Environment = os.Getenv("APP_ENV")
 }
 
 func parseConfigFile(folder, env string) error {
