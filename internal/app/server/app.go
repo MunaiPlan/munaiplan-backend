@@ -5,7 +5,10 @@ import (
 	"fmt"
 
 	"github.com/munaiplan/munaiplan-backend/internal/app/config"
+	"github.com/munaiplan/munaiplan-backend/internal/app/repository"
+	"github.com/munaiplan/munaiplan-backend/internal/app/service"
 	mongo "github.com/munaiplan/munaiplan-backend/pkg/database/mongodb"
+	"github.com/munaiplan/munaiplan-backend/pkg/hash"
 	"github.com/munaiplan/munaiplan-backend/pkg/logger"
 )
 
@@ -31,6 +34,8 @@ func Run(configPath string) {
 
 	fmt.Println(db.Name())
 
+	hasher := hash.NewSHA1Hasher(cfg.Auth.PasswordSalt)
+
 	// tokenManager, err := auth.NewManager(cfg.Auth.JWT.SigningKey)
 	// if err != nil {
 	// 	logger.Error(err)
@@ -38,9 +43,16 @@ func Run(configPath string) {
 	// 	return
 	// }
 
-	// repos := repository.NewRepositories(db)
+	repos := repository.NewRepositories(db)
 
-	// services := service.NewServices()
+	services := service.NewServices(service.Deps{
+		Repos:                  repos,
+		Hasher:                 hasher,
+		AccessTokenTTL:         cfg.Auth.JWT.AccessTokenTTL,
+		RefreshTokenTTL:        cfg.Auth.JWT.RefreshTokenTTL,
+		Environment:            cfg.Environment,
+		Domain:                 cfg.HTTP.Host,
+	})
 
 	// handlers := delivery.NewHandler(services, tokenManager)
 

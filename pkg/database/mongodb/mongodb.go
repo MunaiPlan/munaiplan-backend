@@ -1,4 +1,4 @@
-package mongo
+package mongodb
 
 import (
 	"context"
@@ -20,15 +20,11 @@ func NewClient(uri, username, password string) (*mongo.Client, error) {
 		})
 	}
 
-	client, err := mongo.NewClient(opts)
-	if err != nil {
-		return nil, err
-	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	err = client.Connect(ctx)
+	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		return nil, err
 	}

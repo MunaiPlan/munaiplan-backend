@@ -28,6 +28,7 @@ type (
 		Environment string
 		Mongo       MongoConfig
 		HTTP        HTTPConfig
+		Auth        AuthConfig
 	}
 
 	MongoConfig struct {
@@ -43,6 +44,18 @@ type (
 		ReadTimeout        time.Duration `mapstructure:"readTimeout"`
 		WriteTimeout       time.Duration `mapstructure:"writeTimeout"`
 		MaxHeaderMegabytes int           `mapstructure:"maxHeaderBytes"`
+	}
+
+	AuthConfig struct {
+		JWT                    JWTConfig
+		PasswordSalt           string
+		VerificationCodeLength int `mapstructure:"verificationCodeLength"`
+	}
+
+	JWTConfig struct {
+		AccessTokenTTL  time.Duration `mapstructure:"accessTokenTTL"`
+		RefreshTokenTTL time.Duration `mapstructure:"refreshTokenTTL"`
+		SigningKey      string
 	}
 )
 
