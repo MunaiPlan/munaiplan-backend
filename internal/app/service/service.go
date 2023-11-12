@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/munaiplan/munaiplan-backend/internal/app/repository"
+	"github.com/munaiplan/munaiplan-backend/pkg/auth"
 	"github.com/munaiplan/munaiplan-backend/pkg/hash"
 )
 
@@ -26,7 +27,7 @@ type Services struct {
 type Deps struct {
 	Repos                  *repository.Repositories
 	Hasher                 hash.PasswordHasher
-	//TokenManager           auth.TokenManager
+	TokenManager           auth.TokenManager
 	AccessTokenTTL         time.Duration
 	RefreshTokenTTL        time.Duration
 	Environment            string

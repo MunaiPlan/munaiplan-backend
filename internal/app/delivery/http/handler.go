@@ -1,17 +1,52 @@
 package http
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/munaiplan/munaiplan-backend/internal/app/config"
+	v1 "github.com/munaiplan/munaiplan-backend/internal/app/delivery/http/v1"
+	"github.com/munaiplan/munaiplan-backend/internal/app/service"
+	"github.com/munaiplan/munaiplan-backend/pkg/auth"
+)
 
 type Handler struct {
-
+	services     *service.Services
+	tokenManager auth.TokenManager
 }
 
-func (h *Handler) Init() *gin.Engine {
-	// Init Gin Handler
+func NewHandler(services *service.Services, tokenManager auth.TokenManager) *Handler {
+	return &Handler{
+		services:     services,
+		tokenManager: tokenManager,
+	}
+}
+
+func (h *Handler) Init(cfg *config.Config) *gin.Engine {
+	// Init gin handler
 	router := gin.Default()
+
 	router.Use(
 		gin.Recovery(),
 		gin.Logger(),
+		corsMiddleware,
 	)
+
+
+	// Init router
+	router.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
+
+	h.initAPI(router)
+
 	return router
+}
+
+func (h *Handler) initAPI(router *gin.Engine) {
+	handlerV1 := v1.NewHandler(h.services, h.tokenManager)
+	api := router.Group("/api")
+	{
+		handlerV1.Init(api)
+	}
 }
