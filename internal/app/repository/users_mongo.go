@@ -3,10 +3,12 @@ package repository
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/munaiplan/munaiplan-backend/internal/app/domain"
 	"github.com/munaiplan/munaiplan-backend/pkg/database/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -40,4 +42,10 @@ func (r *UsersRepo) GetByCredentials(ctx context.Context, email, password string
 	}
 
 	return user, nil
+}
+
+func (r *UsersRepo) SetSession(ctx context.Context, userID primitive.ObjectID, session domain.Session) error {
+	_, err := r.db.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$set": bson.M{"session": session, "lastVisitAt": time.Now()}})
+
+	return err
 }

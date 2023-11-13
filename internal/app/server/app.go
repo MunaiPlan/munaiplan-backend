@@ -60,7 +60,6 @@ func Run(configPath string) {
 		AccessTokenTTL:         cfg.Auth.JWT.AccessTokenTTL,
 		RefreshTokenTTL:        cfg.Auth.JWT.RefreshTokenTTL,
 		Environment:            cfg.Environment,
-		Domain:                 cfg.HTTP.Host,
 	})
 
 	handlers := delivery.NewHandler(services, tokenManager)

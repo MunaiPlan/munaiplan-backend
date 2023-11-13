@@ -9,6 +9,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type userSignUpInput struct {
+	Name     string `json:"name" binding:"required,min=2,max=64"`
+	Email    string `json:"email" binding:"required,email,max=64"`
+	Phone    string `json:"phone" binding:"required,max=13"`
+	Password string `json:"password" binding:"required,min=8,max=64"`
+}
+
+type signInInput struct {
+	Email    string `json:"email" binding:"required,email,max=64"`
+	Password string `json:"password" binding:"required,min=8,max=64"`
+}
+
+type tokenResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+}
+
 type Handler struct {
 	services     *service.Services
 	tokenManager auth.TokenManager

@@ -16,8 +16,19 @@ type UserSignUpInput struct {
 	Password string
 }
 
+type UserSignInInput struct {
+	Email    string
+	Password string
+}
+
+type Tokens struct {
+	AccessToken  string
+	RefreshToken string
+}
+
 type Users interface {
 	SignUp(ctx context.Context, input UserSignUpInput) error
+	SignIn(ctx context.Context, input UserSignInInput) (Tokens, error)
 }
 
 type Services struct {
@@ -31,12 +42,11 @@ type Deps struct {
 	AccessTokenTTL         time.Duration
 	RefreshTokenTTL        time.Duration
 	Environment            string
-	Domain                 string
 }
 
 func NewServices(deps Deps) *Services {
 	usersService := NewUsersService(deps.Repos.Users, deps.Hasher,
-		deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.Domain)
+		deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.TokenManager)
 
 	return &Services{
 		Users:    usersService,
