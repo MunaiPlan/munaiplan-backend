@@ -13,12 +13,13 @@ import (
 	"github.com/munaiplan/munaiplan-backend/internal/app/config"
 	delivery "github.com/munaiplan/munaiplan-backend/internal/app/delivery/http"
 	"github.com/munaiplan/munaiplan-backend/internal/app/repository"
+	"github.com/munaiplan/munaiplan-backend/internal/app/server"
 	"github.com/munaiplan/munaiplan-backend/internal/app/service"
+	"github.com/munaiplan/munaiplan-backend/internal/catalog"
 	"github.com/munaiplan/munaiplan-backend/pkg/auth"
 	mongo "github.com/munaiplan/munaiplan-backend/pkg/database/mongodb"
 	"github.com/munaiplan/munaiplan-backend/pkg/hash"
 	"github.com/munaiplan/munaiplan-backend/pkg/logger"
-	"github.com/munaiplan/munaiplan-backend/internal/app/server"
 )
 
 func Run(configPath string) {
@@ -31,6 +32,7 @@ func Run(configPath string) {
 	fmt.Println(cfg.Mongo.URI)
 	fmt.Println(cfg.Mongo.User)
 	fmt.Println(cfg.Mongo.Password)
+	fmt.Println(cfg.Environment)
 
 	// Dependencies
 	mongoClient, err := mongo.NewClient(cfg.Mongo.URI, cfg.Mongo.User, cfg.Mongo.Password)
@@ -40,6 +42,11 @@ func Run(configPath string) {
 		return
 	}
 	fmt.Println("client est")
+
+	catalogPath := "/Users/kadirbeksharau/Desktop/MunaiPlan/munaiplan-backend/"
+	drillCatalog := catalog.NewApiDrillCollarCatalogWrapper(catalogPath + "API Drill Collar.cat.xml")
+	fmt.Println(drillCatalog.Catalog.Name)
+	drillCatalog.PrintCatalog()
 
 	db := mongoClient.Database(cfg.Mongo.Name)
 
@@ -78,6 +85,7 @@ func Run(configPath string) {
 	}()
 
 	logger.Info("Server started")
+
 
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
