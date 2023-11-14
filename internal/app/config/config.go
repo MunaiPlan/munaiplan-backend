@@ -29,6 +29,7 @@ type (
 		Mongo       MongoConfig
 		HTTP        HTTPConfig
 		Auth        AuthConfig
+		CatalogCache     CatalogCacheConfig
 	}
 
 	MongoConfig struct {
@@ -56,6 +57,10 @@ type (
 		AccessTokenTTL  time.Duration `mapstructure:"accessTokenTTL"`
 		RefreshTokenTTL time.Duration `mapstructure:"refreshTokenTTL"`
 		SigningKey      string
+	}
+
+	CatalogCacheConfig struct {
+		ApiDrillCollarPath string `mapstructure:"apiDrillCollarPath"`
 	}
 )
 
@@ -85,6 +90,10 @@ func Init(configsDir string) (*Config, error) {
 
 func unmarshal(cfg *Config) error {
 	if err := viper.UnmarshalKey("mongo", &cfg.Mongo); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("catalogCache", &cfg.CatalogCache); err != nil {
 		return err
 	}
 

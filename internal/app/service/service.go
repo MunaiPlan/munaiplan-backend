@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/munaiplan/munaiplan-backend/internal/app/repository"
+	"github.com/munaiplan/munaiplan-backend/internal/catalog"
 	"github.com/munaiplan/munaiplan-backend/pkg/auth"
 	"github.com/munaiplan/munaiplan-backend/pkg/hash"
 )
@@ -32,16 +33,18 @@ type Users interface {
 }
 
 type Services struct {
-	Users          Users
+	CatalogCache *catalog.CatalogCache
+	Users        Users
 }
 
 type Deps struct {
-	Repos                  *repository.Repositories
-	Hasher                 hash.PasswordHasher
-	TokenManager           auth.TokenManager
-	AccessTokenTTL         time.Duration
-	RefreshTokenTTL        time.Duration
-	Environment            string
+	Repos           *repository.Repositories
+	Hasher          hash.PasswordHasher
+	CatalogCache    *catalog.CatalogCache
+	TokenManager    auth.TokenManager
+	AccessTokenTTL  time.Duration
+	RefreshTokenTTL time.Duration
+	Environment     string
 }
 
 func NewServices(deps Deps) *Services {
@@ -49,6 +52,7 @@ func NewServices(deps Deps) *Services {
 		deps.AccessTokenTTL, deps.RefreshTokenTTL, deps.TokenManager)
 
 	return &Services{
-		Users:    usersService,
+		Users: usersService,
+		CatalogCache: deps.CatalogCache,
 	}
 }

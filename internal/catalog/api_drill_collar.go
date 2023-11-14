@@ -2,7 +2,6 @@ package catalog
 
 import (
 	"encoding/xml"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -46,6 +45,11 @@ type ApiDrillCollarCatalog struct {
 	Cache            map[string]*Item
 }
 
+type ApiDrillCatalog interface {
+	GetCatalogName() string
+	GetCatalogItemByID(id string) *Item
+}
+
 type ApiDrillCollarCatalogWrapper struct {
 	XMLName xml.Name               `xml:"export"`
 	Catalog ApiDrillCollarCatalog  `xml:"CD_CATALOG"`
@@ -58,7 +62,6 @@ func NewApiDrillCollarCatalogWrapper(filePath string) *ApiDrillCollarCatalogWrap
 		log.Fatal(err)
 		return nil
 	}
-	fmt.Println(catalog.Catalog.Name)
 	return catalog
 }
 
@@ -93,8 +96,10 @@ func (a *ApiDrillCollarCatalogWrapper) parseCatalog(filePath string) error {
 	return nil
 }
 
-func (c *ApiDrillCollarCatalogWrapper) PrintCatalog() {
-	for k, v := range c.Catalog.Cache {
-		fmt.Println(k, "value is", v)
-	}
+func (ac *ApiDrillCollarCatalogWrapper) GetCatalogName() string {
+	return ac.Catalog.Name
+}
+
+func (ac *ApiDrillCollarCatalogWrapper) GetCatalogItemByID(id string) *Item {
+	return ac.Catalog.Cache[id]
 }

@@ -29,10 +29,6 @@ func Run(configPath string) {
 
 		return
 	}
-	fmt.Println(cfg.Mongo.URI)
-	fmt.Println(cfg.Mongo.User)
-	fmt.Println(cfg.Mongo.Password)
-	fmt.Println(cfg.Environment)
 
 	// Dependencies
 	mongoClient, err := mongo.NewClient(cfg.Mongo.URI, cfg.Mongo.User, cfg.Mongo.Password)
@@ -41,20 +37,14 @@ func Run(configPath string) {
 
 		return
 	}
-	fmt.Println("client est")
 
-	catalogPath := "/Users/kadirbeksharau/Desktop/MunaiPlan/munaiplan-backend/"
-	drillCatalog := catalog.NewApiDrillCollarCatalogWrapper(catalogPath + "API Drill Collar.cat.xml")
-	fmt.Println(drillCatalog.Catalog.Name)
-	drillCatalog.PrintCatalog()
+	fmt.Println(cfg.CatalogCache.ApiDrillCollarPath)
+	catalog := catalog.NewCatalogCache(cfg.CatalogCache)
 
 	db := mongoClient.Database(cfg.Mongo.Name)
 
-	fmt.Println(db.Name())
-
 	hasher := hash.NewSHA1Hasher(cfg.Auth.PasswordSalt)
 
-	fmt.Println(cfg.Auth.JWT.SigningKey)
 	tokenManager, err := auth.NewManager(cfg.Auth.JWT.SigningKey)
 	if err != nil {
 		logger.Error(err)
@@ -65,17 +55,18 @@ func Run(configPath string) {
 	repos := repository.NewRepositories(db)
 
 	services := service.NewServices(service.Deps{
-		Repos:                  repos,
-		Hasher:                 hasher,
-		TokenManager:           tokenManager,
-		AccessTokenTTL:         cfg.Auth.JWT.AccessTokenTTL,
-		RefreshTokenTTL:        cfg.Auth.JWT.RefreshTokenTTL,
-		Environment:            cfg.Environment,
+		Repos:           repos,
+		Hasher:          hasher,
+		CatalogCache:    catalog,
+		TokenManager:    tokenManager,
+		AccessTokenTTL:  cfg.Auth.JWT.AccessTokenTTL,
+		RefreshTokenTTL: cfg.Auth.JWT.RefreshTokenTTL,
+		Environment:     cfg.Environment,
 	})
 
 	handlers := delivery.NewHandler(services, tokenManager)
 
-		// HTTP Server
+	// HTTP Server
 	srv := server.NewServer(cfg, handlers.Init(cfg))
 
 	go func() {
@@ -85,7 +76,6 @@ func Run(configPath string) {
 	}()
 
 	logger.Info("Server started")
-
 
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
