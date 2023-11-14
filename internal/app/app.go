@@ -1,4 +1,4 @@
-package server
+package app
 
 import (
 	"context"
@@ -18,6 +18,7 @@ import (
 	mongo "github.com/munaiplan/munaiplan-backend/pkg/database/mongodb"
 	"github.com/munaiplan/munaiplan-backend/pkg/hash"
 	"github.com/munaiplan/munaiplan-backend/pkg/logger"
+	"github.com/munaiplan/munaiplan-backend/internal/app/server"
 )
 
 func Run(configPath string) {
@@ -28,6 +29,8 @@ func Run(configPath string) {
 		return
 	}
 	fmt.Println(cfg.Mongo.URI)
+	fmt.Println(cfg.Mongo.User)
+	fmt.Println(cfg.Mongo.Password)
 
 	// Dependencies
 	mongoClient, err := mongo.NewClient(cfg.Mongo.URI, cfg.Mongo.User, cfg.Mongo.Password)
@@ -44,6 +47,7 @@ func Run(configPath string) {
 
 	hasher := hash.NewSHA1Hasher(cfg.Auth.PasswordSalt)
 
+	fmt.Println(cfg.Auth.JWT.SigningKey)
 	tokenManager, err := auth.NewManager(cfg.Auth.JWT.SigningKey)
 	if err != nil {
 		logger.Error(err)
@@ -65,7 +69,7 @@ func Run(configPath string) {
 	handlers := delivery.NewHandler(services, tokenManager)
 
 		// HTTP Server
-	srv := NewServer(cfg, handlers.Init(cfg))
+	srv := server.NewServer(cfg, handlers.Init(cfg))
 
 	go func() {
 		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {

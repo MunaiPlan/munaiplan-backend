@@ -97,6 +97,7 @@ func setFromEnv(cfg *Config) {
 	cfg.Mongo.User = os.Getenv("MONGO_USER")
 	cfg.Mongo.Password = os.Getenv("MONGO_PASS")
 	cfg.Environment = os.Getenv("APP_ENV")
+	cfg.Auth.JWT.SigningKey = os.Getenv("JWT_SIGNING_KEY")
 }
 
 func parseConfigFile(folder, env string) error {

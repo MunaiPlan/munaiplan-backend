@@ -1,9 +1,10 @@
 package main
 
-import "github.com/munaiplan/munaiplan-backend/internal/app/server"
+
+import "github.com/munaiplan/munaiplan-backend/internal/app"
 
 const configsDir = "configs"
 
 func main() {
-	server.Run(configsDir)
+	app.Run(configsDir)
 }
