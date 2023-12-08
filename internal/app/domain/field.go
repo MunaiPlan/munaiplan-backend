@@ -6,14 +6,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// Компания (под юзером)
-// TODO() Correct all tables in this file
-type Company struct {
-	// General Information
+// Месторождение (под компанией)
+type Field struct {
 	ID primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	// General Information
 	Name           string `json:"name" bson:"name"`
-	Division       string `json:"division" bson:"division"`
-	Group          string `json:"group" bson:"group"`
+	Description       string `json:"description" bson:"description"`
+	Location          string `json:"location" bson:"location"`
 	Representative string `json:"representative" bson:"representative"`
 	Address        string `json:"address" bson:"address"`
 	Phone          string `json:"phone" bson:"phone"`

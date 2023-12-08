@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Пользователь (База данных в книге)
 // TODO() Correct all tables in this file
 type User struct {
 	ID           primitive.ObjectID   `json:"id" bson:"_id,omitempty"`

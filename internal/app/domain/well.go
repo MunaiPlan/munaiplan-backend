@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Скважина (под кустом)
 // TODO() Correct all tables in this file
 type Well struct {
 	ID                     primitive.ObjectID `json:"id" bson:"_id,omitempty"`

@@ -2,6 +2,7 @@ package domain
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+// Ствол Скважины (под скважиной)
 // TODO() Correct all tables in this file
 type Wellbore struct {
 	ID                      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
@@ -12,4 +13,5 @@ type Wellbore struct {
 	MainBore                primitive.ObjectID `json:"mainBore" bson:"mainBore"`                       // If this wellbore is a lateral, reference to the main wellbore
 	Type                    string             `json:"type" bson:"type"`                               // Type of the wellbore
 	// Other fields...
+	
 }

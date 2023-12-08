@@ -4,6 +4,8 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 // TODO() Correct all tables in this file
 
+
+// Куст (под месторождением)
 type Site struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name        string             `json:"name" bson:"name"`

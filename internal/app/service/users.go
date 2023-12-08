@@ -37,8 +37,6 @@ func (s *UsersService) SignUp(ctx context.Context, input UserSignUpInput) error 
 		return err
 	}
 
-	//verificationCode := s.otpGenerator.RandomSecret(s.verificationCodeLength)
-
 	user := domain.User{
 		Name:         input.Name,
 		Password:     passwordHash,
@@ -56,11 +54,6 @@ func (s *UsersService) SignUp(ctx context.Context, input UserSignUpInput) error 
 		return err
 	}
 
-	// return s.emailService.SendUserVerificationEmail(VerificationEmailInput{
-	// 	Email:            user.Email,
-	// 	Name:             user.Name,
-	// 	VerificationCode: verificationCode,
-	// })
 	return err
 }
 
