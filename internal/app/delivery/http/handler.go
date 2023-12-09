@@ -4,7 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/gin-swagger" // gin-swagger middleware
+	"github.com/swaggo/files" // swagger embed files
 	"github.com/munaiplan/munaiplan-backend/internal/app/config"
+	_ "github.com/munaiplan/munaiplan-backend/docs"
+
 	v1 "github.com/munaiplan/munaiplan-backend/internal/app/delivery/http/v1"
 	"github.com/munaiplan/munaiplan-backend/internal/app/service"
 	"github.com/munaiplan/munaiplan-backend/pkg/auth"
@@ -25,6 +29,8 @@ func NewHandler(services *service.Services, tokenManager auth.TokenManager) *Han
 func (h *Handler) Init(cfg *config.Config) *gin.Engine {
 	// Init gin handler
 	router := gin.Default()
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.Use(
 		gin.Recovery(),

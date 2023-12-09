@@ -22,6 +22,13 @@ import (
 	"github.com/munaiplan/munaiplan-backend/pkg/logger"
 )
 
+// @title MunaiPlan API
+// @version 1.0
+// @description REST API endpoints for Munai Plan App
+
+// @host localhost:8000
+// @BasePath /api/v1/
+
 func Run(configPath string) {
 	cfg, err := config.Init(configPath)
 	if err != nil {

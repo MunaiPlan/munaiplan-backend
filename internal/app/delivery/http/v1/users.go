@@ -63,7 +63,7 @@ func (h *Handler) userSignUp(c *gin.Context) {
 // @ModuleID userSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInput true "sign up info"
+// @Param input body signInInput true "sign in info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
