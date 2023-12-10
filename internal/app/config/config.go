@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
+	//"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -25,11 +25,11 @@ const (
 
 type (
 	Config struct {
-		Environment string
-		Mongo       MongoConfig
-		HTTP        HTTPConfig
-		Auth        AuthConfig
-		CatalogCache     CatalogCacheConfig
+		Environment  string
+		Mongo        MongoConfig
+		HTTP         HTTPConfig
+		Auth         AuthConfig
+		CatalogCache CatalogCacheConfig
 	}
 
 	MongoConfig struct {
@@ -67,11 +67,11 @@ type (
 // Init populates Config struct with values from config file
 // located at filepath and environment variables.
 func Init(configsDir string) (*Config, error) {
-	if err := godotenv.Load(); err != nil {
-		return nil, err
-	}
+	// if err := godotenv.Load(); err != nil {
+	// 	return nil, err
+	// }
 
-	viper.AutomaticEnv()
+	//viper.AutomaticEnv()
 	populateDefaults()
 
 	if err := parseConfigFile(configsDir, os.Getenv("APP_ENV")); err != nil {
@@ -103,8 +103,8 @@ func unmarshal(cfg *Config) error {
 func setFromEnv(cfg *Config) {
 	// TODO use envconfig https://github.com/kelseyhightower/envconfig
 	cfg.Mongo.URI = os.Getenv("MONGO_URI")
-	cfg.Mongo.User = os.Getenv("MONGO_USER")
-	cfg.Mongo.Password = os.Getenv("MONGO_PASS")
+	cfg.Mongo.User = os.Getenv("MONGO_INITDB_ROOT_USERNAME")
+	cfg.Mongo.Password = os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
 	cfg.Environment = os.Getenv("APP_ENV")
 	cfg.Auth.JWT.SigningKey = os.Getenv("JWT_SIGNING_KEY")
 }

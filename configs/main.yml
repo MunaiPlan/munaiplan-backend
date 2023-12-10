@@ -8,4 +8,4 @@ mongo:
   databaseName: munaiPlan
 
 catalogCache:
-  apiDrillCollarPath: "/Users/kadirbeksharau/Desktop/MunaiPlan/munaiplan-backend/API Drill Collar.cat.xml"
+  apiDrillCollarPath: "/root/catalog_files/API Drill Collar.cat.xml"
