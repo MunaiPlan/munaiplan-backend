@@ -1,7 +1,7 @@
 package catalog
 
 import (
-	"github.com/munaiplan/munaiplan-backend/infrastructure/configs"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/configs"
 	catalogParser "github.com/munaiplan/munaiplan-backend/pkg/catalog/parser"
 	"github.com/xuri/excelize/v2"
 )

@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/munaiplan/munaiplan-backend/infrastructure/configs"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/configs"
 )
 
 type Server struct {

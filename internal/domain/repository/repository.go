@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/munaiplan/munaiplan-backend/infrastructure/database/postgres/repository"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/database/postgres/repository"
 	"gorm.io/gorm"
 )
 

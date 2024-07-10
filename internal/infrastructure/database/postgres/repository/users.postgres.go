@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/munaiplan/munaiplan-backend/infrastructure/database/postgres/models"
-	"github.com/munaiplan/munaiplan-backend/internal/domain"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/database/postgres/infra/models"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
+    domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +27,7 @@ func (r *usersRepository) GetByEmail(ctx context.Context, email string) (*domain
     var user models.User
     err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error
     if errors.Is(err, gorm.ErrRecordNotFound) {
-        return nil, domain.ErrUserNotFound
+        return nil, domainErrors.ErrUserNotFound
     }
 
     res := toDomainUser(&user)

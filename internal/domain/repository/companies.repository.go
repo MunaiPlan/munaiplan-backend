@@ -1,6 +1,6 @@
 package repository
 
-import "github.com/munaiplan/munaiplan-backend/internal/domain"
+import "github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 
 type CompaniesRepository interface {
 	CreateCompany(company *domain.Company) error

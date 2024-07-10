@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 
-	"github.com/munaiplan/munaiplan-backend/helpers"
-	"github.com/munaiplan/munaiplan-backend/internal/repository"
-	"github.com/munaiplan/munaiplan-backend/presentation/types/requests"
-	"github.com/munaiplan/munaiplan-backend/presentation/types/responses"
+	"github.com/munaiplan/munaiplan-backend/internal/helpers"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
+	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
+	"github.com/munaiplan/munaiplan-backend/internal/application/dto/responses"
 )
 
 type Users interface {

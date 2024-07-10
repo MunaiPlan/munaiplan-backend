@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/munaiplan/munaiplan-backend/internal/service"
-	"github.com/munaiplan/munaiplan-backend/presentation/middleware"
+	"github.com/munaiplan/munaiplan-backend/internal/application/service"
+	"github.com/munaiplan/munaiplan-backend/internal/presentation/middleware"
 )
 
 type Handler struct {

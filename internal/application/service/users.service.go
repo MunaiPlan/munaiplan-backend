@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/munaiplan/munaiplan-backend/helpers"
-	"github.com/munaiplan/munaiplan-backend/internal/domain"
-	"github.com/munaiplan/munaiplan-backend/internal/repository"
-	"github.com/munaiplan/munaiplan-backend/presentation/types/requests"
-	"github.com/munaiplan/munaiplan-backend/presentation/types/responses"
+	"github.com/munaiplan/munaiplan-backend/internal/helpers"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
+	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
+	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
+	"github.com/munaiplan/munaiplan-backend/internal/application/dto/responses"
 	"github.com/sirupsen/logrus"
 )
 
@@ -32,7 +33,7 @@ func (s *UsersService) SignUp(ctx context.Context, input requests.UserSignUpRequ
 	// Check if user with the same email already exists
 	_, err := s.repo.GetByEmail(ctx, input.Email)
 	if err == nil {
-		return domain.ErrUserAlreadyExists
+		return domainErrors.ErrUserAlreadyExists
 	}
 
 	// Hash the password
@@ -67,7 +68,7 @@ func (s *UsersService) SignIn(ctx context.Context, input requests.UserSignInRequ
 	fmt.Println(input.Password)
 
 	if !helpers.CheckPasswordHash(input.Password, user.Password) {
-		return nil, domain.ErrUserPasswordIncorrect
+		return nil, domainErrors.ErrUserPasswordIncorrect
 	}
 
 	token, err := s.jwt.CreateAccessToken(helpers.UserAccessTokenClaims{UserId: user.ID})

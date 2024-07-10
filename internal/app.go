@@ -9,14 +9,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/munaiplan/munaiplan-backend/helpers"
-	"github.com/munaiplan/munaiplan-backend/infrastructure/configs"
-	postgres "github.com/munaiplan/munaiplan-backend/infrastructure/database/postgres/connection"
-	infrastructure "github.com/munaiplan/munaiplan-backend/infrastructure/http"
-	"github.com/munaiplan/munaiplan-backend/internal/repository"
-	"github.com/munaiplan/munaiplan-backend/internal/service"
+	"github.com/munaiplan/munaiplan-backend/internal/helpers"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/configs"
+	postgres "github.com/munaiplan/munaiplan-backend/internal/infrastructure/database/postgres/infra/connection"
+	infrastructure "github.com/munaiplan/munaiplan-backend/internal/infrastructure/http"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
+	"github.com/munaiplan/munaiplan-backend/internal/application/service"
 	"github.com/munaiplan/munaiplan-backend/pkg/logger"
-	"github.com/munaiplan/munaiplan-backend/presentation/middleware"
+	"github.com/munaiplan/munaiplan-backend/internal/presentation/middleware"
 	//"github.com/xuri/excelize/v2"
 )
 

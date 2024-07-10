@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/munaiplan/munaiplan-backend/infrastructure/database/postgres/models"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/database/postgres/infra/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

@@ -1,8 +1,10 @@
 package service
 
 import (
-	"github.com/munaiplan/munaiplan-backend/internal/domain"
-	"github.com/munaiplan/munaiplan-backend/internal/repository"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
+	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
+
 )
 
 type CompaniesService struct {
@@ -26,7 +28,7 @@ func (s *CompaniesService) UpdateCompany(company *domain.Company) error {
 	}
 
 	if s.compareCompanies(oldCompany, company) {
-		return domain.ErrCompanyWasNotUpdated
+		return domainErrors.ErrCompanyWasNotUpdated
 	}
 
 	return s.repo.UpdateCompany(company)

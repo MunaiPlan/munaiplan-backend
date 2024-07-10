@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/munaiplan/munaiplan-backend/internal/domain"
-	"github.com/munaiplan/munaiplan-backend/presentation/types/requests"
-	"github.com/munaiplan/munaiplan-backend/presentation/types/responses"
+	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
+	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
+	"github.com/munaiplan/munaiplan-backend/internal/application/dto/responses"
 )
 
 func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
@@ -66,7 +66,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 
 	res, err := h.services.Users.SignIn(c.Request.Context(), inp)
 	if err != nil {
-		if errors.Is(err, domain.ErrUserNotFound) {
+		if errors.Is(err, domainErrors.ErrUserNotFound) {
 			responses.NewResponse(c, http.StatusBadRequest, err.Error())
 
 			return

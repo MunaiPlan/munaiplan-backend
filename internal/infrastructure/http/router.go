@@ -5,13 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/munaiplan/munaiplan-backend/docs"
-	"github.com/munaiplan/munaiplan-backend/infrastructure/configs"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/configs"
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 
-	"github.com/munaiplan/munaiplan-backend/internal/service"
-	"github.com/munaiplan/munaiplan-backend/presentation/handlers"
-	"github.com/munaiplan/munaiplan-backend/presentation/middleware"
+	"github.com/munaiplan/munaiplan-backend/internal/application/service"
+	"github.com/munaiplan/munaiplan-backend/internal/presentation/handlers"
+	"github.com/munaiplan/munaiplan-backend/internal/presentation/middleware"
 )
 
 type Router struct {

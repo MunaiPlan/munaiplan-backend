@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/munaiplan/munaiplan-backend/helpers"
+	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/munaiplan/munaiplan-backend/pkg/values"
 )
 
