@@ -17,16 +17,17 @@ const (
 )
 
 type UsersService struct {
-	repo repository.UserRepository
+	repo repository.UsersRepository
 	jwt  helpers.Jwt
 }
 
-func NewUsersService(repo repository.UserRepository, jwt helpers.Jwt) *UsersService {
+func NewUsersService(repo repository.UsersRepository, jwt helpers.Jwt) *UsersService {
 	return &UsersService{
 		repo: repo,
 		jwt:  jwt,
 	}
 }
+
 func (s *UsersService) SignUp(ctx context.Context, input requests.UserSignUpRequest) error {
 	// Check if user with the same email already exists
 	_, err := s.repo.GetByEmail(ctx, input.Email)

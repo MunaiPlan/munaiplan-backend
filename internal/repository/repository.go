@@ -6,11 +6,11 @@ import (
 )
 
 type Repository struct {
-    Users UserRepository
+    Users UsersRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repository {
     return &Repository{
-        Users: repository.NewUserRepository(db),
+        Users: repository.NewUsersRepository(db),
     }
 }

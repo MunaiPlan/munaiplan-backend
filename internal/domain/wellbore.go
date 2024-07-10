@@ -1,17 +1,27 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"time"
+)
 
 // Ствол Скважины (под скважиной)
 // TODO() Correct all tables in this file
 type Wellbore struct {
-	ID                      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	WellID                  primitive.ObjectID `json:"wellId" bson:"wellId"`
-	Name                    string             `json:"name" bson:"name"`
-	BottomHoleLocation      int                `json:"bottomHoleLocation" bson:"bottomHoleLocation"`           // Coordinates (should be a more complex type)
-	LateralFromExistingWell bool               `json:"lateralFromExistingWell" bson:"lateralFromExistingWell"` // Is this a lateral from an existing well
-	MainBore                primitive.ObjectID `json:"mainBore" bson:"mainBore"`                               // If this wellbore is a lateral, reference to the main wellbore
-	Type                    string             `json:"type" bson:"type"`                                       // Type of the wellbore
-	// Other fields...
-
+	ID                             string    `json:"id"`
+	Name                           string    `json:"name"`
+	BottomHoleLocation             string    `json:"bottom_hole_location"`
+	WellboreDepth                  float64   `json:"wellbore_depth"`
+	AverageHookLoad                float64   `json:"average_hook_load"`
+	RiserPressure                  float64   `json:"riser_pressure"`
+	AverageInletFlow               float64   `json:"average_inlet_flow"`
+	AverageColumnRotationFrequency float64   `json:"average_column_rotation_frequency"`
+	MaximumColumnRotationFrequency float64   `json:"maximum_column_rotation_frequency"`
+	AverageWeightOnBit             float64   `json:"average_weight_on_bit"`
+	MaximumWeightOnBit             float64   `json:"maximum_weight_on_bit"`
+	AverageTorque                  float64   `json:"average_torque"`
+	MaximumTorque                  float64   `json:"maximum_torque"`
+	DownStaticFriction             float64   `json:"down_static_friction"`
+	DepthInterval                  float64   `json:"depth_interval"`
+	Designs                        []*Design `json:"designs"`
+	CreatedAt                      time.Time `json:"created_at"`
 }
