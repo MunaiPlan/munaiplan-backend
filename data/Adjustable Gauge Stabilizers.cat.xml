@@ -1,0 +1,36 @@
+<?xml version="1.0" standalone="no"?>
+<?DataServices CATALOG?>
+<?EDM database version="16.00.00.001" ?>
+
+<export>
+<TOPLEVEL>
+</TOPLEVEL>
+    <REPLACE catalog_id="6m1RZ" name="Adjustable Gauge Stabilizers" table="CD_STAB_CATALOG" type="IBS">
+    </REPLACE>
+    <CD_CATALOG CATALOG_ID="6m1RZ" CATALOG_TYPE_CODE="IBS" NAME="Adjustable Gauge Stabilizers" IS_API="N" DESCRIPTION="AGS" READ_ONLY="N" COMMENTS="" AUTHOR="Landmark" CREATE_DATE="12/31/02 12:00 AM" CREATE_USER_ID="sa" CREATE_APP_ID="" UPDATE_DATE="12/31/02 12:00 AM" UPDATE_USER_ID="" UPDATE_APP_ID="">
+    </CD_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.4583333333315" comp_type_code="AST" nominal_size="6" create_user_id="sa" approximate_weight="57.62" closed_end_displacement="0.12305934766547" description="6&quot; AGS" length="8.33" id_body="0.083333333333" connection="3 1/2 IF" makeup_torque="9900.0" od_body="0.39583333333175" catalog_item_id="5WI17" linear_capacity="0.0054541539131508" fishneck_length="2.33" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="1.45" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.47916666666475" comp_type_code="AST" nominal_size="6.125" create_user_id="sa" approximate_weight="62.43" closed_end_displacement="0.12305934766547" description="6 1/8&quot; AGS" length="8.33" id_body="0.083333333333" connection="3 1/2 IF" makeup_torque="9900.0" od_body="0.39583333333175" catalog_item_id="5WYXL" linear_capacity="0.0054541539131508" fishneck_length="2.33" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="1.45" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.47916666666475" comp_type_code="AST" nominal_size="6.25" create_user_id="sa" approximate_weight="62.43" closed_end_displacement="0.12305934766547" description="6 1/4&quot; AGS" length="8.33" id_body="0.083333333333" connection="3 1/2 IF" makeup_torque="9900.0" od_body="0.39583333333175" catalog_item_id="5X2P6" linear_capacity="0.0054541539131508" fishneck_length="2.33" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="1.45" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.60416666666425" comp_type_code="AST" nominal_size="7.875" create_user_id="sa" approximate_weight="76.92" closed_end_displacement="0.23043800283062" description="7 7/8&quot; AGS" length="9.75" id_body="0.14583333333275" connection="4 1/2 IF" makeup_torque="29500.0" od_body="0.5416666666645" catalog_item_id="5X5H1" linear_capacity="0.016703346359024" fishneck_length="3.83" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="1.76" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.61458333333088" comp_type_code="AST" nominal_size="8" create_user_id="sa" approximate_weight="76.92" closed_end_displacement="0.23043800283062" description="8&quot; AGS" length="9.75" id_body="0.14583333333275" connection="4 1/2 IF" makeup_torque="29500.0" od_body="0.5416666666645" catalog_item_id="5XGFJ" linear_capacity="0.016703346359024" fishneck_length="3.83" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="1.76" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.65624999999737" comp_type_code="AST" nominal_size="8.5" create_user_id="sa" approximate_weight="89.23" closed_end_displacement="0.24850488766793" description="8 1/2&quot; AGS" length="9.75" id_body="0.14583333333275" connection="4 1/2 IF" makeup_torque="29500.0" od_body="0.56249999999775" catalog_item_id="5XP1L" linear_capacity="0.016703346359024" fishneck_length="3.83" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="1.76" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.666666666664" comp_type_code="AST" nominal_size="8.75" create_user_id="sa" approximate_weight="92.3" closed_end_displacement="0.24850488766793" description="8 3/4&quot; AGS" length="9.75" id_body="0.14583333333275" connection="4 1/2 IF" makeup_torque="29500.0" od_body="0.56249999999775" catalog_item_id="5XU2D" linear_capacity="0.016703346359024" fishneck_length="3.83" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="1.76" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.76041666666362" comp_type_code="AST" nominal_size="9.875" create_user_id="sa" approximate_weight="104.17" closed_end_displacement="0.32759011940862" description="9 7/8&quot; AGS" length="10.08" id_body="0.17708333333262" connection="6 5/8 REG" makeup_torque="45000.0" od_body="0.64583333333075" catalog_item_id="5Y0DB" linear_capacity="0.024628913764072" fishneck_length="3.33" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="2.11" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.93749999999625" comp_type_code="AST" nominal_size="11.75" create_user_id="sa" approximate_weight="112.42" closed_end_displacement="0.37122335071383" description="11 3/4&quot; AGS" length="9.34" id_body="0.17708333333262" connection="6 5/8 REG" makeup_torque="45000.0" od_body="0.68749999999725" catalog_item_id="5YA1G" linear_capacity="0.024628913764072" fishneck_length="3.24803149605" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="2.49" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="0.9583333333295" comp_type_code="AST" nominal_size="12.25" create_user_id="sa" approximate_weight="198.41" closed_end_displacement="0.37122335071383" description="12 1/4&quot; AGS" length="10.08" id_body="0.17708333333262" connection="6 5/8 REG" makeup_torque="45000.0" od_body="0.68749999999725" catalog_item_id="5YIP0" linear_capacity="0.024628913764072" fishneck_length="3.24803149605" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="2.35" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="1.249999999995" comp_type_code="AST" nominal_size="16" create_user_id="sa" approximate_weight="300.0" closed_end_displacement="0.49223739066186" description="16&quot; AGS" length="9.17" id_body="0.19791666666587" connection="7 5/8 REG" makeup_torque="74000.0" od_body="0.7916666666635" catalog_item_id="5YZT3" linear_capacity="0.030764836916366" fishneck_length="2.5" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="2.79" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    <CD_STAB_CATALOG ecc_stab_blade_od="1.3749999999945" comp_type_code="AST" nominal_size="17.5" create_user_id="sa" approximate_weight="363.64" closed_end_displacement="0.49223739066186" description="17 1/2&quot; AGS" length="8.25" id_body="0.19791666666587" connection="7 5/8 REG" makeup_torque="74000.0" od_body="0.7916666666635" catalog_item_id="5Z3MV" linear_capacity="0.030764836916366" fishneck_length="2.5" grade_id="4145H" sect_type_code="IBS" ecc_stab_blade_length="2.79" catalog_id="6m1RZ">
+    </CD_STAB_CATALOG>
+    </export>

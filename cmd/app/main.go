@@ -1,10 +1,11 @@
 package main
 
+import "github.com/munaiplan/munaiplan-backend/internal"
+import _ "ariga.io/atlas-provider-gorm/gormschema"
 
-import "github.com/munaiplan/munaiplan-backend/internal/app"
 
-const configsDir = "configs"
+const configsDir = "infrastructure/configs"
 
 func main() {
-	app.Run(configsDir)
+	internal.Run(configsDir)
 }

@@ -1,0 +1,23 @@
+http:
+  port: 8000
+  maxHeaderBytes: 1
+  readTimeout: 10s
+  writeTimeout: 10s
+
+mongo:
+  databaseName: munaiPlan
+
+catalog:
+  catalogCode: "CD_CATALOG"
+  apiDrillCollar:
+    catalogPath: "data/API Drill Collar.cat.xml"
+    catalogItemCode: "CD_DC_CATALOG"
+  apiDrillPipe: 
+    catalogPath: "data/API Drill Pipe.cat.xml"
+    catalogItemCode: "CD_DP_CATALOG"
+  adjustableGaugeStablilizers:
+    catalogPath: "data/Adjustable Gauge Stabilizers.cat.xml"
+    catalogItemCode: "CD_STAB_CATALOG"
+  additional:
+    catalogPath: "data/Additional.cat.xml"
+    catalogItemCode: "CD_CENTRALIZER_CATALOG"

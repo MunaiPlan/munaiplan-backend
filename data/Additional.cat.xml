@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="no"?>
+<?DataServices CATALOG?>
+<?EDM database version="16.00.00.001" ?>
+
+<export>
+<TOPLEVEL>
+</TOPLEVEL>
+    <REPLACE catalog_id="OTH  " name="Additional" table="CD_CENTRALIZER_CATALOG" type="CEN">
+    </REPLACE>
+    <CD_CATALOG CATALOG_ID="OTH  " CATALOG_TYPE_CODE="CEN" NAME="Additional" IS_API="" DESCRIPTION="System Catalog" READ_ONLY="Y" COMMENTS="" AUTHOR="" CREATE_DATE="12/31/02 12:00 AM" CREATE_USER_ID="sa" CREATE_APP_ID="" UPDATE_DATE="12/31/02 12:00 AM" UPDATE_USER_ID="" UPDATE_APP_ID="">
+    </CD_CATALOG>
+    <CD_CENTRALIZER_CATALOG starting_force="1490.0" casing_diameter="0.8020833333333334" part_number="STA 3 9.625 x 12.25" create_user_id="sa" type="BowSpring" nominal_diameter_measure="14.5669" description="Weatherford STA 3" running_force="879.0" restoring_force="3058.0" hole_diameter="1.0208333333333333" bows="6" non_fixed="N" minimum_diameter="0.9066666666666667" catalog_item_id="001  " catalog_id="OTH  ">
+    </CD_CENTRALIZER_CATALOG>
+    <CD_CENTRALIZER_CATALOG starting_force="0.0" casing_diameter="0.8020833333333334" part_number="Spiraglider 9 5/8&quot; x 12 1/4&quot;" create_user_id="sa" type="Rigid" nominal_diameter_measure="12.0" description="Weatherford Spiraglider 9 5/8&quot; x 12 1/4&quot;" running_force="0.0" restoring_force="0.0" hole_diameter="1.0208333333333333" bows="6" non_fixed="Y" minimum_diameter="1.0" catalog_item_id="002  " catalog_id="OTH  ">
+    </CD_CENTRALIZER_CATALOG>
+    </export>
