@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
@@ -17,21 +16,21 @@ const (
 	BEARER_TOKEN_TYPE = "Bearer"
 )
 
-type UsersService struct {
+type usersService struct {
 	repo repository.UsersRepository
 	jwt  helpers.Jwt
 }
 
-func NewUsersService(repo repository.UsersRepository, jwt helpers.Jwt) *UsersService {
-	return &UsersService{
+func NewUsersService(repo repository.UsersRepository, jwt helpers.Jwt) *usersService {
+	return &usersService{
 		repo: repo,
 		jwt:  jwt,
 	}
 }
 
-func (s *UsersService) SignUp(ctx context.Context, input requests.UserSignUpRequest) error {
+func (s *usersService) SignUp(ctx context.Context, organizationId string, input *requests.UserSignUpRequest) error {
 	// Check if user with the same email already exists
-	_, err := s.repo.GetByEmail(ctx, input.Email)
+	_, err := s.repo.GetByEmail(ctx, organizationId, input.Email)
 	if err == nil {
 		return domainErrors.ErrUserAlreadyExists
 	}
@@ -44,13 +43,13 @@ func (s *UsersService) SignUp(ctx context.Context, input requests.UserSignUpRequ
 	}
 
 	// Create the user
-	user := domain.User{
+	user := entities.User{
 		Email:    input.Email,
 		Password: hashedPassword,
 	}
 
 	// Save the user to the repository
-	err = s.repo.Create(ctx, &user)
+	err = s.repo.Create(ctx, organizationId, &user)
 	if err != nil {
 		logrus.Errorf("Error creating user: %s", err)
 		return nil
@@ -58,14 +57,11 @@ func (s *UsersService) SignUp(ctx context.Context, input requests.UserSignUpRequ
 
 	return nil
 }
-func (s *UsersService) SignIn(ctx context.Context, input requests.UserSignInRequest) (*responses.TokenResponse, error) {
-	user, err := s.repo.GetByEmail(ctx, input.Email)
+func (s *usersService) SignIn(ctx context.Context, organizationId string, input *requests.UserSignInRequest) (*responses.TokenResponse, error) {
+	user, err := s.repo.GetByEmail(ctx, organizationId, input.Email)
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(user.Password)
-	fmt.Println(input.Password)
 
 	if !helpers.CheckPasswordHash(input.Password, user.Password) {
 		return nil, domainErrors.ErrUserPasswordIncorrect

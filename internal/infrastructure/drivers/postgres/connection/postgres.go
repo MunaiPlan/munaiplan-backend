@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/database/postgres/infra/models"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -60,13 +60,14 @@ func NewDatabase() *Database {
             logrus.Fatalf("failed to connect database: %v", err)
         }
 
-        // Create UUID extension
-        if err := createUUIDExtension(db); err != nil {
-            logrus.Fatalf("failed to create UUID extension: %v", err)
+        err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/setup.sql")
+        if err != nil {
+            logrus.Fatalf("failed to execute setup sql file: %v", err)
         }
 
         // Auto-migrate the database schema
         err = db.AutoMigrate(
+            &models.Organization{},
             &models.User{},
             &models.Company{},
             &models.Field{},
@@ -83,9 +84,14 @@ func NewDatabase() *Database {
             logrus.Fatalf("failed to auto-migrate database: %v", err)
         }
 
-        err = seedData(db, "infrastructure/database/postgres/seeds/users.sql")
+        err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/indexes.sql")
         if err != nil {
-            logrus.Fatalf("failed to connect database: %v", err)
+            logrus.Fatalf("failed to execute indexes sql file: %v", err)
+        }
+
+        err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/seed.sql")
+        if err != nil {
+            logrus.Fatalf("failed to execute seed sql file: %v", err)
         }
 
         dbInstance = &Database{Conn: db}
@@ -95,27 +101,23 @@ func NewDatabase() *Database {
     return dbInstance
 }
 
-func seedData(db *gorm.DB, seedFile string) error {
-    absPath, err := filepath.Abs(seedFile)
+func execSqlFromFile(db *gorm.DB, filePath string) error {
+    absPath, err := filepath.Abs(filePath)
     if err != nil {
         return fmt.Errorf("could not determine absolute path: %v", err)
     }
 
     content, err := os.ReadFile(absPath)
     if err != nil {
-        return fmt.Errorf("could not read seed file: %v", err)
+        return fmt.Errorf("could not read sql file: %v", err)
     }
 
     err = db.Exec(string(content)).Error
     if err != nil {
-        return fmt.Errorf("could not execute seed file: %v", err)
+        return fmt.Errorf("could not execute sql file: %v", err)
     }
 
     return nil
-}
-
-func createUUIDExtension(db *gorm.DB) error {
-    return db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
 }
 
 func getEnv(key, defaultValue string) string {

@@ -15,7 +15,434 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/users/sign-in": {
+        "/api/v1/companies": {
+            "get": {
+                "description": "Retrieves all companies",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "companies"
+                ],
+                "summary": "Get Companies",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Company"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "companies"
+                ],
+                "summary": "Create Company",
+                "parameters": [
+                    {
+                        "description": "Company input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateCompanyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/companies/{id}": {
+            "put": {
+                "description": "Updates an existing company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "companies"
+                ],
+                "summary": "Update Company",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Company input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateCompanyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Company"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "companies"
+                ],
+                "summary": "Delete Company",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Company input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.DeleteCompanyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/companies/{name}": {
+            "get": {
+                "description": "Retrieves a company by its name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "companies"
+                ],
+                "summary": "Get Company by Name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company Name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Company"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations": {
+            "get": {
+                "description": "Retrieve all organizations",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organizations"
+                ],
+                "summary": "Get Organizations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Organization"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new organization",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organizations"
+                ],
+                "summary": "Create Organization",
+                "parameters": [
+                    {
+                        "description": "Organization details",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateOrganizationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Organization"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{id}": {
+            "put": {
+                "description": "Update an existing organization",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organizations"
+                ],
+                "summary": "Update Organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated organization details",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateOrganizationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Organization"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an organization",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organizations"
+                ],
+                "summary": "Delete Organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{name}": {
+            "get": {
+                "description": "Retrieve an organization by its name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organizations"
+                ],
+                "summary": "Get Organization by Name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Organization"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/sign-in": {
             "post": {
                 "description": "user sign in",
                 "consumes": [
@@ -35,7 +462,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.signInInput"
+                            "$ref": "#/definitions/requests.UserSignInRequest"
                         }
                     }
                 ],
@@ -43,39 +470,39 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/v1.tokenResponse"
+                            "$ref": "#/definitions/responses.TokenResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.response"
+                            "$ref": "#/definitions/responses.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/v1.response"
+                            "$ref": "#/definitions/responses.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.response"
+                            "$ref": "#/definitions/responses.Response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/v1.response"
+                            "$ref": "#/definitions/responses.Response"
                         }
                     }
                 }
             }
         },
-        "/users/sign-up": {
+        "/api/v1/users/sign-up": {
             "post": {
-                "description": "create user account",
+                "description": "user sign up",
                 "consumes": [
                     "application/json"
                 ],
@@ -93,39 +520,33 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.userSignUpInput"
+                            "$ref": "#/definitions/requests.UserSignUpRequest"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "ok",
+                        "description": "Created",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/responses.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/v1.response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/v1.response"
+                            "$ref": "#/definitions/responses.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/v1.response"
+                            "$ref": "#/definitions/responses.Response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/v1.response"
+                            "$ref": "#/definitions/responses.Response"
                         }
                     }
                 }
@@ -133,15 +554,530 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "v1.response": {
+        "entities.Case": {
             "type": "object",
             "properties": {
-                "message": {
+                "case_description": {
+                    "type": "string"
+                },
+                "case_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "drill_depth": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "pipe_size": {
+                    "type": "number"
+                }
+            }
+        },
+        "entities.Company": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "division": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Field"
+                    }
+                },
+                "group": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "representative": {
                     "type": "string"
                 }
             }
         },
-        "v1.signInInput": {
+        "entities.Design": {
+            "type": "object",
+            "properties": {
+                "actual_date": {
+                    "type": "string"
+                },
+                "cases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Case"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "plan_name": {
+                    "type": "string"
+                },
+                "stage": {
+                    "type": "string"
+                },
+                "trajectories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Trajectory"
+                    }
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.Field": {
+            "type": "object",
+            "properties": {
+                "active_field_unit": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "reduction_level": {
+                    "type": "string"
+                },
+                "sites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Site"
+                    }
+                }
+            }
+        },
+        "entities.Organization": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "companies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Company"
+                    }
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "registeredAt": {
+                    "type": "string"
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.User"
+                    }
+                }
+            }
+        },
+        "entities.Site": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "azimuth": {
+                    "type": "number"
+                },
+                "block": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "field_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "wells": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Well"
+                    }
+                }
+            }
+        },
+        "entities.Trajectory": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.TrajectoryHeader"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "units": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.TrajectoryUnit"
+                    }
+                }
+            }
+        },
+        "entities.TrajectoryHeader": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "customer": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "job_number": {
+                    "type": "string"
+                },
+                "kelly_bushing_elev": {
+                    "type": "number"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "profile_type": {
+                    "type": "string"
+                },
+                "project": {
+                    "type": "string"
+                },
+                "structure": {
+                    "type": "string"
+                },
+                "wellhead": {
+                    "type": "string"
+                },
+                "your_ref": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.TrajectoryUnit": {
+            "type": "object",
+            "properties": {
+                "azim": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "dogleg": {
+                    "type": "number"
+                },
+                "global_e_coord": {
+                    "type": "number"
+                },
+                "global_n_coord": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "incl": {
+                    "type": "number"
+                },
+                "local_e_coord": {
+                    "type": "number"
+                },
+                "local_n_coord": {
+                    "type": "number"
+                },
+                "md": {
+                    "type": "number"
+                },
+                "sub_sea": {
+                    "type": "number"
+                },
+                "tvd": {
+                    "type": "number"
+                },
+                "vertical_section": {
+                    "type": "number"
+                }
+            }
+        },
+        "entities.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "registeredAt": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.Well": {
+            "type": "object",
+            "properties": {
+                "active_well_unit": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "universal_well_identifier": {
+                    "type": "string"
+                },
+                "well_number": {
+                    "type": "string"
+                },
+                "wellbores": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Wellbore"
+                    }
+                },
+                "working_group": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.Wellbore": {
+            "type": "object",
+            "properties": {
+                "average_column_rotation_frequency": {
+                    "type": "number"
+                },
+                "average_hook_load": {
+                    "type": "number"
+                },
+                "average_inlet_flow": {
+                    "type": "number"
+                },
+                "average_torque": {
+                    "type": "number"
+                },
+                "average_weight_on_bit": {
+                    "type": "number"
+                },
+                "bottom_hole_location": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "depth_interval": {
+                    "type": "number"
+                },
+                "designs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Design"
+                    }
+                },
+                "down_static_friction": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "maximum_column_rotation_frequency": {
+                    "type": "number"
+                },
+                "maximum_torque": {
+                    "type": "number"
+                },
+                "maximum_weight_on_bit": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "riser_pressure": {
+                    "type": "number"
+                },
+                "wellbore_depth": {
+                    "type": "number"
+                }
+            }
+        },
+        "requests.CreateCompanyRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "division": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "representative": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateOrganizationRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.DeleteCompanyRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateCompanyRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "division": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "representative": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateOrganizationRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UserSignInRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -159,24 +1095,14 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.tokenResponse": {
-            "type": "object",
-            "properties": {
-                "accessToken": {
-                    "type": "string"
-                },
-                "refreshToken": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.userSignUpInput": {
+        "requests.UserSignUpRequest": {
             "type": "object",
             "required": [
                 "email",
                 "name",
+                "organization_id",
                 "password",
-                "phone"
+                "surname"
             ],
             "properties": {
                 "email": {
@@ -185,17 +1111,55 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
-                    "maxLength": 64,
-                    "minLength": 2
+                    "maxLength": 32,
+                    "minLength": 3
+                },
+                "organization_id": {
+                    "type": "string"
                 },
                 "password": {
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 8
                 },
-                "phone": {
+                "surname": {
                     "type": "string",
-                    "maxLength": 13
+                    "maxLength": 32,
+                    "minLength": 3
+                }
+            }
+        },
+        "responses.Response": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.TokenResponse": {
+            "type": "object",
+            "properties": {
+                "expires_at": {
+                    "type": "integer"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "refresh_token_expires_at": {
+                    "type": "integer"
+                },
+                "refresh_token_type": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "token_type": {
+                    "type": "string"
                 }
             }
         }
@@ -204,12 +1168,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:8000",
-	BasePath:         "/api/v1/",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "MunaiPlan API",
-	Description:      "REST API endpoints for Munai Plan App",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

@@ -1,4 +1,4 @@
-package domain
+package entities
 
 // Месторождение (под компанией)
 type Field struct {

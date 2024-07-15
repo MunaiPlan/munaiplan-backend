@@ -9,6 +9,14 @@ import (
 	"golang.org/x/text/language"
 )
 
+type Response struct {
+	Message string `json:"message"`
+}
+
+func NewResponse(message string) Response {
+	return Response{message}
+}
+
 type responseError struct {
 	Detail string `json:"detail"`
 }

@@ -1,11 +1,348 @@
-basePath: /api/v1/
 definitions:
-  v1.response:
+  entities.Case:
     properties:
-      message:
+      case_description:
+        type: string
+      case_name:
+        type: string
+      created_at:
+        type: string
+      drill_depth:
+        type: number
+      id:
+        type: string
+      pipe_size:
+        type: number
+    type: object
+  entities.Company:
+    properties:
+      address:
+        type: string
+      division:
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/entities.Field'
+        type: array
+      group:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      representative:
         type: string
     type: object
-  v1.signInInput:
+  entities.Design:
+    properties:
+      actual_date:
+        type: string
+      cases:
+        items:
+          $ref: '#/definitions/entities.Case'
+        type: array
+      created_at:
+        type: string
+      id:
+        type: string
+      plan_name:
+        type: string
+      stage:
+        type: string
+      trajectories:
+        items:
+          $ref: '#/definitions/entities.Trajectory'
+        type: array
+      version:
+        type: string
+    type: object
+  entities.Field:
+    properties:
+      active_field_unit:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      reduction_level:
+        type: string
+      sites:
+        items:
+          $ref: '#/definitions/entities.Site'
+        type: array
+    type: object
+  entities.Organization:
+    properties:
+      address:
+        type: string
+      companies:
+        items:
+          $ref: '#/definitions/entities.Company'
+        type: array
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      registeredAt:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/entities.User'
+        type: array
+    type: object
+  entities.Site:
+    properties:
+      area:
+        type: number
+      azimuth:
+        type: number
+      block:
+        type: string
+      country:
+        type: string
+      field_id:
+        type: string
+      name:
+        type: string
+      region:
+        type: string
+      state:
+        type: string
+      wells:
+        items:
+          $ref: '#/definitions/entities.Well'
+        type: array
+    type: object
+  entities.Trajectory:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      headers:
+        items:
+          $ref: '#/definitions/entities.TrajectoryHeader'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      units:
+        items:
+          $ref: '#/definitions/entities.TrajectoryUnit'
+        type: array
+    type: object
+  entities.TrajectoryHeader:
+    properties:
+      created_at:
+        type: string
+      customer:
+        type: string
+      field:
+        type: string
+      id:
+        type: string
+      job_number:
+        type: string
+      kelly_bushing_elev:
+        type: number
+      profile:
+        type: string
+      profile_type:
+        type: string
+      project:
+        type: string
+      structure:
+        type: string
+      wellhead:
+        type: string
+      your_ref:
+        type: string
+    type: object
+  entities.TrajectoryUnit:
+    properties:
+      azim:
+        type: number
+      created_at:
+        type: string
+      dogleg:
+        type: number
+      global_e_coord:
+        type: number
+      global_n_coord:
+        type: number
+      id:
+        type: string
+      incl:
+        type: number
+      local_e_coord:
+        type: number
+      local_n_coord:
+        type: number
+      md:
+        type: number
+      sub_sea:
+        type: number
+      tvd:
+        type: number
+      vertical_section:
+        type: number
+    type: object
+  entities.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      registeredAt:
+        type: string
+      surname:
+        type: string
+    type: object
+  entities.Well:
+    properties:
+      active_well_unit:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+      universal_well_identifier:
+        type: string
+      well_number:
+        type: string
+      wellbores:
+        items:
+          $ref: '#/definitions/entities.Wellbore'
+        type: array
+      working_group:
+        type: string
+    type: object
+  entities.Wellbore:
+    properties:
+      average_column_rotation_frequency:
+        type: number
+      average_hook_load:
+        type: number
+      average_inlet_flow:
+        type: number
+      average_torque:
+        type: number
+      average_weight_on_bit:
+        type: number
+      bottom_hole_location:
+        type: string
+      created_at:
+        type: string
+      depth_interval:
+        type: number
+      designs:
+        items:
+          $ref: '#/definitions/entities.Design'
+        type: array
+      down_static_friction:
+        type: number
+      id:
+        type: string
+      maximum_column_rotation_frequency:
+        type: number
+      maximum_torque:
+        type: number
+      maximum_weight_on_bit:
+        type: number
+      name:
+        type: string
+      riser_pressure:
+        type: number
+      wellbore_depth:
+        type: number
+    type: object
+  requests.CreateCompanyRequest:
+    properties:
+      address:
+        type: string
+      division:
+        type: string
+      group:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: string
+      phone:
+        type: string
+      representative:
+        type: string
+    type: object
+  requests.CreateOrganizationRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  requests.DeleteCompanyRequest:
+    properties:
+      id:
+        type: string
+    type: object
+  requests.UpdateCompanyRequest:
+    properties:
+      address:
+        type: string
+      division:
+        type: string
+      group:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      representative:
+        type: string
+    type: object
+  requests.UpdateOrganizationRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  requests.UserSignInRequest:
     properties:
       email:
         maxLength: 64
@@ -18,43 +355,340 @@ definitions:
     - email
     - password
     type: object
-  v1.tokenResponse:
-    properties:
-      accessToken:
-        type: string
-      refreshToken:
-        type: string
-    type: object
-  v1.userSignUpInput:
+  requests.UserSignUpRequest:
     properties:
       email:
         maxLength: 64
         type: string
       name:
-        maxLength: 64
-        minLength: 2
+        maxLength: 32
+        minLength: 3
+        type: string
+      organization_id:
         type: string
       password:
         maxLength: 64
         minLength: 8
         type: string
-      phone:
-        maxLength: 13
+      surname:
+        maxLength: 32
+        minLength: 3
         type: string
     required:
     - email
     - name
+    - organization_id
     - password
-    - phone
+    - surname
     type: object
-host: localhost:8000
+  responses.Response:
+    properties:
+      message:
+        type: string
+    type: object
+  responses.TokenResponse:
+    properties:
+      expires_at:
+        type: integer
+      refresh_token:
+        type: string
+      refresh_token_expires_at:
+        type: integer
+      refresh_token_type:
+        type: string
+      success:
+        type: boolean
+      token:
+        type: string
+      token_type:
+        type: string
+    type: object
 info:
   contact: {}
-  description: REST API endpoints for Munai Plan App
-  title: MunaiPlan API
-  version: "1.0"
 paths:
-  /users/sign-in:
+  /api/v1/companies:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all companies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Company'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Get Companies
+      tags:
+      - companies
+    post:
+      consumes:
+      - application/json
+      description: Creates a new company
+      parameters:
+      - description: Company input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CreateCompanyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Create Company
+      tags:
+      - companies
+  /api/v1/companies/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an existing company
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Company input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.DeleteCompanyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Delete Company
+      tags:
+      - companies
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing company
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Company input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateCompanyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Update Company
+      tags:
+      - companies
+  /api/v1/companies/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a company by its name
+      parameters:
+      - description: Company Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Company'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Get Company by Name
+      tags:
+      - companies
+  /api/v1/organizations:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all organizations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Organization'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Get Organizations
+      tags:
+      - organizations
+    post:
+      consumes:
+      - application/json
+      description: Create a new organization
+      parameters:
+      - description: Organization details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CreateOrganizationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Organization'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Create Organization
+      tags:
+      - organizations
+  /api/v1/organizations/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Delete Organization
+      tags:
+      - organizations
+    put:
+      consumes:
+      - application/json
+      description: Update an existing organization
+      parameters:
+      - description: Organization ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated organization details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateOrganizationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Organization'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Update Organization
+      tags:
+      - organizations
+  /api/v1/organizations/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve an organization by its name
+      parameters:
+      - description: Organization name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Organization'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Response'
+      summary: Get Organization by Name
+      tags:
+      - organizations
+  /api/v1/users/sign-in:
     post:
       consumes:
       - application/json
@@ -65,68 +699,64 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/v1.signInInput'
+          $ref: '#/definitions/requests.UserSignInRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/v1.tokenResponse'
+            $ref: '#/definitions/responses.TokenResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.response'
+            $ref: '#/definitions/responses.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/v1.response'
+            $ref: '#/definitions/responses.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.response'
+            $ref: '#/definitions/responses.Response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/v1.response'
+            $ref: '#/definitions/responses.Response'
       summary: User SignIn
       tags:
       - users-auth
-  /users/sign-up:
+  /api/v1/users/sign-up:
     post:
       consumes:
       - application/json
-      description: create user account
+      description: user sign up
       parameters:
       - description: sign up info
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/v1.userSignUpInput'
+          $ref: '#/definitions/requests.UserSignUpRequest'
       produces:
       - application/json
       responses:
         "201":
-          description: ok
+          description: Created
           schema:
-            type: string
+            $ref: '#/definitions/responses.Response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.response'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/v1.response'
+            $ref: '#/definitions/responses.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.response'
+            $ref: '#/definitions/responses.Response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/v1.response'
+            $ref: '#/definitions/responses.Response'
       summary: User SignUp
       tags:
       - users-auth

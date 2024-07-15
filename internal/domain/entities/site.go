@@ -1,4 +1,4 @@
-package domain
+package entities
 
 // TODO() Correct all tables in this file
 

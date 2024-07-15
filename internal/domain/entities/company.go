@@ -1,8 +1,4 @@
-package domain
-
-import (
-	"time"
-)
+package entities
 
 // Компания (под юзером)
 // TODO() Correct all tables in this file
@@ -14,7 +10,5 @@ type Company struct {
 	Representative string    `json:"representative"`
 	Address        string    `json:"address"`
 	Phone          string    `json:"phone"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
 	Fields         []*Field  `json:"fields"`
 }

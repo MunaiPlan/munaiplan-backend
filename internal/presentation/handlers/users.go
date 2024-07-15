@@ -5,16 +5,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
-	"github.com/munaiplan/munaiplan-backend/internal/application/dto/responses"
+	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
+	"github.com/munaiplan/munaiplan-backend/internal/helpers"
+	"github.com/munaiplan/munaiplan-backend/pkg/values"
 )
 
 func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	users := api.Group("/users")
 	{
-		users.POST("/sign-in", h.SignIn)
-		users.POST("/sign-up", h.SignUp)
+		users.POST("/sign-in", h.signIn)
+		users.POST("/sign-up", h.signUp)
 	}
 }
 
@@ -24,25 +25,31 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 // @ModuleID userSignUp
 // @Accept  json
 // @Produce  json
-// @Param input body signUpInput true "sign up info"
-// @Success 201 {object} tokenResponse
-// @Failure 400,500 {object} response
-// @Failure default {object} response
-// @Router /users/sign-up [post]
-func (h *Handler) SignUp(c *gin.Context) {
+// @Param input body requests.UserSignUpRequest true "sign up info"
+// @Success 201 {object} helpers.Response
+// @Failure 400,500 {object} helpers.Response
+// @Failure default {object} helpers.Response
+// @Router /api/v1/users/sign-up [post]
+func (h *Handler) signUp(c *gin.Context) {
 	var inp requests.UserSignUpRequest
-	if err := c.BindJSON(&inp); err != nil {
-		responses.NewResponse(c, http.StatusBadRequest, "invalid input body")
-		return
-	}
-
-	err := h.services.Users.SignUp(c.Request.Context(), inp)
+	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
 	if err != nil {
-		responses.NewResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	
+
+	if err := c.BindJSON(&inp); err != nil {
+		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	err = h.services.Users.SignUp(c.Request.Context(), organizationId, &inp)
+	if err != nil {
+		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusCreated, helpers.NewResponse("user created"))
 }
 
 // @Summary User SignIn
@@ -51,28 +58,33 @@ func (h *Handler) SignUp(c *gin.Context) {
 // @ModuleID userSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInput true "sign in info"
-// @Success 200 {object} tokenResponse
-// @Failure 400,404 {object} response
-// @Failure 500 {object} response
-// @Failure default {object} response
-// @Router /users/sign-in [post]
-func (h *Handler) SignIn(c *gin.Context) {
+// @Param input body requests.UserSignInRequest true "sign in info"
+// @Success 200 {object} helpers.TokenResponse
+// @Failure 400,404 {object} helpers.Response
+// @Failure 500 {object} helpers.Response
+// @Failure default {object} helpers.Response
+// @Router /api/v1/users/sign-in [post]
+func (h *Handler) signIn(c *gin.Context) {
 	var inp requests.UserSignInRequest
-	if err := c.BindJSON(&inp); err != nil {
-		responses.NewResponse(c, http.StatusBadRequest, "invalid input body")
+	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
+	if err != nil {
 		return
 	}
 
-	res, err := h.services.Users.SignIn(c.Request.Context(), inp)
+	if err := c.BindJSON(&inp); err != nil {
+		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
+		return
+	}
+
+	res, err := h.services.Users.SignIn(c.Request.Context(), organizationId, &inp)
 	if err != nil {
 		if errors.Is(err, domainErrors.ErrUserNotFound) {
-			responses.NewResponse(c, http.StatusBadRequest, err.Error())
+			helpers.NewErrorResponse(c, http.StatusBadRequest, err.Error())
 
 			return
 		}
 
-		responses.NewResponse(c, http.StatusInternalServerError, err.Error())
+		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 
 		return
 	}

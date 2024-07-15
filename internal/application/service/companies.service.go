@@ -1,69 +1,56 @@
 package service
 
 import (
+	"context"
+
+	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
-	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
-
 )
 
-type CompaniesService struct {
+type companiesService struct {
 	repo repository.CompaniesRepository
 }
 
-func NewCompaniesService(repo repository.CompaniesRepository) *CompaniesService {
-	return &CompaniesService{
+func NewCompaniesService(repo repository.CompaniesRepository) *companiesService {
+	return &companiesService{
 		repo: repo,
 	}
 }
 
-func (s *CompaniesService) CreateCompany(company *domain.Company) error {
-	return s.repo.CreateCompany(company)
+func (s *companiesService) GetCompanies(ctx context.Context) ([]*entities.Company, error) {
+	return s.repo.GetCompanies(ctx)
 }
 
-func (s *CompaniesService) UpdateCompany(company *domain.Company) error {
-	oldCompany, err := s.repo.GetCompanyByID(company.ID)
-	if err != nil {
-		return err
-	}
-
-	if s.compareCompanies(oldCompany, company) {
-		return domainErrors.ErrCompanyWasNotUpdated
-	}
-
-	return s.repo.UpdateCompany(company)
+func (s *companiesService) GetCompanyByName(ctx context.Context, name string) (*entities.Company, error) {
+	return s.repo.GetCompanyByName(ctx, name)
 }
 
-func (s *CompaniesService) DeleteCompany(id string) error {
-	return s.repo.DeleteCompany(id)
+func (s *companiesService) CreateCompany(ctx context.Context, input *requests.CreateCompanyRequest) error {
+	company := &entities.Company{
+		Name: input.Name,
+		Division: input.Division,
+		Group: input.Group,
+		Representative: input.Representative,
+		Address: input.Address,
+		Phone: input.Phone,
+	}
+	return s.repo.CreateCompany(ctx, input.OrganizationID, company)
 }
 
-
-func (s *CompaniesService) compareCompanies(oldCompany *domain.Company, newCompany *domain.Company) bool {
-	if (len(oldCompany.Fields) != len(newCompany.Fields)) {
-		return false
+func (s *companiesService) UpdateCompany(ctx context.Context, input *requests.UpdateCompanyRequest) (*entities.Company, error) {
+	company := &entities.Company{
+		ID: input.ID,
+		Name: input.Name,
+		Division: input.Division,
+		Group: input.Group,
+		Representative: input.Representative,
+		Address: input.Address,
+		Phone: input.Phone,
 	}
+	return s.repo.UpdateCompany(ctx, company)
+}
 
-	for i := 0; i < len(oldCompany.Fields); i++ {
-		if oldCompany.Fields[i].ID != newCompany.Fields[i].ID {
-			return false
-		}
-	}
-
-	switch {
-	case oldCompany.Name != newCompany.Name:
-		return false
-	case oldCompany.Division != newCompany.Division:
-		return false
-	case oldCompany.Group != newCompany.Group:
-		return false
-	case oldCompany.Address != newCompany.Address:
-		return false
-	case oldCompany.Representative != newCompany.Representative:
-		return false
-	case oldCompany.Phone != newCompany.Phone:
-		return false
-	default:
-		return true
-	}
+func (s *companiesService) DeleteCompany(ctx context.Context, input *requests.DeleteCompanyRequest) error {
+	return s.repo.DeleteCompany(ctx, input.ID)
 }

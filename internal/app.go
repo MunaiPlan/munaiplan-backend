@@ -9,14 +9,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/munaiplan/munaiplan-backend/internal/application/service"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/configs"
-	postgres "github.com/munaiplan/munaiplan-backend/internal/infrastructure/database/postgres/infra/connection"
+	postgres "github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/connection"
 	infrastructure "github.com/munaiplan/munaiplan-backend/internal/infrastructure/http"
-	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
-	"github.com/munaiplan/munaiplan-backend/internal/application/service"
-	"github.com/munaiplan/munaiplan-backend/pkg/logger"
 	"github.com/munaiplan/munaiplan-backend/internal/presentation/middleware"
+	"github.com/sirupsen/logrus"
 	//"github.com/xuri/excelize/v2"
 )
 
@@ -30,14 +30,14 @@ import (
 func Run(configPath string) {
 	cfg, err := configs.Init(configPath)
 	if err != nil {
-		logger.Error(err)
+		logrus.Error(err)
 		return
 	}
 
 	// Dependencies
 	db := postgres.NewDatabase()
 	if db == nil {
-		logger.Error("failed to initialize database connection")
+		logrus.Error("failed to initialize database connection")
 		return
 	}
 
@@ -53,7 +53,7 @@ func Run(configPath string) {
 
 	jwt, err := helpers.NewJwt()
 	if err != nil {
-		logger.Error(err)
+		logrus.Error(err)
 		return
 	}
 
@@ -74,11 +74,11 @@ func Run(configPath string) {
 
 	go func() {
 		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
-			logger.Errorf("error occurred while running http server: %s\n", err.Error())
+			logrus.Errorf("error occurred while running http server: %s\n", err.Error())
 		}
 	}()
 
-	logger.Info("Server started")
+	logrus.Info("Server started")
 
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
@@ -92,15 +92,15 @@ func Run(configPath string) {
 	defer shutdown()
 
 	if err := srv.Stop(ctx); err != nil {
-		logger.Errorf("failed to stop server: %v", err)
+		logrus.Errorf("failed to stop server: %v", err)
 	}
 
 	sqlDB, err := db.Conn.DB()
 	if err != nil {
-		logger.Error(err.Error())
+		logrus.Error(err.Error())
 	}
 
 	if err := sqlDB.Close(); err != nil {
-		logger.Error(err.Error())
+		logrus.Error(err.Error())
 	}
 }
