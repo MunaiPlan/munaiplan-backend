@@ -1,5 +1,7 @@
 # MunaiPlan Software 
 It provides a comprehensive well engineering tool kit for designing Hydraulics and Torque & Drag of wells.
+Web application designed to assist oil engineers in calculating well drilling parameters. This application, inspired by Halliburton's WellPlan, focuses on providing tools for calculating Hydraulics and Torque and Drag, which are crucial for efficient and safe well drilling operations. Unlike WellPlan, our application will leverage advanced machine learning models to predict the outcomes of these calculations, offering enhanced decision-making support for engineers.
+
 
 ### Prerequisites
 - Golang 1.18
