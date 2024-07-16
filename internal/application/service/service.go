@@ -23,9 +23,10 @@ type Organizations interface {
 	GetOrganizationByName(ctx context.Context, name string) (*entities.Organization, error)
 }
 
+
 type Companies interface {
-	GetCompanies(ctx context.Context) ([]*entities.Company, error)
-	GetCompanyByName(ctx context.Context, name string) (*entities.Company, error)
+	GetCompanies(ctx context.Context, input *requests.GetCompaniesRequest) ([]*entities.Company, error)
+	GetCompanyByName(ctx context.Context, input *requests.GetCompanyByNameRequest) (*entities.Company, error)
 	CreateCompany(ctx context.Context, input *requests.CreateCompanyRequest) error
 	UpdateCompany(ctx context.Context, input *requests.UpdateCompanyRequest) (*entities.Company, error)
 	DeleteCompany(ctx context.Context, input *requests.DeleteCompanyRequest) error

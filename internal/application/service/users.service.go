@@ -3,12 +3,12 @@ package service
 import (
 	"context"
 
-	"github.com/munaiplan/munaiplan-backend/internal/helpers"
-	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
-	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
-	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/responses"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
+	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
+	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/sirupsen/logrus"
 )
 
@@ -46,6 +46,9 @@ func (s *usersService) SignUp(ctx context.Context, organizationId string, input 
 	user := entities.User{
 		Email:    input.Email,
 		Password: hashedPassword,
+		Name:     input.Name,
+		Surname:  input.Surname,
+		Phone:    input.Phone,
 	}
 
 	// Save the user to the repository

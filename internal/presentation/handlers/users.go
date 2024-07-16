@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -31,19 +32,20 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 // @Failure default {object} helpers.Response
 // @Router /api/v1/users/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
-	var inp requests.UserSignUpRequest
-	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
+	var inp *requests.UserSignUpRequest
+	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)	
 	if err != nil {
 		return
 	}
-	
 
 	if err := c.BindJSON(&inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
-	err = h.services.Users.SignUp(c.Request.Context(), organizationId, &inp)
+	fmt.Println(inp.Phone + " edf")
+
+	err = h.services.Users.SignUp(c.Request.Context(), organizationId, inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -65,7 +67,7 @@ func (h *Handler) signUp(c *gin.Context) {
 // @Failure default {object} helpers.Response
 // @Router /api/v1/users/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
-	var inp requests.UserSignInRequest
+	var inp *requests.UserSignInRequest
 	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
 	if err != nil {
 		return
@@ -76,7 +78,7 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	res, err := h.services.Users.SignIn(c.Request.Context(), organizationId, &inp)
+	res, err := h.services.Users.SignIn(c.Request.Context(), organizationId, inp)
 	if err != nil {
 		if errors.Is(err, domainErrors.ErrUserNotFound) {
 			helpers.NewErrorResponse(c, http.StatusBadRequest, err.Error())

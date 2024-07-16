@@ -34,10 +34,10 @@ func (r *companiesRepository) CreateCompany(ctx context.Context, organizationID 
 	return nil
 }
 
-func (r *companiesRepository) GetCompanyByID(ctx context.Context, id string) (*entities.Company, error) {
+func (r *companiesRepository) GetCompanyByID(ctx context.Context, id, organizationId string) (*entities.Company, error) {
 	var company models.Company
 	var res entities.Company
-	result := r.db.WithContext(ctx).Where("id = ?", id).First(&company)
+	result := r.db.WithContext(ctx).Where("id = ? AND organization_id = ?", id, organizationId).First(&company)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -46,10 +46,10 @@ func (r *companiesRepository) GetCompanyByID(ctx context.Context, id string) (*e
 	return &res, nil
 }
 
-func (r *companiesRepository) GetCompanyByName(ctx context.Context, name string) (*entities.Company, error) {
+func (r *companiesRepository) GetCompanyByName(ctx context.Context, name string, organizationId string) (*entities.Company, error) {
 	var company models.Company
 	var res entities.Company
-	result := r.db.WithContext(ctx).Where("name = ?", name).First(&company)
+	result := r.db.WithContext(ctx).Where("name = ? AND organization_id = ?", name, organizationId).First(&company)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -58,10 +58,10 @@ func (r *companiesRepository) GetCompanyByName(ctx context.Context, name string)
 	return &res, nil
 }
 
-func (r *companiesRepository) GetCompanies(ctx context.Context) ([]*entities.Company, error) {
+func (r *companiesRepository) GetCompanies(ctx context.Context, organizationId string) ([]*entities.Company, error) {
 	var companies []*models.Company
 	var res []*entities.Company
-	result := r.db.WithContext(ctx).Find(&companies)
+	result := r.db.WithContext(ctx).Where("organization_id = ?", organizationId).Find(&companies)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -73,16 +73,16 @@ func (r *companiesRepository) GetCompanies(ctx context.Context) ([]*entities.Com
 	return res, nil
 }
 
-func (r *companiesRepository) UpdateCompany(ctx context.Context, company *entities.Company) (*entities.Company, error) {
+func (r *companiesRepository) UpdateCompany(ctx context.Context, organizationId string, company *entities.Company) (*entities.Company, error) {
 	gormCompany := r.toGormCompany(company)
 	oldCompany := models.Organization{}
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		query := tx.WithContext(ctx).Where("id = ?", company.ID).First(&oldCompany)
+		query := tx.WithContext(ctx).Where("id = ? AND organization_id = ?", company.ID, organizationId).First(&oldCompany)
 		if query.Error != nil {
 			return query.Error
 		}
 
-		if reflect.DeepEqual(gormCompany, oldCompany) {
+		if reflect.DeepEqual(&gormCompany, &oldCompany) {
 			return nil
 		}
 
@@ -97,12 +97,12 @@ func (r *companiesRepository) UpdateCompany(ctx context.Context, company *entiti
 		return nil, err
 	}
 
-	res := r.toDomainCompany(&gormCompany)
+	res := r.toDomainCompany(gormCompany)
 	return &res, nil
 }
 
-func (r *companiesRepository) DeleteCompany(ctx context.Context, id string) error {
-	result := r.db.WithContext(ctx).Where("id = ?", id).Delete(&models.Company{})
+func (r *companiesRepository) DeleteCompany(ctx context.Context, organizationId string, id string) error {
+	result := r.db.WithContext(ctx).Where("id = ? AND organization_id = ?", id, organizationId).Delete(&models.Company{})
 	if result.Error != nil {
 		return result.Error
 	}
@@ -123,8 +123,8 @@ func (r *companiesRepository) toDomainCompany(companyModel *models.Company) enti
 }
 
 // toGormCompany maps the domain Company entity to the GORM Company model.
-func (r *companiesRepository) toGormCompany(company *entities.Company) models.Company {
-	return models.Company{
+func (r *companiesRepository) toGormCompany(company *entities.Company) *models.Company {
+	return &models.Company{
 		Name:           company.Name,
 		Division:       company.Division,
 		Group:          company.Group,

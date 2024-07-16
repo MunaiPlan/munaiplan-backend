@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
+	"github.com/munaiplan/munaiplan-backend/pkg/values"
 )
 
 // initCompaniesRoutes initializes the routes for the companies API.
@@ -30,7 +31,14 @@ func (h *Handler) initCompaniesRoutes(api *gin.RouterGroup) {
 // @Failure 500 {object} helpers.Response
 // @Router /api/v1/companies [get]
 func (h *Handler) getCompanies(c *gin.Context) {
-	companies, err := h.services.Companies.GetCompanies(c.Request.Context())
+	var inp requests.GetCompaniesRequest
+	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
+	if err != nil {
+		return
+	}
+	inp.OrganizationID = organizationId
+
+	companies, err := h.services.Companies.GetCompanies(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -52,12 +60,18 @@ func (h *Handler) getCompanies(c *gin.Context) {
 // @Router /api/v1/companies [post]
 func (h *Handler) createCompany(c *gin.Context) {
 	var inp requests.CreateCompanyRequest
-	if err := c.BindJSON(&inp); err != nil {
+	if err := c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
-	err := h.services.Companies.CreateCompany(c.Request.Context(), &inp)
+	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
+	if err != nil {
+		return
+	}
+	inp.OrganizationID = organizationId
+
+	err = h.services.Companies.CreateCompany(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -80,10 +94,16 @@ func (h *Handler) createCompany(c *gin.Context) {
 // @Router /api/v1/companies/{id} [put]
 func (h *Handler) updateCompany(c *gin.Context) {
 	var inp requests.UpdateCompanyRequest
-	if err := c.BindJSON(&inp); err != nil {
+	if err := c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
+
+	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
+	if err != nil {
+		return
+	}
+	inp.OrganizationID = organizationId
 
 	company, err := h.services.Companies.UpdateCompany(c.Request.Context(), &inp)
 	if err != nil {
@@ -113,7 +133,13 @@ func (h *Handler) deleteCompany(c *gin.Context) {
 		return
 	}
 
-	err := h.services.Companies.DeleteCompany(c.Request.Context(), &inp)
+	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
+	if err != nil {
+		return
+	}
+	inp.OrganizationID = organizationId
+
+	err = h.services.Companies.DeleteCompany(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -133,8 +159,17 @@ func (h *Handler) deleteCompany(c *gin.Context) {
 // @Failure 500 {object} helpers.Response
 // @Router /api/v1/companies/{name} [get]
 func (h *Handler) getCompanyByName(c *gin.Context) {
-	name := c.Param("name")
-	company, err := h.services.Companies.GetCompanyByName(c.Request.Context(), name)
+	var inp requests.GetCompanyByNameRequest
+	var err error
+	if inp.Name, err = h.validateQueryParam(c, values.CompanyNameQueryParam); err != nil {
+		return
+	}
+
+	if inp.OrganizationID, err = h.validateQueryParam(c, values.OrganizationIdQueryParam); err != nil {
+		return
+	}
+
+	company, err := h.services.Companies.GetCompanyByName(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -142,4 +177,3 @@ func (h *Handler) getCompanyByName(c *gin.Context) {
 
 	c.JSON(http.StatusOK, company)
 }
-

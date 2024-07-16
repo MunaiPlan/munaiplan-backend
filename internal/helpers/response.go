@@ -27,5 +27,5 @@ func NewErrorResponse(c *gin.Context, statusCode int, message string) {
 	words[0] = tc.String(words[0])
 	message = strings.Join(words, " ")
 	logrus.Error(message)
-	c.AbortWithStatusJSON(statusCode, responseError{message})
+	c.AbortWithStatusJSON(statusCode, Response{message})
 }

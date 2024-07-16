@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
 	"github.com/sirupsen/logrus"
@@ -53,9 +54,20 @@ func NewDatabase() *Database {
             dbCredentials.Host, dbCredentials.Username, dbCredentials.Password, dbCredentials.Dbname, dbCredentials.Port,
         )
 
-        db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-            Logger: logger.Default.LogMode(logger.Info),
-        })
+        var db *gorm.DB
+	    var err error
+
+        for i := 0; i < 5; i++ {
+            db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+                Logger: logger.Default.LogMode(logger.Info),
+            })
+            if err == nil {
+                break
+            }
+            fmt.Printf("failed to connect to database: %v\n", err)
+            time.Sleep(10 * time.Second)
+        }
+
         if err != nil {
             logrus.Fatalf("failed to connect database: %v", err)
         }

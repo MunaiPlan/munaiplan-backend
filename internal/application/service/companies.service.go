@@ -18,39 +18,39 @@ func NewCompaniesService(repo repository.CompaniesRepository) *companiesService 
 	}
 }
 
-func (s *companiesService) GetCompanies(ctx context.Context) ([]*entities.Company, error) {
-	return s.repo.GetCompanies(ctx)
+func (s *companiesService) GetCompanies(ctx context.Context, input *requests.GetCompaniesRequest) ([]*entities.Company, error) {
+	return s.repo.GetCompanies(ctx, input.OrganizationID)
 }
 
-func (s *companiesService) GetCompanyByName(ctx context.Context, name string) (*entities.Company, error) {
-	return s.repo.GetCompanyByName(ctx, name)
+func (s *companiesService) GetCompanyByName(ctx context.Context, input *requests.GetCompanyByNameRequest) (*entities.Company, error) {
+	return s.repo.GetCompanyByName(ctx, input.Name, input.OrganizationID)
 }
 
 func (s *companiesService) CreateCompany(ctx context.Context, input *requests.CreateCompanyRequest) error {
 	company := &entities.Company{
-		Name: input.Name,
-		Division: input.Division,
-		Group: input.Group,
-		Representative: input.Representative,
-		Address: input.Address,
-		Phone: input.Phone,
+		Name: input.Body.Name,
+		Division: input.Body.Division,
+		Group: input.Body.Group,
+		Representative: input.Body.Representative,
+		Address: input.Body.Address,
+		Phone: input.Body.Phone,
 	}
 	return s.repo.CreateCompany(ctx, input.OrganizationID, company)
 }
 
 func (s *companiesService) UpdateCompany(ctx context.Context, input *requests.UpdateCompanyRequest) (*entities.Company, error) {
 	company := &entities.Company{
-		ID: input.ID,
-		Name: input.Name,
-		Division: input.Division,
-		Group: input.Group,
-		Representative: input.Representative,
-		Address: input.Address,
-		Phone: input.Phone,
+		ID: input.Body.ID,
+		Name: input.Body.Name,
+		Division: input.Body.Division,
+		Group: input.Body.Group,
+		Representative: input.Body.Representative,
+		Address: input.Body.Address,
+		Phone: input.Body.Phone,
 	}
-	return s.repo.UpdateCompany(ctx, company)
+	return s.repo.UpdateCompany(ctx, input.OrganizationID, company)
 }
 
 func (s *companiesService) DeleteCompany(ctx context.Context, input *requests.DeleteCompanyRequest) error {
-	return s.repo.DeleteCompany(ctx, input.ID)
+	return s.repo.DeleteCompany(ctx, input.OrganizationID, input.ID)
 }
