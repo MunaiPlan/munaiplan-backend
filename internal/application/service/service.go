@@ -11,8 +11,8 @@ import (
 )
 
 type Users interface {
-	SignIn(ctx context.Context, organizationId string, input *requests.UserSignInRequest) (*responses.TokenResponse, error)
-	SignUp(ctx context.Context, organizationId string, input *requests.UserSignUpRequest) error
+	SignIn(ctx context.Context, input *requests.UserSignInRequest) (*responses.TokenResponse, error)
+	SignUp(ctx context.Context, input *requests.UserSignUpRequest) error
 }
 
 type Organizations interface {
@@ -20,7 +20,7 @@ type Organizations interface {
 	UpdateOrganization(ctx context.Context, input *requests.UpdateOrganizationRequest) (*entities.Organization, error)
 	DeleteOrganization(ctx context.Context, input *requests.DeleteOrganizationRequest) error
 	GetOrganizations(ctx context.Context) ([]*entities.Organization, error)
-	GetOrganizationByName(ctx context.Context, name string) (*entities.Organization, error)
+	GetOrganizationByName(ctx context.Context, input *requests.GetOrganizationByNameRequest) (*entities.Organization, error)
 }
 
 
@@ -41,11 +41,10 @@ type Services struct {
 }
 
 func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
-	usersService := NewUsersService(repos.Users, jwt)
 
 	return &Services{
-		Users:     usersService,
-		Companies: NewCompaniesService(repos.Companies),
+		Users:     NewUsersService(repos.Users, repos.Common, jwt),
+		Companies: NewCompaniesService(repos.Companies, repos.Common),
 		Organizations: NewOrganizationsService(repos.Organizations),
 		// CatalogCache: deps.CatalogCache,
 	}

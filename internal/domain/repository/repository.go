@@ -6,15 +6,17 @@ import (
 )
 
 type Repository struct {
-	Users        UsersRepository
-	Companies    CompaniesRepository
+	Common        CommonRepository
+	Users         UsersRepository
+	Companies     CompaniesRepository
 	Organizations OrganizationsRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repository {
 	return &Repository{
-		Users:        postgres.NewUsersRepository(db),
-		Companies:    postgres.NewCompaniesRepository(db),
+		Common: 	  postgres.NewCommonRepository(db),
+		Users:         postgres.NewUsersRepository(db),
+		Companies:     postgres.NewCompaniesRepository(db),
 		Organizations: postgres.NewOrganizationsRepository(db),
 	}
 }

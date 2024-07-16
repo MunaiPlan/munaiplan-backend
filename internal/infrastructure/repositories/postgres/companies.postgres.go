@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/repositories/types"
 	"gorm.io/gorm"
 )
 
@@ -75,7 +76,7 @@ func (r *companiesRepository) GetCompanies(ctx context.Context, organizationId s
 
 func (r *companiesRepository) UpdateCompany(ctx context.Context, organizationId string, company *entities.Company) (*entities.Company, error) {
 	gormCompany := r.toGormCompany(company)
-	oldCompany := models.Organization{}
+	oldCompany := models.Company{}
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		query := tx.WithContext(ctx).Where("id = ? AND organization_id = ?", company.ID, organizationId).First(&oldCompany)
 		if query.Error != nil {
@@ -83,7 +84,7 @@ func (r *companiesRepository) UpdateCompany(ctx context.Context, organizationId 
 		}
 
 		if reflect.DeepEqual(&gormCompany, &oldCompany) {
-			return nil
+			return types.ErrComanyNotChanged
 		}
 
 		err := tx.WithContext(ctx).Model(&oldCompany).Updates(gormCompany).Error
@@ -97,7 +98,8 @@ func (r *companiesRepository) UpdateCompany(ctx context.Context, organizationId 
 		return nil, err
 	}
 
-	res := r.toDomainCompany(gormCompany)
+	res := r.toDomainCompany(&oldCompany)
+
 	return &res, nil
 }
 

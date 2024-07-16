@@ -16,8 +16,8 @@ type CreateCompanyRequest struct {
 }
 
 type UpdateCompanyRequest struct {
-	OrganizationID string                   `json:"organization_id"`
-	Body           UpdateCompanyRequestBody `json:"body"`
+	OrganizationID string                   
+	Body           UpdateCompanyRequestBody 
 }
 
 type UpdateCompanyRequestBody struct {

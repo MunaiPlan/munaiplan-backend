@@ -100,6 +100,7 @@ func NewDatabase() *Database {
         if err != nil {
             logrus.Fatalf("failed to execute indexes sql file: %v", err)
         }
+        logrus.Print("Indexes created")
 
         err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/seed.sql")
         if err != nil {

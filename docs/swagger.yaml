@@ -364,6 +364,13 @@ definitions:
     type: object
   requests.UserSignInRequest:
     properties:
+      body:
+        $ref: '#/definitions/requests.UserSignInRequestBody'
+      organizationID:
+        type: string
+    type: object
+  requests.UserSignInRequestBody:
+    properties:
       email:
         maxLength: 64
         type: string
@@ -376,6 +383,13 @@ definitions:
     - password
     type: object
   requests.UserSignUpRequest:
+    properties:
+      body:
+        $ref: '#/definitions/requests.UserSignUpRequestBody'
+      organizationID:
+        type: string
+    type: object
+  requests.UserSignUpRequestBody:
     properties:
       email:
         maxLength: 64

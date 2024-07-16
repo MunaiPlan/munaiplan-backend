@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
-	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/repositories/types"
 	"gorm.io/gorm"
 )
 
@@ -21,7 +21,7 @@ func NewUsersRepository(db *gorm.DB) *usersRepository {
 
 func (r *usersRepository) Create(ctx context.Context, organizationId string, user *entities.User) error {
     tempUser := toGormUser(user)
-    tempUser.OrganizationID, _ = uuid.Parse(organizationId)
+    tempUser.OrganizationID = uuid.MustParse(organizationId)
     return r.db.WithContext(ctx).Create(&tempUser).Error
 }
 
@@ -29,7 +29,7 @@ func (r *usersRepository) GetByEmail(ctx context.Context, organizationId string,
     var user models.User
     err := r.db.WithContext(ctx).Where("email = ? AND organization_id = ?", email, organizationId).First(&user).Error
     if errors.Is(err, gorm.ErrRecordNotFound) {
-        return nil, domainErrors.ErrUserNotFound
+        return nil, types.ErrUserNotFound
     }
 
     res := toDomainUser(&user)

@@ -47,6 +47,6 @@ func (s *organizationsService) GetOrganizations(ctx context.Context) ([]*entitie
 	return s.organizationsRepo.GetOrganizations(ctx)
 }
 
-func (s *organizationsService) GetOrganizationByName(ctx context.Context, name string) (*entities.Organization, error) {
-	return s.organizationsRepo.GetOrganizationByName(ctx, name)
+func (s *organizationsService) GetOrganizationByName(ctx context.Context, input *requests.GetOrganizationByNameRequest) (*entities.Organization, error) {
+	return s.organizationsRepo.GetOrganizationByName(ctx, input.Name)
 }

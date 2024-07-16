@@ -18,25 +18,30 @@ const (
 
 type usersService struct {
 	repo repository.UsersRepository
+	commonRepo repository.CommonRepository
 	jwt  helpers.Jwt
 }
 
-func NewUsersService(repo repository.UsersRepository, jwt helpers.Jwt) *usersService {
+func NewUsersService(repo repository.UsersRepository, commonRepo repository.CommonRepository, jwt helpers.Jwt) *usersService {
 	return &usersService{
 		repo: repo,
+		commonRepo: commonRepo,
 		jwt:  jwt,
 	}
 }
 
-func (s *usersService) SignUp(ctx context.Context, organizationId string, input *requests.UserSignUpRequest) error {
+func (s *usersService) SignUp(ctx context.Context, input *requests.UserSignUpRequest) error {
+	if err := s.commonRepo.CheckIfOrganizationExists(ctx, input.OrganizationID); err != nil {
+		return err
+	}
+
 	// Check if user with the same email already exists
-	_, err := s.repo.GetByEmail(ctx, organizationId, input.Email)
-	if err == nil {
-		return domainErrors.ErrUserAlreadyExists
+	if _, err := s.repo.GetByEmail(ctx, input.OrganizationID, input.Body.Email); err != nil {
+		return err
 	}
 
 	// Hash the password
-	hashedPassword, err := helpers.HashPassword(input.Password)
+	hashedPassword, err := helpers.HashPassword(input.Body.Password)
 	if err != nil {
 		logrus.Errorf("Error hashing password: %s", err)
 		return nil
@@ -44,29 +49,33 @@ func (s *usersService) SignUp(ctx context.Context, organizationId string, input 
 
 	// Create the user
 	user := entities.User{
-		Email:    input.Email,
+		Email:    input.Body.Email,
 		Password: hashedPassword,
-		Name:     input.Name,
-		Surname:  input.Surname,
-		Phone:    input.Phone,
+		Name:     input.Body.Name,
+		Surname:  input.Body.Surname,
+		Phone:    input.Body.Phone,
 	}
 
 	// Save the user to the repository
-	err = s.repo.Create(ctx, organizationId, &user)
+	err = s.repo.Create(ctx, input.OrganizationID, &user)
 	if err != nil {
 		logrus.Errorf("Error creating user: %s", err)
-		return nil
+		return err
 	}
 
 	return nil
 }
-func (s *usersService) SignIn(ctx context.Context, organizationId string, input *requests.UserSignInRequest) (*responses.TokenResponse, error) {
-	user, err := s.repo.GetByEmail(ctx, organizationId, input.Email)
+func (s *usersService) SignIn(ctx context.Context, input *requests.UserSignInRequest) (*responses.TokenResponse, error) {
+	if err := s.commonRepo.CheckIfOrganizationExists(ctx, input.OrganizationID); err != nil {
+		return nil, err
+	}
+
+	user, err := s.repo.GetByEmail(ctx, input.OrganizationID, input.Body.Email)
 	if err != nil {
 		return nil, err
 	}
 
-	if !helpers.CheckPasswordHash(input.Password, user.Password) {
+	if !helpers.CheckPasswordHash(input.Body.Password, user.Password) {
 		return nil, domainErrors.ErrUserPasswordIncorrect
 	}
 

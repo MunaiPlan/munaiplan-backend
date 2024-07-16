@@ -21,3 +21,7 @@ type UpdateOrganizationRequest struct {
 type DeleteOrganizationRequest struct {
 	ID string `json:"id"`
 }
+
+type GetOrganizationByNameRequest struct {
+	Name string `json:"name"`
+}

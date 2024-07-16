@@ -39,3 +39,12 @@ func (h *Handler) validateQueryParam(c *gin.Context, key string) (string, error)
 	}
 	return value, nil
 }
+
+func (h *Handler) validateRequestParam(c *gin.Context, key string) (string, error) {
+	value := c.Param(key)
+	if value == "" {
+		helpers.NewErrorResponse(c, http.StatusBadRequest, key + " is required")
+		return "", errors.New(key + " is required")
+	}
+	return value, nil
+}

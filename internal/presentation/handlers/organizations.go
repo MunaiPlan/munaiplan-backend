@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
+	"github.com/munaiplan/munaiplan-backend/internal/presentation/types"
+	"github.com/munaiplan/munaiplan-backend/pkg/values"
 )
 
 // initOrganizationsRoutes initializes the routes for the organizations API.
@@ -50,13 +52,14 @@ func (h *Handler) getOrganizations(c *gin.Context) {
 // @Router /api/v1/organizations [post]
 func (h *Handler) createOrganization(c *gin.Context) {
 	var inp requests.CreateOrganizationRequest
-	if err := c.BindJSON(&inp); err != nil {
+	var err error
+
+	if err = c.BindJSON(&inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
-	err := h.services.Organizations.CreateOrganization(c.Request.Context(), &inp)
-	if err != nil {
+	if err = h.services.Organizations.CreateOrganization(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -76,13 +79,17 @@ func (h *Handler) createOrganization(c *gin.Context) {
 // @Failure 500 {object} helpers.Response
 // @Router /api/v1/organizations/{id} [put]
 func (h *Handler) updateOrganization(c *gin.Context) {
-	organizationID := c.Param("id")
 	var inp requests.UpdateOrganizationRequest
-	if err := c.BindJSON(&inp); err != nil {
+	var err error
+	if err = c.BindJSON(&inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
-	inp.ID = organizationID
+
+	if inp.ID, err = h.validateRequestParam(c, values.IdQueryParam); err != nil {
+		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidIDQueryParameter.Error())
+		return
+	}
 
 	organization, err := h.services.Organizations.UpdateOrganization(c.Request.Context(), &inp)
 	if err != nil {
@@ -104,11 +111,15 @@ func (h *Handler) updateOrganization(c *gin.Context) {
 // @Failure 500 {object} helpers.Response
 // @Router /api/v1/organizations/{id} [delete]
 func (h *Handler) deleteOrganization(c *gin.Context) {
-	organizationId := c.Param("id")
 	var inp requests.DeleteOrganizationRequest
-	inp.ID = organizationId
+	var err error
 
-	err := h.services.Organizations.DeleteOrganization(c.Request.Context(), &inp)
+	if inp.ID, err = h.validateRequestParam(c, values.IdQueryParam); err != nil {
+		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidIDQueryParameter.Error())
+		return
+	}
+
+	err = h.services.Organizations.DeleteOrganization(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -127,8 +138,13 @@ func (h *Handler) deleteOrganization(c *gin.Context) {
 // @Failure 500 {object} helpers.Response
 // @Router /api/v1/organizations/{name} [get]
 func (h *Handler) getOrganizationByName(c *gin.Context) {
-	name := c.Param("name")
-	organization, err := h.services.Organizations.GetOrganizationByName(c.Request.Context(), name)
+	var inp requests.GetOrganizationByNameRequest
+	var err error
+
+	if inp.Name, err = h.validateRequestParam(c, values.NameQueryParam); err != nil {
+		return
+	}
+	organization, err := h.services.Organizations.GetOrganizationByName(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

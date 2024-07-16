@@ -1124,6 +1124,17 @@ const docTemplate = `{
         },
         "requests.UserSignInRequest": {
             "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UserSignInRequestBody"
+                },
+                "organizationID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UserSignInRequestBody": {
+            "type": "object",
             "required": [
                 "email",
                 "password"
@@ -1141,6 +1152,17 @@ const docTemplate = `{
             }
         },
         "requests.UserSignUpRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UserSignUpRequestBody"
+                },
+                "organizationID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UserSignUpRequestBody": {
             "type": "object",
             "required": [
                 "email",

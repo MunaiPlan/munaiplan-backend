@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
+	"github.com/munaiplan/munaiplan-backend/internal/presentation/types"
 	"github.com/munaiplan/munaiplan-backend/pkg/values"
 )
 
@@ -35,20 +36,24 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 // @Failure default {object} helpers.Response
 // @Router /api/v1/users/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
-	var inp *requests.UserSignUpRequest
+	var inp requests.UserSignUpRequest
 	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
 	if err != nil {
 		return
 	}
+	if err := uuid.Validate(organizationId); err != nil {
+		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
+		return
+	}
 
-	if err := c.BindJSON(&inp); err != nil {
+	inp.OrganizationID = organizationId
+
+	if err := c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
-	fmt.Println(inp.Phone + " edf")
-
-	err = h.services.Users.SignUp(c.Request.Context(), organizationId, inp)
+	err = h.services.Users.SignUp(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -72,18 +77,23 @@ func (h *Handler) signUp(c *gin.Context) {
 // @Failure default {object} helpers.Response
 // @Router /api/v1/users/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
-	var inp *requests.UserSignInRequest
+	var inp requests.UserSignInRequest
 	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
 	if err != nil {
 		return
 	}
+	if err := uuid.Validate(organizationId); err != nil {
+		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
+		return
+	}
+	inp.OrganizationID = organizationId
 
-	if err := c.BindJSON(&inp); err != nil {
+	if err := c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
-	res, err := h.services.Users.SignIn(c.Request.Context(), organizationId, inp)
+	res, err := h.services.Users.SignIn(c.Request.Context(), &inp)
 	if err != nil {
 		if errors.Is(err, domainErrors.ErrUserNotFound) {
 			helpers.NewErrorResponse(c, http.StatusBadRequest, err.Error())

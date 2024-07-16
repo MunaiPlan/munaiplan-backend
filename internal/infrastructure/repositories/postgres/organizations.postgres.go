@@ -2,11 +2,11 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/repositories/types"
 	"gorm.io/gorm"
 )
 
@@ -23,11 +23,11 @@ func (r *organizationsRepository) CreateOrganization(ctx context.Context, organi
 	result := r.db.Where("email = ? AND deleted_at IS NULL", organization.Email).FirstOrCreate(&gormOrganization)
 
 	if result.Error != nil {
-        return fmt.Errorf("error creating user: %v", result.Error)
+        return types.ErrGettingOrganizationByEmail
     }
 
     if result.RowsAffected == 0 {
-        return fmt.Errorf("user with email %s already exists", organization.Email)
+        return types.ErrOrganizationExistsWithEmail
     }
 	return nil
 }
@@ -90,7 +90,7 @@ func (r *organizationsRepository) UpdateOrganization(ctx context.Context, organi
                 return err
             }
             if count > 0 {
-                return fmt.Errorf("email %s is already in use", gormOrg.Email)
+                return types.ErrOrganizationExistsWithEmail
             }
         }
 
