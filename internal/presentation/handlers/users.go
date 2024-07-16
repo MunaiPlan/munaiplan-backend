@@ -12,6 +12,7 @@ import (
 	"github.com/munaiplan/munaiplan-backend/pkg/values"
 )
 
+// initUsersRoutes initializes the user routes.
 func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	users := api.Group("/users")
 	{
@@ -20,12 +21,14 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	}
 }
 
+// signUp handles the user sign up request.
 // @Summary User SignUp
 // @Tags users-auth
 // @Description user sign up
 // @ModuleID userSignUp
 // @Accept  json
 // @Produce  json
+// @Param organizationId query string true "Organization ID"
 // @Param input body requests.UserSignUpRequest true "sign up info"
 // @Success 201 {object} helpers.Response
 // @Failure 400,500 {object} helpers.Response
@@ -33,7 +36,7 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 // @Router /api/v1/users/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
 	var inp *requests.UserSignUpRequest
-	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)	
+	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
 	if err != nil {
 		return
 	}
@@ -54,14 +57,16 @@ func (h *Handler) signUp(c *gin.Context) {
 	c.JSON(http.StatusCreated, helpers.NewResponse("user created"))
 }
 
+// signIn handles the user sign in request.
 // @Summary User SignIn
 // @Tags users-auth
 // @Description user sign in
 // @ModuleID userSignIn
 // @Accept  json
 // @Produce  json
+// @Param organizationId query string true "Organization ID"
 // @Param input body requests.UserSignInRequest true "sign in info"
-// @Success 200 {object} helpers.TokenResponse
+// @Success 200 {object} responses.TokenResponse
 // @Failure 400,404 {object} helpers.Response
 // @Failure 500 {object} helpers.Response
 // @Failure default {object} helpers.Response
@@ -82,12 +87,10 @@ func (h *Handler) signIn(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, domainErrors.ErrUserNotFound) {
 			helpers.NewErrorResponse(c, http.StatusBadRequest, err.Error())
-
 			return
 		}
 
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
-
 		return
 	}
 

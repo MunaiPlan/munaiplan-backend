@@ -279,7 +279,19 @@ definitions:
       wellbore_depth:
         type: number
     type: object
+  helpers.Response:
+    properties:
+      message:
+        type: string
+    type: object
   requests.CreateCompanyRequest:
+    properties:
+      body:
+        $ref: '#/definitions/requests.CreateCompanyRequestBody'
+      organizationID:
+        type: string
+    type: object
+  requests.CreateCompanyRequestBody:
     properties:
       address:
         type: string
@@ -288,8 +300,7 @@ definitions:
       group:
         type: string
       name:
-        type: string
-      organization_id:
+        description: OrganzationID string `json:"organization_id"`
         type: string
       phone:
         type: string
@@ -311,8 +322,17 @@ definitions:
     properties:
       id:
         type: string
+      organization_id:
+        type: string
     type: object
   requests.UpdateCompanyRequest:
+    properties:
+      body:
+        $ref: '#/definitions/requests.UpdateCompanyRequestBody'
+      organization_id:
+        type: string
+    type: object
+  requests.UpdateCompanyRequestBody:
     properties:
       address:
         type: string
@@ -364,11 +384,13 @@ definitions:
         maxLength: 32
         minLength: 3
         type: string
-      organization_id:
-        type: string
       password:
         maxLength: 64
         minLength: 8
+        type: string
+      phone:
+        maxLength: 20
+        minLength: 10
         type: string
       surname:
         maxLength: 32
@@ -377,14 +399,8 @@ definitions:
     required:
     - email
     - name
-    - organization_id
     - password
     - surname
-    type: object
-  responses.Response:
-    properties:
-      message:
-        type: string
     type: object
   responses.TokenResponse:
     properties:
@@ -423,7 +439,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Get Companies
       tags:
       - companies
@@ -444,15 +460,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Create Company
       tags:
       - companies
@@ -479,15 +495,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Delete Company
       tags:
       - companies
@@ -517,11 +533,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Update Company
       tags:
       - companies
@@ -546,7 +562,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Get Company by Name
       tags:
       - companies
@@ -567,7 +583,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Get Organizations
       tags:
       - organizations
@@ -588,15 +604,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/entities.Organization'
+            $ref: '#/definitions/helpers.Response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Create Organization
       tags:
       - organizations
@@ -617,15 +633,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Delete Organization
       tags:
       - organizations
@@ -655,11 +671,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Update Organization
       tags:
       - organizations
@@ -684,7 +700,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: Get Organization by Name
       tags:
       - organizations
@@ -694,6 +710,11 @@ paths:
       - application/json
       description: user sign in
       parameters:
+      - description: Organization ID
+        in: query
+        name: organizationId
+        required: true
+        type: string
       - description: sign in info
         in: body
         name: input
@@ -710,19 +731,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: User SignIn
       tags:
       - users-auth
@@ -732,6 +753,11 @@ paths:
       - application/json
       description: user sign up
       parameters:
+      - description: Organization ID
+        in: query
+        name: organizationId
+        required: true
+        type: string
       - description: sign up info
         in: body
         name: input
@@ -744,19 +770,19 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/helpers.Response'
       summary: User SignUp
       tags:
       - users-auth

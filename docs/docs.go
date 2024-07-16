@@ -41,7 +41,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -73,19 +73,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -132,13 +132,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -177,19 +177,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -227,7 +227,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -259,7 +259,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -291,19 +291,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entities.Organization"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -350,13 +350,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -386,19 +386,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -436,7 +436,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -457,6 +457,13 @@ const docTemplate = `{
                 "summary": "User SignIn",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "organizationId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "description": "sign in info",
                         "name": "input",
                         "in": "body",
@@ -476,25 +483,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -515,6 +522,13 @@ const docTemplate = `{
                 "summary": "User SignUp",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "organizationId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "description": "sign up info",
                         "name": "input",
                         "in": "body",
@@ -528,25 +542,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     }
                 }
@@ -980,7 +994,26 @@ const docTemplate = `{
                 }
             }
         },
+        "helpers.Response": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "requests.CreateCompanyRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateCompanyRequestBody"
+                },
+                "organizationID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateCompanyRequestBody": {
             "type": "object",
             "properties": {
                 "address": {
@@ -993,9 +1026,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "organization_id": {
+                    "description": "OrganzationID string ` + "`" + `json:\"organization_id\"` + "`" + `",
                     "type": "string"
                 },
                 "phone": {
@@ -1028,10 +1059,24 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
                 }
             }
         },
         "requests.UpdateCompanyRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UpdateCompanyRequestBody"
+                },
+                "organization_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateCompanyRequestBody": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1100,7 +1145,6 @@ const docTemplate = `{
             "required": [
                 "email",
                 "name",
-                "organization_id",
                 "password",
                 "surname"
             ],
@@ -1114,26 +1158,20 @@ const docTemplate = `{
                     "maxLength": 32,
                     "minLength": 3
                 },
-                "organization_id": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 8
                 },
+                "phone": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 10
+                },
                 "surname": {
                     "type": "string",
                     "maxLength": 32,
                     "minLength": 3
-                }
-            }
-        },
-        "responses.Response": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
                 }
             }
         },
