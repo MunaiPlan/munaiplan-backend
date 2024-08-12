@@ -49,6 +49,7 @@ func (s *companiesService) CreateCompany(ctx context.Context, input *requests.Cr
 		Address: input.Body.Address,
 		Phone: input.Body.Phone,
 	}
+	
 	return s.repo.CreateCompany(ctx, input.OrganizationID, company)
 }
 
@@ -66,6 +67,7 @@ func (s *companiesService) UpdateCompany(ctx context.Context, input *requests.Up
 		Address: input.Body.Address,
 		Phone: input.Body.Phone,
 	}
+
 	return s.repo.UpdateCompany(ctx, input.OrganizationID, company)
 }
 
@@ -73,5 +75,6 @@ func (s *companiesService) DeleteCompany(ctx context.Context, input *requests.De
 	if err := s.commonRepo.CheckIfOrganizationExists(ctx, input.OrganizationID); err != nil {
 		return err
 	}
+
 	return s.repo.DeleteCompany(ctx, input.OrganizationID, input.ID)
 }

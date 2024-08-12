@@ -1,7 +1,6 @@
 package requests
 
 type CreateCompanyRequestBody struct {
-	//OrganzationID string `json:"organization_id"`
 	Name           string `json:"name"`
 	Division       string `json:"division"`
 	Group          string `json:"group"`

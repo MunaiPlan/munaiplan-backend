@@ -189,3 +189,142 @@ type TrajectoryUnit struct {
 	CreatedAt       time.Time  `gorm:"not null" json:"created_at"`
 	Trajectory      Trajectory `gorm:"foreignKey:TrajectoryID;constraint:OnDelete:CASCADE;" json:"trajectory"`
 }
+
+// Holes table
+type Hole struct {
+	BaseModel
+	CaseID uuid.UUID `gorm:"type:uuid;not null" json:"case_id"`
+}
+
+// HoleCasings table
+type HoleCasing struct {
+	BaseModel
+	HoleID                uuid.UUID `gorm:"type:uuid;not null" json:"hole_id"`
+	MDTop                 float64   `gorm:"not null" json:"md_top"`
+	MDBase                float64   `gorm:"not null" json:"md_base"`
+	Length                float64   `gorm:"not null" json:"length"`
+	ShoeMD                float64   `json:"shoe_md"`
+	OD                    float64   `gorm:"not null" json:"od"`
+	ID                    float64   `gorm:"not null" json:"id"`
+	DriftID               float64   `gorm:"not null" json:"drift_id"`
+	EffectiveHoleDiameter float64   `gorm:"not null" json:"effective_hole_diameter"`
+	Weight                float64   `gorm:"not null" json:"weight"`
+	Grade                 string    `gorm:"type:string;not null" json:"grade"`
+	MinYieldStrength      float64   `gorm:"not null" json:"min_yield_strength"`
+	BurstRating           float64   `gorm:"not null" json:"burst_rating"`
+	CollapseRating        float64   `gorm:"not null" json:"collapse_rating"`
+	FrictionFactor        float64   `gorm:"not null" json:"friction_factor"`
+	LinearCapacity        float64   `gorm:"not null" json:"linear_capacity"`
+	Description           string    `gorm:"type:string" json:"description"`
+	Manufacturer          string    `gorm:"type:string" json:"manufacturer"`
+	Model                 string    `gorm:"type:string" json:"model"`
+}
+
+// OpenHoles table
+type OpenHole struct {
+	BaseModel
+	HoleID            uuid.UUID `gorm:"type:uuid;not null" json:"hole_id"`
+	MDTop             float64   `gorm:"not null" json:"md_top"`
+	MDBase            float64   `gorm:"not null" json:"md_base"`
+	Length            float64   `gorm:"not null" json:"length"`
+	ID                float64   `gorm:"not null" json:"id"`
+	EffectiveDiameter float64   `gorm:"not null" json:"effective_diameter"`
+	FrictionFactor    float64   `gorm:"not null" json:"friction_factor"`
+	LinearCapacity    float64   `gorm:"not null" json:"linear_capacity"`
+	VolumeExcess      float64   `json:"volume_excess"`
+	Description       string    `gorm:"type:string" json:"description"`
+}
+
+// FrictionFactors table
+type FrictionFactor struct {
+	BaseModel
+	HoleID                    uuid.UUID `gorm:"type:uuid;not null" json:"hole_id"`
+	TrippingInCasing          float64   `gorm:"not null" json:"tripping_in_casing"`
+	TrippingOutCasing         float64   `gorm:"not null" json:"tripping_out_casing"`
+	RotatingOnBottomCasing    float64   `gorm:"not null" json:"rotating_on_bottom_casing"`
+	SlideDrillingCasing       float64   `gorm:"not null" json:"slide_drilling_casing"`
+	BackReamingCasing         float64   `gorm:"not null" json:"back_reaming_casing"`
+	RotatingOffBottomCasing   float64   `gorm:"not null" json:"rotating_off_bottom_casing"`
+	TrippingInOpenHole        float64   `gorm:"not null" json:"tripping_in_open_hole"`
+	TrippingOutOpenHole       float64   `gorm:"not null" json:"tripping_out_open_hole"`
+	RotatingOnBottomOpenHole  float64   `gorm:"not null" json:"rotating_on_bottom_open_hole"`
+	SlideDrillingOpenHole     float64   `gorm:"not null" json:"slide_drilling_open_hole"`
+	BackReamingOpenHole       float64   `gorm:"not null" json:"back_reaming_open_hole"`
+	RotatingOffBottomOpenHole float64   `gorm:"not null" json:"rotating_off_bottom_open_hole"`
+}
+
+// Strings table
+type String struct {
+	BaseModel
+	Name   string    `gorm:"type:text;not null" json:"name"`
+	Depth  float64   `gorm:"not null" json:"depth"`
+	CaseID uuid.UUID `gorm:"type:uuid;not null" json:"case_id"`
+}
+
+// SectionTypes table
+type SectionType struct {
+	BaseModel
+	Name string `gorm:"type:varchar(255);not null" json:"name"`
+}
+
+// SectionAttributes table
+type SectionAttribute struct {
+	BaseModel
+	Name          string    `gorm:"type:varchar(255);not null" json:"name"`
+	Unit          string    `gorm:"type:varchar(50)" json:"unit"`
+	ValueTypeID   uuid.UUID `gorm:"type:uuid;not null" json:"value_type_id"`
+	SectionTypeID uuid.UUID `gorm:"type:uuid;not null" json:"section_type_id"`
+}
+
+// Sections table
+type Section struct {
+	BaseModel
+	StringID      uuid.UUID `gorm:"type:uuid;not null" json:"string_id"`
+	SectionTypeID uuid.UUID `gorm:"type:uuid;not null" json:"section_type_id"`
+}
+
+// SectionValues table
+type SectionValue struct {
+	BaseModel
+	SectionID   uuid.UUID `gorm:"type:uuid;not null" json:"section_id"`
+	AttributeID uuid.UUID `gorm:"type:uuid;not null" json:"attribute_id"`
+	Value       string    `gorm:"type:text;not null" json:"value"`
+}
+
+// SectionValueTypes table
+type SectionValueType struct {
+	BaseModel
+	Name string `gorm:"type:varchar(50);not null;unique" json:"name"` // e.g., "text", "float", "integer"
+}
+
+// Languages table
+type Language struct {
+	BaseModel
+	Name string `gorm:"type:varchar(50);not null;unique" json:"name"`
+}
+
+// SectionAttributesU18n table (for translations)
+type SectionAttributeU18n struct {
+	BaseModel
+	AttributeID uuid.UUID `gorm:"type:uuid;not null" json:"attribute_id"`
+	LanguageID  uuid.UUID `gorm:"type:uuid;not null" json:"language_id"`
+	Name        string    `gorm:"type:varchar(255);not null" json:"name"`
+	Unit        string    `gorm:"type:varchar(50)" json:"unit"`
+}
+
+// Fluids table
+type Fluid struct {
+	BaseModel
+	CaseID          uuid.UUID `gorm:"type:uuid;not null" json:"case_id"`
+	Name            string    `gorm:"type:text;not null" json:"name"`
+	Description     string    `gorm:"type:text" json:"description"`
+	Density         float64   `gorm:"type:decimal;not null" json:"density"`
+	FluidBaseTypeID uuid.UUID `gorm:"type:uuid;not null" json:"fluid_base_type_id"`
+	BaseFluidID     uuid.UUID `gorm:"type:uuid;not null" json:"base_fluid_id"`
+}
+
+// FluidTypes table
+type FluidType struct {
+	BaseModel
+	Name string `gorm:"type:text;not null" json:"name"`
+}

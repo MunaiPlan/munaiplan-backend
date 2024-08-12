@@ -23,7 +23,6 @@ type Organizations interface {
 	GetOrganizationByName(ctx context.Context, input *requests.GetOrganizationByNameRequest) (*entities.Organization, error)
 }
 
-
 type Companies interface {
 	GetCompanies(ctx context.Context, input *requests.GetCompaniesRequest) ([]*entities.Company, error)
 	GetCompanyByName(ctx context.Context, input *requests.GetCompanyByNameRequest) (*entities.Company, error)
@@ -41,10 +40,9 @@ type Services struct {
 }
 
 func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
-
 	return &Services{
-		Users:     NewUsersService(repos.Users, repos.Common, jwt),
-		Companies: NewCompaniesService(repos.Companies, repos.Common),
+		Users:         NewUsersService(repos.Users, repos.Common, jwt),
+		Companies:     NewCompaniesService(repos.Companies, repos.Common),
 		Organizations: NewOrganizationsService(repos.Organizations),
 		// CatalogCache: deps.CatalogCache,
 	}

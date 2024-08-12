@@ -3,6 +3,6 @@ package values
 const (
 	OrganizationIdQueryParam = "organizationId"
 	CompanyIdQueryParam      = "companyId"
-	NameQueryParam    = "name"
+	NameQueryParam           = "name"
 	IdQueryParam             = "id"
 )
