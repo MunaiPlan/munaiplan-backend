@@ -39,7 +39,8 @@ type Token struct {
 
 type tokenClaims struct {
 	jwt.StandardClaims
-	UserId string `json:"user_id"`
+	UserId         string `json:"user_id"`
+	OrganizationId string `json:"organization_id"`
 }
 
 type refreshTokenClaims struct {
@@ -48,7 +49,8 @@ type refreshTokenClaims struct {
 }
 
 type UserAccessTokenClaims struct {
-	UserId string `json:"user_id"`
+	UserId         string `json:"user_id"`
+	OrganizationId string `json:"organization_id"`
 }
 
 func NewJwt() (*jwtStructure, error) {
@@ -74,8 +76,9 @@ func (j *jwtStructure) CreateAccessToken(claims UserAccessTokenClaims) (*Token, 
 	var res Token
 	expirationTime := time.Now().Add(time.Duration(j.accessTokenLiftimeMinutes) * time.Minute).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": claims.UserId,
-		"exp":     expirationTime,
+		"user_id":         claims.UserId,
+		"organization_id": claims.OrganizationId,
+		"exp":             expirationTime,
 	})
 	tokenString, err := token.SignedString([]byte(j.userAccessTokenSecret))
 	if err != nil {

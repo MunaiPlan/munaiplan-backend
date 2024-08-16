@@ -31,12 +31,21 @@ type Companies interface {
 	DeleteCompany(ctx context.Context, input *requests.DeleteCompanyRequest) error
 }
 
+type Fields interface {
+	GetFields(ctx context.Context, input *requests.GetFieldsRequest) ([]*entities.Field, error)
+	GetFieldByID(ctx context.Context, input *requests.GetFieldByIDRequest) (*entities.Field, error)
+	CreateField(ctx context.Context, input *requests.CreateFieldRequest) error
+	UpdateField(ctx context.Context, input *requests.UpdateFieldRequest) (*entities.Field, error)
+	DeleteField(ctx context.Context, input *requests.DeleteFieldRequest) error
+}
+
 type Services struct {
 	// TODO() Implement cache
 	// CatalogCache *catalog.CatalogCache
 	Users
 	Companies
 	Organizations
+	Fields
 }
 
 func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
@@ -44,6 +53,7 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
 		Users:         NewUsersService(repos.Users, repos.Common, jwt),
 		Companies:     NewCompaniesService(repos.Companies, repos.Common),
 		Organizations: NewOrganizationsService(repos.Organizations),
+		Fields: 	  NewFieldsService(repos.Fields, repos.Common),
 		// CatalogCache: deps.CatalogCache,
 	}
 }

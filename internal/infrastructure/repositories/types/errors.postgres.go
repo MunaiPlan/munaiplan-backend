@@ -22,3 +22,7 @@ var (
 	ErrGettingOrganizationByEmail  = errors.New("error getting organization by email")
 	ErrCreatingOrganization        = errors.New("error creating organization")
 )
+
+var (
+	ErrFieldNotChanged = errors.New("field was not changed")
+)

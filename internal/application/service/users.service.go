@@ -31,12 +31,12 @@ func NewUsersService(repo repository.UsersRepository, commonRepo repository.Comm
 }
 
 func (s *usersService) SignUp(ctx context.Context, input *requests.UserSignUpRequest) error {
-	if err := s.commonRepo.CheckIfOrganizationExists(ctx, input.OrganizationID); err != nil {
+	if err := s.commonRepo.CheckIfUserExistsByEmail(ctx, input.Body.Email); err != nil {
 		return err
 	}
 
 	// Check if user with the same email already exists
-	if _, err := s.repo.GetByEmail(ctx, input.OrganizationID, input.Body.Email); err != nil {
+	if _, err := s.repo.GetByEmail(ctx, input.Body.Email); err != nil {
 		return err
 	}
 
@@ -54,6 +54,7 @@ func (s *usersService) SignUp(ctx context.Context, input *requests.UserSignUpReq
 		Name:     input.Body.Name,
 		Surname:  input.Body.Surname,
 		Phone:    input.Body.Phone,
+		OrganizationID: input.OrganizationID,
 	}
 
 	// Save the user to the repository
@@ -66,20 +67,23 @@ func (s *usersService) SignUp(ctx context.Context, input *requests.UserSignUpReq
 	return nil
 }
 func (s *usersService) SignIn(ctx context.Context, input *requests.UserSignInRequest) (*responses.TokenResponse, error) {
-	if err := s.commonRepo.CheckIfOrganizationExists(ctx, input.OrganizationID); err != nil {
+	if err := s.commonRepo.CheckIfUserExistsByEmail(ctx, input.Email); err != nil {
 		return nil, err
 	}
 
-	user, err := s.repo.GetByEmail(ctx, input.OrganizationID, input.Body.Email)
+	user, err := s.repo.GetByEmail(ctx, input.Email)
 	if err != nil {
 		return nil, err
 	}
 
-	if !helpers.CheckPasswordHash(input.Body.Password, user.Password) {
+	if !helpers.CheckPasswordHash(input.Password, user.Password) {
 		return nil, domainErrors.ErrUserPasswordIncorrect
 	}
 
-	token, err := s.jwt.CreateAccessToken(helpers.UserAccessTokenClaims{UserId: user.ID})
+	token, err := s.jwt.CreateAccessToken(helpers.UserAccessTokenClaims{
+		UserId: user.ID,
+		OrganizationId: user.OrganizationID,
+	})
 	if err != nil {
 		logrus.Errorf("Error creating access token: %s", err)
 		return nil, err

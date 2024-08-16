@@ -78,17 +78,7 @@ func (h *Handler) signUp(c *gin.Context) {
 // @Router /api/v1/users/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
 	var inp requests.UserSignInRequest
-	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
-	if err != nil {
-		return
-	}
-	if err := uuid.Validate(organizationId); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
-		return
-	}
-	inp.OrganizationID = organizationId
-
-	if err := c.BindJSON(&inp.Body); err != nil {
+	if err := c.BindJSON(&inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}

@@ -25,15 +25,19 @@ func (r *usersRepository) Create(ctx context.Context, organizationId string, use
     return r.db.WithContext(ctx).Create(&tempUser).Error
 }
 
-func (r *usersRepository) GetByEmail(ctx context.Context, organizationId string, email string) (*entities.User, error) {
-    var user models.User
-    err := r.db.WithContext(ctx).Where("email = ? AND organization_id = ?", email, organizationId).First(&user).Error
+func (r *usersRepository) GetByEmail(ctx context.Context, email string) (*entities.User, error) {
+    var user entities.User
+
+    err := r.db.WithContext(ctx).
+        Select("users.*, users.organization_id").
+        Where("email = ?", email).
+        First(&user).Error
+
     if errors.Is(err, gorm.ErrRecordNotFound) {
         return nil, types.ErrUserNotFound
     }
 
-    res := toDomainUser(&user)
-    return &res, err
+    return &user, err
 }
 
 // Todo() Decide on need
@@ -41,17 +45,6 @@ func (r *usersRepository) GetByEmail(ctx context.Context, organizationId string,
 //     return r.db.WithContext(ctx).Save(&user).Error
 // }
 
-// ToDomainUser maps the GORM User model to the domain User entity.
-func toDomainUser(userModel *models.User) entities.User {
-    return entities.User{
-        ID:        userModel.ID.String(),
-        Name:      userModel.Name,
-        Email:     userModel.Email,
-        Password:  userModel.Password,
-        Phone:     userModel.Phone,
-        CreatedAt: userModel.CreatedAt,
-    }
-}
 
 // ToGormUser maps the domain User entity to the GORM User model.
 func toGormUser(user *entities.User) models.User {

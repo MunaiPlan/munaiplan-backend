@@ -62,5 +62,6 @@ func (m *AuthMiddleware) UserIdentity(c *gin.Context) {
 	}
 
 	c.Set(values.UserIdCtx, userClaims.UserId)
+	c.Set(values.OrganizationIdCtx, userClaims.OrganizationId)
 	c.Set(values.UserRefreshTokenCtx, header)
 }

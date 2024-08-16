@@ -27,6 +27,17 @@ func (r *commonRepository) CheckIfOrganizationExists(ctx context.Context, organi
     return nil
 }
 
+func (r *commonRepository) CheckIfUserExistsByEmail(ctx context.Context, email string) error {
+    var count int64
+    if err := r.db.WithContext(ctx).Model(&models.User{}).Where("email = ?", email).Count(&count).Error; err != nil {
+        return fmt.Errorf("error checking user existence: %w", err)
+    }
+    if count == 0 {
+        return fmt.Errorf("user with email %s does not exist", email)
+    }
+    return nil
+}
+
 func (r *commonRepository) CheckIfCompanyExists(ctx context.Context, companyId string) error {
 	var count int64
 	if err := r.db.WithContext(ctx).Model(&models.Company{}).Where("id = ?", companyId).Count(&count).Error; err != nil {

@@ -10,13 +10,15 @@ type Repository struct {
 	Users         UsersRepository
 	Companies     CompaniesRepository
 	Organizations OrganizationsRepository
+	Fields        FieldsRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repository {
 	return &Repository{
-		Common: 	  postgres.NewCommonRepository(db),
+		Common:        postgres.NewCommonRepository(db),
 		Users:         postgres.NewUsersRepository(db),
 		Companies:     postgres.NewCompaniesRepository(db),
 		Organizations: postgres.NewOrganizationsRepository(db),
+		Fields:        postgres.NewFieldsRepository(db),
 	}
 }

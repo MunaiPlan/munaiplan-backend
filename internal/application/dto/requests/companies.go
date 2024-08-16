@@ -15,8 +15,8 @@ type CreateCompanyRequest struct {
 }
 
 type UpdateCompanyRequest struct {
-	OrganizationID string                   
-	Body           UpdateCompanyRequestBody 
+	OrganizationID string
+	Body           UpdateCompanyRequestBody
 }
 
 type UpdateCompanyRequestBody struct {
@@ -30,20 +30,20 @@ type UpdateCompanyRequestBody struct {
 }
 
 type GetCompaniesRequest struct {
-	OrganizationID string `json:"organization_id"`
+	OrganizationID string
 }
 
 type GetCompanyByNameRequest struct {
-	OrganizationID string `json:"organization_id"`
-	Name           string `json:"name"`
+	OrganizationID string
+	Name           string
 }
 
 type GetCompanyByID struct {
-	OrganizationID string `json:"organization_id"`
-	ID             string `json:"id"`
+	OrganizationID string
+	ID             string
 }
 
 type DeleteCompanyRequest struct {
-	OrganizationID string `json:"organization_id"`
-	ID             string `json:"id"`
+	OrganizationID string
+	ID             string
 }
