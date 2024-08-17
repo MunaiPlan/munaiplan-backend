@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
+	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/munaiplan/munaiplan-backend/internal/presentation/types"
 	"github.com/munaiplan/munaiplan-backend/pkg/values"
@@ -74,16 +75,9 @@ func (h *Handler) createField(c *gin.Context) {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, types.ErrInvalidInputBody.Error())
 		return
 	}
-
-	if inp.CompanyID, err = h.validateQueryParam(c, values.CompanyIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidCompanyIDQueryParameter.Error())
+	if inp.CompanyID, err = h.validateQueryIDParam(c, values.CompanyIdQueryParam); err != nil {
 		return
 	}
-	if err := uuid.Validate(inp.CompanyID); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
-		return
-	}
-
 	if err = h.services.Fields.CreateField(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -112,17 +106,10 @@ func (h *Handler) updateField(c *gin.Context) {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, types.ErrInvalidInputBody.Error())
 		return
 	}
-
-	if inp.CompanyID, err = h.validateQueryParam(c, values.CompanyIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidCompanyIDQueryParameter.Error())
+	if inp.CompanyID, err = h.validateQueryIDParam(c, values.CompanyIdQueryParam); err != nil {
 		return
 	}
-	if inp.Body.ID, err = h.validateRequestParam(c, values.IdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidIDQueryParameter.Error())
-		return
-	}
-	if uuid.Validate(inp.CompanyID) != nil || uuid.Validate(inp.Body.ID) != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
+	if inp.Body.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
 		return
 	}
 
@@ -151,22 +138,13 @@ func (h *Handler) deleteField(c *gin.Context) {
 	var inp requests.DeleteFieldRequest
 	var err error
 
-	if inp.ID, err = h.validateRequestParam(c, values.IdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidIDQueryParameter.Error())
+	if inp.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
 		return
 	}
-
-	if inp.CompanyID, err = h.validateQueryParam(c, values.CompanyIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidCompanyIDQueryParameter.Error())
+	if inp.CompanyID, err = h.validateQueryIDParam(c, values.CompanyIdQueryParam); err != nil {
 		return
 	}
-	if uuid.Validate(inp.CompanyID) != nil || uuid.Validate(inp.ID) != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
-		return
-	}
-
-	err = h.services.Fields.DeleteField(c.Request.Context(), &inp)
-	if err != nil {
+	if err = h.services.Fields.DeleteField(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -188,22 +166,14 @@ func (h *Handler) deleteField(c *gin.Context) {
 func (h *Handler) getFieldByID(c *gin.Context) {
 	var inp requests.GetFieldByIDRequest
 	var err error
-	if inp.ID, err = h.validateRequestParam(c, values.IdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidIDQueryParameter.Error())
+	var field *entities.Field
+	if inp.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
 		return
 	}
-
-	if inp.CompanyID, err = h.validateQueryParam(c, values.CompanyIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidCompanyIDQueryParameter.Error())
+	if inp.CompanyID, err = h.validateQueryIDParam(c, values.CompanyIdQueryParam); err != nil {
 		return
 	}
-	if uuid.Validate(inp.CompanyID) != nil || uuid.Validate(inp.ID) != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
-		return
-	}
-
-	field, err := h.services.Fields.GetFieldByID(c.Request.Context(), &inp)
-	if err != nil {
+	if field, err = h.services.Fields.GetFieldByID(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}

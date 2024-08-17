@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/munaiplan/munaiplan-backend/internal/presentation/types"
@@ -36,15 +35,10 @@ func (h *Handler) initCompaniesRoutes(api *gin.RouterGroup) {
 func (h *Handler) getCompanies(c *gin.Context) {
 	var inp requests.GetCompaniesRequest
 	var err error
-	if inp.OrganizationID, err = h.validateQueryParam(c, values.OrganizationIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidOrganizationIDQueryParameter.Error())
+	inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdQueryParam)
+	if err != nil {
 		return
 	}
-	if err := uuid.Validate(inp.OrganizationID); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
-		return
-	}
-
 	companies, err := h.services.Companies.GetCompanies(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -69,21 +63,13 @@ func (h *Handler) getCompanies(c *gin.Context) {
 func (h *Handler) createCompany(c *gin.Context) {
 	var inp requests.CreateCompanyRequest
 	var err error
-
 	if err = c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, types.ErrInvalidInputBody.Error())
 		return
 	}
-
-	if inp.OrganizationID, err = h.validateQueryParam(c, values.OrganizationIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidOrganizationIDQueryParameter.Error())
+	if inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdQueryParam); err != nil {
 		return
 	}
-	if err := uuid.Validate(inp.OrganizationID); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
-		return
-	}
-
 	if err = h.services.Companies.CreateCompany(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -112,17 +98,10 @@ func (h *Handler) updateCompany(c *gin.Context) {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, types.ErrInvalidInputBody.Error())
 		return
 	}
-
-	if inp.OrganizationID, err = h.validateQueryParam(c, values.OrganizationIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidOrganizationIDQueryParameter.Error())
+	if inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdQueryParam); err != nil {
 		return
 	}
-	if inp.Body.ID, err = h.validateRequestParam(c, values.IdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidIDQueryParameter.Error())
-		return
-	}
-	if uuid.Validate(inp.OrganizationID) != nil || uuid.Validate(inp.Body.ID) != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
+	if inp.Body.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
 		return
 	}
 
@@ -151,22 +130,14 @@ func (h *Handler) deleteCompany(c *gin.Context) {
 	var inp requests.DeleteCompanyRequest
 	var err error
 
-	if inp.ID, err = h.validateRequestParam(c, values.IdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidIDQueryParameter.Error())
+	if inp.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
+		return
+	}
+	if inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdQueryParam); err != nil {
 		return
 	}
 
-	if inp.OrganizationID, err = h.validateQueryParam(c, values.OrganizationIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidOrganizationIDQueryParameter.Error())
-		return
-	}
-	if uuid.Validate(inp.OrganizationID) != nil || uuid.Validate(inp.ID) != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
-		return
-	}
-
-	err = h.services.Companies.DeleteCompany(c.Request.Context(), &inp)
-	if err != nil {
+	if err = h.services.Companies.DeleteCompany(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -191,13 +162,7 @@ func (h *Handler) getCompanyByName(c *gin.Context) {
 	if inp.Name, err = h.validateRequestParam(c, values.NameQueryParam); err != nil {
 		return
 	}
-
-	inp.OrganizationID, err = h.validateQueryParam(c, values.OrganizationIdQueryParam)
-	if err != nil {
-		return
-	}
-	if uuid.Validate(inp.OrganizationID) != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
+	if inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdQueryParam); err != nil {
 		return
 	}
 

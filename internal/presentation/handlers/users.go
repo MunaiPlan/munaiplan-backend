@@ -5,11 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
-	"github.com/munaiplan/munaiplan-backend/internal/presentation/types"
 	"github.com/munaiplan/munaiplan-backend/pkg/values"
 )
 
@@ -37,16 +35,9 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 // @Router /api/v1/users/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
 	var inp requests.UserSignUpRequest
-	organizationId, err := h.validateQueryParam(c, values.OrganizationIdQueryParam)
-	if err != nil {
-		return
+	var err error
+	if inp.OrganizationID, err = h.validateQueryIDParam(c, values.OrganizationIdQueryParam); err != nil {		return
 	}
-	if err := uuid.Validate(organizationId); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
-		return
-	}
-
-	inp.OrganizationID = organizationId
 
 	if err := c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
