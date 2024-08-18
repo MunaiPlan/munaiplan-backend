@@ -33,12 +33,7 @@ type GetCompaniesRequest struct {
 	OrganizationID string
 }
 
-type GetCompanyByNameRequest struct {
-	OrganizationID string
-	Name           string
-}
-
-type GetCompanyByID struct {
+type GetCompanyByIDRequest struct {
 	OrganizationID string
 	ID             string
 }

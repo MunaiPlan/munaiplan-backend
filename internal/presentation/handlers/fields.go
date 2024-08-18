@@ -14,7 +14,7 @@ import (
 
 // initFieldsRoutes initializes the routes for the fields API.
 func (h *Handler) initFieldsRoutes(api *gin.RouterGroup) {
-	fields := api.Group("/fields")
+	fields := api.Group("/fields", h.authMiddleware.UserIdentity)
 	{
 		fields.GET("/", h.getFields)
 		fields.POST("/", h.createField)
@@ -37,7 +37,7 @@ func (h *Handler) initFieldsRoutes(api *gin.RouterGroup) {
 func (h *Handler) getFields(c *gin.Context) {
 	var inp requests.GetFieldsRequest
 	var err error
-	if inp.CompanyID, err = h.validateQueryParam(c, values.CompanyIdQueryParam); err != nil {
+	if inp.CompanyID, err = h.validateQueryIDParam(c, values.CompanyIdQueryParam); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidCompanyIDQueryParameter.Error())
 		return
 	}
@@ -93,7 +93,6 @@ func (h *Handler) createField(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Field ID"
-// @Param companyId query string true "Company ID"
 // @Param input body requests.UpdateFieldRequest true "Field input"
 // @Success 200 {object} entities.Field
 // @Failure 400 {object} helpers.Response
@@ -106,10 +105,7 @@ func (h *Handler) updateField(c *gin.Context) {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, types.ErrInvalidInputBody.Error())
 		return
 	}
-	if inp.CompanyID, err = h.validateQueryIDParam(c, values.CompanyIdQueryParam); err != nil {
-		return
-	}
-	if inp.Body.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
+	if inp.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
 		return
 	}
 
@@ -128,7 +124,6 @@ func (h *Handler) updateField(c *gin.Context) {
 // @Description Deletes an existing field
 // @Accept json
 // @Produce json
-// @Param companyId query string true "Company ID"
 // @Param id path string true "Field ID"
 // @Success 200 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
@@ -139,9 +134,6 @@ func (h *Handler) deleteField(c *gin.Context) {
 	var err error
 
 	if inp.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
-		return
-	}
-	if inp.CompanyID, err = h.validateQueryIDParam(c, values.CompanyIdQueryParam); err != nil {
 		return
 	}
 	if err = h.services.Fields.DeleteField(c.Request.Context(), &inp); err != nil {
@@ -158,7 +150,6 @@ func (h *Handler) deleteField(c *gin.Context) {
 // @Description Retrieves a field by its ID
 // @Accept json
 // @Produce json
-// @Param companyId query string true "Company ID"
 // @Param id path string true "Field ID"
 // @Success 200 {object} entities.Field
 // @Failure 500 {object} helpers.Response
@@ -168,9 +159,6 @@ func (h *Handler) getFieldByID(c *gin.Context) {
 	var err error
 	var field *entities.Field
 	if inp.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
-		return
-	}
-	if inp.CompanyID, err = h.validateQueryIDParam(c, values.CompanyIdQueryParam); err != nil {
 		return
 	}
 	if field, err = h.services.Fields.GetFieldByID(c.Request.Context(), &inp); err != nil {

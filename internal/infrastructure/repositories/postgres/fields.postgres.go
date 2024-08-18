@@ -35,10 +35,10 @@ func (r *fieldsRepository) CreateField(ctx context.Context, companyID string, fi
 	return nil
 }
 
-func (r *fieldsRepository) GetFieldByID(ctx context.Context, id, companyID string) (*entities.Field, error) {
+func (r *fieldsRepository) GetFieldByID(ctx context.Context, id string) (*entities.Field, error) {
 	var field models.Field
 	var res entities.Field
-	result := r.db.WithContext(ctx).Where("id = ? AND company_id = ?", id, companyID).First(&field)
+	result := r.db.WithContext(ctx).Where("id = ?", id).First(&field)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -62,11 +62,11 @@ func (r *fieldsRepository) GetFields(ctx context.Context, companyID string) ([]*
 	return res, nil
 }
 
-func (r *fieldsRepository) UpdateField(ctx context.Context, companyID string, field *entities.Field) (*entities.Field, error) {
+func (r *fieldsRepository) UpdateField(ctx context.Context, field *entities.Field) (*entities.Field, error) {
 	gormField := r.toGormField(field)
 	oldField := models.Field{}
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		query := tx.WithContext(ctx).Where("id = ? AND company_id = ?", field.ID, companyID).First(&oldField)
+		query := tx.WithContext(ctx).Where("id = ?", field.ID).First(&oldField)
 		if query.Error != nil {
 			return query.Error
 		}
@@ -91,8 +91,8 @@ func (r *fieldsRepository) UpdateField(ctx context.Context, companyID string, fi
 	return &res, nil
 }
 
-func (r *fieldsRepository) DeleteField(ctx context.Context, companyID string, id string) error {
-	result := r.db.WithContext(ctx).Where("id = ? AND company_id = ?", id, companyID).Delete(&models.Field{})
+func (r *fieldsRepository) DeleteField(ctx context.Context, id string) error {
+	result := r.db.WithContext(ctx).Where("id = ?", id).Delete(&models.Field{})
 	if result.Error != nil {
 		return result.Error
 	}

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,11 +13,11 @@ import (
 
 // initCompaniesRoutes initializes the routes for the companies API.
 func (h *Handler) initCompaniesRoutes(api *gin.RouterGroup) {
-	companies := api.Group("/companies")
+	companies := api.Group("/companies", h.authMiddleware.UserIdentity)
 	{
 		companies.GET("/", h.getCompanies)
 		companies.POST("/", h.createCompany)
-		companies.GET("/:name", h.getCompanyByName)
+		companies.GET("/:id", h.getCompanyByID)
 		companies.PUT("/:id", h.updateCompany)
 		companies.DELETE("/:id", h.deleteCompany)
 	}
@@ -35,7 +36,7 @@ func (h *Handler) initCompaniesRoutes(api *gin.RouterGroup) {
 func (h *Handler) getCompanies(c *gin.Context) {
 	var inp requests.GetCompaniesRequest
 	var err error
-	inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdQueryParam)
+	inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdCtx)
 	if err != nil {
 		return
 	}
@@ -156,17 +157,18 @@ func (h *Handler) deleteCompany(c *gin.Context) {
 // @Success 200 {object} entities.Company
 // @Failure 500 {object} helpers.Response
 // @Router /api/v1/companies/{name} [get]
-func (h *Handler) getCompanyByName(c *gin.Context) {
-	var inp requests.GetCompanyByNameRequest
+func (h *Handler) getCompanyByID(c *gin.Context) {
+	var inp requests.GetCompanyByIDRequest
 	var err error
-	if inp.Name, err = h.validateRequestParam(c, values.NameQueryParam); err != nil {
+	if inp.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
 		return
 	}
+	fmt.Println("inp.ID ", inp.ID)
 	if inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdQueryParam); err != nil {
 		return
 	}
 
-	company, err := h.services.Companies.GetCompanyByName(c.Request.Context(), &inp)
+	company, err := h.services.Companies.GetCompanyByID(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

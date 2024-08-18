@@ -47,18 +47,6 @@ func (r *companiesRepository) GetCompanyByID(ctx context.Context, id, organizati
 	return &res, nil
 }
 
-func (r *companiesRepository) GetCompanyByName(ctx context.Context, name string, organizationId string) (*entities.Company, error) {
-	var company models.Company
-	var res entities.Company
-	result := r.db.WithContext(ctx).Where("name = ? AND organization_id = ?", name, organizationId).First(&company)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	res = r.toDomainCompany(&company)
-	return &res, nil
-}
-
 func (r *companiesRepository) GetCompanies(ctx context.Context, organizationId string) ([]*entities.Company, error) {
 	var companies []*models.Company
 	var res []*entities.Company

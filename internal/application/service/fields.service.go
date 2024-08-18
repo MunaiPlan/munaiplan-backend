@@ -29,11 +29,7 @@ func (s *fieldsService) GetFields(ctx context.Context, input *requests.GetFields
 }
 
 func (s *fieldsService) GetFieldByID(ctx context.Context, input *requests.GetFieldByIDRequest) (*entities.Field, error) {
-	if err := s.commonRepo.CheckIfCompanyExists(ctx, input.CompanyID); err != nil {
-		return nil, err
-	}
-
-	return s.repo.GetFieldByID(ctx, input.ID, input.CompanyID)
+	return s.repo.GetFieldByID(ctx, input.ID)
 }
 
 func (s *fieldsService) CreateField(ctx context.Context, input *requests.CreateFieldRequest) error {
@@ -52,25 +48,17 @@ func (s *fieldsService) CreateField(ctx context.Context, input *requests.CreateF
 }
 
 func (s *fieldsService) UpdateField(ctx context.Context, input *requests.UpdateFieldRequest) (*entities.Field, error) {
-	if err := s.commonRepo.CheckIfCompanyExists(ctx, input.CompanyID); err != nil {
-		return nil, err
-	}
-
 	field := &entities.Field{
-		ID:              input.Body.ID,
+		ID:              input.ID,
 		Name:            input.Body.Name,
 		Description:     input.Body.Description,
 		ReductionLevel:  input.Body.ReductionLevel,
 		ActiveFieldUnit: input.Body.ActiveFieldUnit,
 	}
 
-	return s.repo.UpdateField(ctx, input.CompanyID, field)
+	return s.repo.UpdateField(ctx, field)
 }
 
 func (s *fieldsService) DeleteField(ctx context.Context, input *requests.DeleteFieldRequest) error {
-	if err := s.commonRepo.CheckIfCompanyExists(ctx, input.CompanyID); err != nil {
-		return err
-	}
-
-	return s.repo.DeleteField(ctx, input.CompanyID, input.ID)
+	return s.repo.DeleteField(ctx, input.ID)
 }

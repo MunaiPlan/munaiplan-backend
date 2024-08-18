@@ -26,3 +26,19 @@ var (
 var (
 	ErrFieldNotChanged = errors.New("field was not changed")
 )
+
+var (
+	ErrSiteNotChanged = errors.New("site was not changed")
+)
+
+var (
+	ErrWellNotChanged = errors.New("well was not changed")
+)
+
+var (
+	ErrWellboreNotChanged = errors.New("wellbore was not changed")
+)
+
+var (
+	ErrDesignNotChanged = errors.New("design was not changed")
+)

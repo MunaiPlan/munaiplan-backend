@@ -48,3 +48,47 @@ func (r *commonRepository) CheckIfCompanyExists(ctx context.Context, companyId s
 	}
 	return nil
 }
+
+func (r *commonRepository) CheckIfFieldExists(ctx context.Context, fieldId string) error {
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&models.Field{}).Where("id = ?", fieldId).Count(&count).Error; err != nil {
+		return fmt.Errorf("error checking field existence: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("field with id %s does not exist", fieldId)
+	}
+	return nil
+}
+
+func (r *commonRepository) CheckIfSiteExists(ctx context.Context, siteId string) error {
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&models.Site{}).Where("id = ?", siteId).Count(&count).Error; err != nil {
+		return fmt.Errorf("error checking site existence: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("site with id %s does not exist", siteId)
+	}
+	return nil
+}
+
+func (r *commonRepository) CheckIfWellExists(ctx context.Context, wellId string) error {
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&models.Well{}).Where("id = ?", wellId).Count(&count).Error; err != nil {
+		return fmt.Errorf("error checking well existence: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("well with id %s does not exist", wellId)
+	}
+	return nil
+}
+
+func (r *commonRepository) CheckIfWellboreExists(ctx context.Context, wellboreId string) error {
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&models.Wellbore{}).Where("id = ?", wellboreId).Count(&count).Error; err != nil {
+		return fmt.Errorf("error checking wellbore existence: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("wellbore with id %s does not exist", wellboreId)
+	}
+	return nil
+}

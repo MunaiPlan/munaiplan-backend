@@ -28,6 +28,15 @@ const docTemplate = `{
                     "companies"
                 ],
                 "summary": "Get Companies",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "organizationId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -59,6 +68,13 @@ const docTemplate = `{
                 ],
                 "summary": "Create Company",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "organizationId",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "description": "Company input",
                         "name": "input",
@@ -113,6 +129,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "organizationId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "description": "Company input",
                         "name": "input",
                         "in": "body",
@@ -158,19 +181,17 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Organization ID",
+                        "name": "organizationId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Company ID",
                         "name": "id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "Company input",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/requests.DeleteCompanyRequest"
-                        }
                     }
                 ],
                 "responses": {
@@ -211,8 +232,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Organization ID",
+                        "name": "organizationId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Company Name",
-                        "name": "name",
+                        "name": "companyName",
                         "in": "path",
                         "required": true
                     }
@@ -222,6 +250,452 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/entities.Company"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/designs": {
+            "get": {
+                "description": "Retrieves all designs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "designs"
+                ],
+                "summary": "Get Designs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Wellbore ID",
+                        "name": "wellboreId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Design"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new design",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "designs"
+                ],
+                "summary": "Create Design",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Wellbore ID",
+                        "name": "wellboreId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Design input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateDesignRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/designs/{id}": {
+            "get": {
+                "description": "Retrieves a design by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "designs"
+                ],
+                "summary": "Get Design by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Design ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Design"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing design",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "designs"
+                ],
+                "summary": "Update Design",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Design ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Design input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateDesignRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Design"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing design",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "designs"
+                ],
+                "summary": "Delete Design",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Design ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/fields": {
+            "get": {
+                "description": "Retrieves all fields",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fields"
+                ],
+                "summary": "Get Fields",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company ID",
+                        "name": "companyId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Field"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new field",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fields"
+                ],
+                "summary": "Create Field",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company ID",
+                        "name": "companyId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Field input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateFieldRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/fields/{id}": {
+            "get": {
+                "description": "Retrieves a field by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fields"
+                ],
+                "summary": "Get Field by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Field ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Field"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing field",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fields"
+                ],
+                "summary": "Update Field",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Field ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Field input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateFieldRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Field"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing field",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fields"
+                ],
+                "summary": "Delete Field",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Field ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
                         }
                     },
                     "500": {
@@ -442,6 +916,229 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/sites": {
+            "get": {
+                "description": "Retrieves all sites",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Get Sites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Field ID",
+                        "name": "fieldId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Site"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Create Site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Field ID",
+                        "name": "fieldId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Site input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateSiteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/sites/{id}": {
+            "get": {
+                "description": "Retrieves a site by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Get Site by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Site"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Update Site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Site input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateSiteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Site"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Delete Site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/sign-in": {
             "post": {
                 "description": "user sign in",
@@ -559,6 +1256,452 @@ const docTemplate = `{
                     },
                     "default": {
                         "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/wellbores": {
+            "get": {
+                "description": "Retrieves all wellbores",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wellbores"
+                ],
+                "summary": "Get Wellbores",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Well ID",
+                        "name": "wellId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Wellbore"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new wellbore",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wellbores"
+                ],
+                "summary": "Create Wellbore",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Well ID",
+                        "name": "wellId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Wellbore input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateWellboreRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/wellbores/{id}": {
+            "get": {
+                "description": "Retrieves a wellbore by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wellbores"
+                ],
+                "summary": "Get Wellbore by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Wellbore ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Wellbore"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing wellbore",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wellbores"
+                ],
+                "summary": "Update Wellbore",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Wellbore ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Wellbore input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateWellboreRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Wellbore"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing wellbore",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wellbores"
+                ],
+                "summary": "Delete Wellbore",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Wellbore ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/wells": {
+            "get": {
+                "description": "Retrieves all wells",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wells"
+                ],
+                "summary": "Get Wells",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "siteId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Well"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new well",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wells"
+                ],
+                "summary": "Create Well",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "siteId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Well input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateWellRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/wells/{id}": {
+            "get": {
+                "description": "Retrieves a well by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wells"
+                ],
+                "summary": "Get Well by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Well ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Well"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing well",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wells"
+                ],
+                "summary": "Update Well",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Well ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Well input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateWellRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Well"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing well",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wells"
+                ],
+                "summary": "Delete Well",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Well ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/helpers.Response"
                         }
@@ -880,6 +2023,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "organizationId": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string"
                 },
@@ -1026,13 +2172,68 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "description": "OrganzationID string ` + "`" + `json:\"organization_id\"` + "`" + `",
                     "type": "string"
                 },
                 "phone": {
                     "type": "string"
                 },
                 "representative": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateDesignRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateDesignRequestBody"
+                },
+                "wellboreID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateDesignRequestBody": {
+            "type": "object",
+            "properties": {
+                "actual_date": {
+                    "type": "string"
+                },
+                "plan_name": {
+                    "type": "string"
+                },
+                "stage": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateFieldRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateFieldRequestBody"
+                },
+                "companyID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateFieldRequestBody": {
+            "type": "object",
+            "properties": {
+                "active_field_unit": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "reduction_level": {
                     "type": "string"
                 }
             }
@@ -1054,14 +2255,138 @@ const docTemplate = `{
                 }
             }
         },
-        "requests.DeleteCompanyRequest": {
+        "requests.CreateSiteRequest": {
             "type": "object",
             "properties": {
-                "id": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateSiteRequestBody"
+                },
+                "fieldID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateSiteRequestBody": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "azimuth": {
+                    "type": "number"
+                },
+                "block": {
                     "type": "string"
                 },
-                "organization_id": {
+                "country": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateWellRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateWellRequestBody"
+                },
+                "siteID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateWellRequestBody": {
+            "type": "object",
+            "properties": {
+                "active_well_unit": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "universal_well_identifier": {
+                    "type": "string"
+                },
+                "well_number": {
+                    "type": "string"
+                },
+                "working_group": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateWellboreRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateWellboreRequestBody"
+                },
+                "wellID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateWellboreRequestBody": {
+            "type": "object",
+            "properties": {
+                "average_column_rotation_frequency": {
+                    "type": "number"
+                },
+                "average_hook_load": {
+                    "type": "number"
+                },
+                "average_inlet_flow": {
+                    "type": "number"
+                },
+                "average_torque": {
+                    "type": "number"
+                },
+                "average_weight_on_bit": {
+                    "type": "number"
+                },
+                "bottom_hole_location": {
+                    "type": "string"
+                },
+                "depth_interval": {
+                    "type": "number"
+                },
+                "down_static_friction": {
+                    "type": "number"
+                },
+                "maximum_column_rotation_frequency": {
+                    "type": "number"
+                },
+                "maximum_torque": {
+                    "type": "number"
+                },
+                "maximum_weight_on_bit": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "riser_pressure": {
+                    "type": "number"
+                },
+                "wellbore_depth": {
+                    "type": "number"
                 }
             }
         },
@@ -1071,7 +2396,7 @@ const docTemplate = `{
                 "body": {
                     "$ref": "#/definitions/requests.UpdateCompanyRequestBody"
                 },
-                "organization_id": {
+                "organizationID": {
                     "type": "string"
                 }
             }
@@ -1102,6 +2427,62 @@ const docTemplate = `{
                 }
             }
         },
+        "requests.UpdateDesignRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UpdateDesignRequestBody"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateDesignRequestBody": {
+            "type": "object",
+            "properties": {
+                "actual_date": {
+                    "type": "string"
+                },
+                "plan_name": {
+                    "type": "string"
+                },
+                "stage": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateFieldRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UpdateFieldRequestBody"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateFieldRequestBody": {
+            "type": "object",
+            "properties": {
+                "active_field_unit": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "reduction_level": {
+                    "type": "string"
+                }
+            }
+        },
         "requests.UpdateOrganizationRequest": {
             "type": "object",
             "properties": {
@@ -1122,18 +2503,142 @@ const docTemplate = `{
                 }
             }
         },
-        "requests.UserSignInRequest": {
+        "requests.UpdateSiteRequest": {
             "type": "object",
             "properties": {
                 "body": {
-                    "$ref": "#/definitions/requests.UserSignInRequestBody"
+                    "$ref": "#/definitions/requests.UpdateSiteRequestBody"
                 },
-                "organizationID": {
+                "id": {
                     "type": "string"
                 }
             }
         },
-        "requests.UserSignInRequestBody": {
+        "requests.UpdateSiteRequestBody": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "azimuth": {
+                    "type": "number"
+                },
+                "block": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateWellRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UpdateWellRequestBody"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateWellRequestBody": {
+            "type": "object",
+            "properties": {
+                "active_well_unit": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "universal_well_identifier": {
+                    "type": "string"
+                },
+                "well_number": {
+                    "type": "string"
+                },
+                "working_group": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateWellboreRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UpdateWellboreRequestBody"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateWellboreRequestBody": {
+            "type": "object",
+            "properties": {
+                "average_column_rotation_frequency": {
+                    "type": "number"
+                },
+                "average_hook_load": {
+                    "type": "number"
+                },
+                "average_inlet_flow": {
+                    "type": "number"
+                },
+                "average_torque": {
+                    "type": "number"
+                },
+                "average_weight_on_bit": {
+                    "type": "number"
+                },
+                "bottom_hole_location": {
+                    "type": "string"
+                },
+                "depth_interval": {
+                    "type": "number"
+                },
+                "down_static_friction": {
+                    "type": "number"
+                },
+                "maximum_column_rotation_frequency": {
+                    "type": "number"
+                },
+                "maximum_torque": {
+                    "type": "number"
+                },
+                "maximum_weight_on_bit": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "riser_pressure": {
+                    "type": "number"
+                },
+                "wellbore_depth": {
+                    "type": "number"
+                }
+            }
+        },
+        "requests.UserSignInRequest": {
             "type": "object",
             "required": [
                 "email",
