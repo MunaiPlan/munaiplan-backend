@@ -42,3 +42,7 @@ var (
 var (
 	ErrDesignNotChanged = errors.New("design was not changed")
 )
+
+var (
+	ErrTrajectoryNotChanged = errors.New("trajectory was not changed")
+)

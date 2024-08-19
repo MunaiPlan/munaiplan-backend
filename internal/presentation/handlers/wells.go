@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
@@ -38,11 +37,6 @@ func (h *Handler) getWells(c *gin.Context) {
 	var inp requests.GetWellsRequest
 	var err error
 	if inp.SiteID, err = h.validateQueryIDParam(c, values.SiteIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidSiteIDQueryParameter.Error())
-		return
-	}
-	if err := uuid.Validate(inp.SiteID); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
 		return
 	}
 

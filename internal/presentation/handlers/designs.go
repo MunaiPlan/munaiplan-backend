@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
@@ -37,17 +36,12 @@ func (h *Handler) initDesignsRoutes(api *gin.RouterGroup) {
 func (h *Handler) getDesigns(c *gin.Context) {
 	var inp requests.GetDesignsRequest
 	var err error
+	var designs []*entities.Design
 	if inp.WellboreID, err = h.validateQueryIDParam(c, values.WellboreIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidWellboreIDQueryParameter.Error())
-		return
-	}
-	if err := uuid.Validate(inp.WellboreID); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
 		return
 	}
 
-	designs, err := h.services.Designs.GetDesigns(c.Request.Context(), &inp)
-	if err != nil {
+	if designs, err = h.services.Designs.GetDesigns(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}

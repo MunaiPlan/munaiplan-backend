@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
@@ -24,6 +25,8 @@ func (s *designsService) GetDesigns(ctx context.Context, input *requests.GetDesi
 	if err := s.commonRepo.CheckIfWellboreExists(ctx, input.WellboreID); err != nil {
 		return nil, err
 	}
+
+	fmt.Println(input.WellboreID)
 
 	return s.repo.GetDesigns(ctx, input.WellboreID)
 }

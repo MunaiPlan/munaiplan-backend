@@ -7,6 +7,7 @@ const (
 	SiteIdQueryParam         = "siteId"
 	WellIdQueryParam         = "wellId"
 	WellboreIdQueryParam     = "wellboreId"
+	DesignIdQueryParam       = "designId"
 	NameQueryParam           = "name"
 	IdQueryParam             = "id"
 )

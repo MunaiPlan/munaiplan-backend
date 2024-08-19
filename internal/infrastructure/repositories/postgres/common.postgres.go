@@ -92,3 +92,14 @@ func (r *commonRepository) CheckIfWellboreExists(ctx context.Context, wellboreId
 	}
 	return nil
 }
+
+func (r *commonRepository) CheckIfDesignExists(ctx context.Context, designId string) error {
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&models.Design{}).Where("id = ?", designId).Count(&count).Error; err != nil {
+		return fmt.Errorf("error checking design existence: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("design with id %s does not exist", designId)
+	}
+	return nil
+}

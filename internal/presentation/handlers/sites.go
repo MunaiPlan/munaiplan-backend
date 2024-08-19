@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
@@ -38,11 +37,6 @@ func (h *Handler) getSites(c *gin.Context) {
 	var inp requests.GetSitesRequest
 	var err error
 	if inp.FieldID, err = h.validateQueryIDParam(c, values.FieldIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidFieldIDQueryParameter.Error())
-		return
-	}
-	if err := uuid.Validate(inp.FieldID); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
 		return
 	}
 

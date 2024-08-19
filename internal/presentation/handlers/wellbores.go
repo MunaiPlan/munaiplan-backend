@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
@@ -38,11 +37,6 @@ func (h *Handler) getWellbores(c *gin.Context) {
 	var inp requests.GetWellboresRequest
 	var err error
 	if inp.WellID, err = h.validateQueryIDParam(c, values.WellIdQueryParam); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidWellIDQueryParameter.Error())
-		return
-	}
-	if err := uuid.Validate(inp.WellID); err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, types.ErrInvalidUUID.Error())
 		return
 	}
 

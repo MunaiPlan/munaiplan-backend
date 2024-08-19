@@ -29,5 +29,6 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initWellsRoutes(v1)
 		h.initWellboresRoutes(v1)
 		h.initDesignsRoutes(v1)
+		h.initTrajectoriesRoutes(v1)
 	}
 }

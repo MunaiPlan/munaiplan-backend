@@ -14,7 +14,8 @@ type Repository struct {
 	Sites         SitesRepository
 	Wells         WellsRepository
 	Wellbores     WellboresRepository
-	Designs 	 DesignsRepository
+	Designs       DesignsRepository
+	Trajectories  TrajectoriesRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repository {
@@ -27,5 +28,7 @@ func NewRepositories(db *gorm.DB) *Repository {
 		Sites:         postgres.NewSitesRepository(db),
 		Wells:         postgres.NewWellsRepository(db),
 		Wellbores:     postgres.NewWellboresRepository(db),
+		Designs:       postgres.NewDesignsRepository(db),
+		Trajectories:  postgres.NewTrajectoriesRepository(db),
 	}
 }
