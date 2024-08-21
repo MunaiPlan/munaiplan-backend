@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
+	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
 )

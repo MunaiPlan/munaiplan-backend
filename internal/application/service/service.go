@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
-	"github.com/munaiplan/munaiplan-backend/internal/application/dto/responses"
+	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
+	"github.com/munaiplan/munaiplan-backend/internal/application/types/responses"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"

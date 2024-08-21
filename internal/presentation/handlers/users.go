@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
-	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
+	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
+	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/types"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/munaiplan/munaiplan-backend/pkg/values"
 )

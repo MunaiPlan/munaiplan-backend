@@ -46,7 +46,7 @@ type UpdateTrajectoryHeaderRequestBody struct {
 
 // UpdateTrajectoryUnitRequestBody represents the request body for updating a trajectory unit
 type UpdateTrajectoryUnitRequestBody struct {
-	ID              string  `json:"id"`
+	ID              *string `json:"id"`
 	MD              float64 `json:"md"`
 	Incl            float64 `json:"incl"`
 	Azim            float64 `json:"azim"`

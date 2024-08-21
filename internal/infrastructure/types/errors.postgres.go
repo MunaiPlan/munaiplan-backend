@@ -44,5 +44,7 @@ var (
 )
 
 var (
-	ErrTrajectoryNotChanged = errors.New("trajectory was not changed")
+	ErrTrajectoryNotChanged       = errors.New("trajectory was not changed")
+	ErrTrajectoryHeaderIdNotFound = errors.New("trajectory header ID was not found")
+	ErrTrajectoryUnitIdNotFound   = errors.New("trajectory unit ID was not found")
 )

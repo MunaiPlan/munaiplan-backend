@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
-	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/repositories/types"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/types"
 	"gorm.io/gorm"
 )
 

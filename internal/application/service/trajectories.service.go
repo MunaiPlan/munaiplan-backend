@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
+	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
 )
@@ -116,7 +116,6 @@ func (s *trajectoriesService) UpdateTrajectoryRequestToEntity(input *requests.Up
 	units := make([]*entities.TrajectoryUnit, len(input.Units))
 	for i, unit := range input.Units {
 		units[i] = &entities.TrajectoryUnit{
-			ID:              unit.ID,
 			MD:              unit.MD,
 			Incl:            unit.Incl,
 			Azim:            unit.Azim,
@@ -128,6 +127,11 @@ func (s *trajectoriesService) UpdateTrajectoryRequestToEntity(input *requests.Up
 			GlobalECoord:    unit.GlobalECoord,
 			Dogleg:          unit.Dogleg,
 			VerticalSection: unit.VerticalSection,
+		}
+		if unit.ID != nil {
+			units[i].ID = *unit.ID
+		} else {
+			units[i].ID = ""
 		}
 	}
 

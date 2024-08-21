@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 
-	"github.com/munaiplan/munaiplan-backend/internal/application/dto/requests"
-	"github.com/munaiplan/munaiplan-backend/internal/application/dto/responses"
+	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
+	"github.com/munaiplan/munaiplan-backend/internal/application/types/responses"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
-	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/errors"
+	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/types"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/sirupsen/logrus"

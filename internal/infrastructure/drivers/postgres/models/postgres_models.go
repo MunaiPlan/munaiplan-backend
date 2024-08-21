@@ -158,39 +158,37 @@ type Trajectory struct {
 
 // TrajectoryHeader model with UUID primary key and foreign key.
 type TrajectoryHeader struct {
-	ID               uuid.UUID  `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
-	TrajectoryID     uuid.UUID  `gorm:"type:uuid;not null" json:"trajectory_id"`
-	Customer         string     `json:"customer"`
-	Project          string     `json:"project"`
-	ProfileType      string     `json:"profile_type"`
-	Field            string     `json:"field"`
-	YourRef          string     `json:"your_ref"`
-	Structure        string     `json:"structure"`
-	JobNumber        string     `json:"job_number"`
-	Wellhead         string     `json:"wellhead"`
-	KellyBushingElev float64    `json:"kelly_bushing_elev"`
-	Profile          string     `json:"profile"`
-	CreatedAt        time.Time  `gorm:"not null" json:"created_at"`
-	Trajectory       Trajectory `gorm:"foreignKey:TrajectoryID;constraint:OnDelete:CASCADE;" json:"trajectory"`
+	ID               uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	TrajectoryID     uuid.UUID `gorm:"type:uuid;not null" json:"trajectory_id"`
+	Customer         string    `json:"customer"`
+	Project          string    `json:"project"`
+	ProfileType      string    `json:"profile_type"`
+	Field            string    `json:"field"`
+	YourRef          string    `json:"your_ref"`
+	Structure        string    `json:"structure"`
+	JobNumber        string    `json:"job_number"`
+	Wellhead         string    `json:"wellhead"`
+	KellyBushingElev float64   `json:"kelly_bushing_elev"`
+	Profile          string    `json:"profile"`
+	CreatedAt        time.Time `gorm:"not null" json:"created_at"`
 }
 
 // TrajectoryUnit model with UUID primary key and foreign key.
 type TrajectoryUnit struct {
-	ID              uuid.UUID  `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
-	TrajectoryID    uuid.UUID  `gorm:"type:uuid;not null" json:"trajectory_id"`
-	MD              float64    `json:"md"`
-	Incl            float64    `json:"incl"`
-	Azim            float64    `json:"azim"`
-	SubSea          float64    `json:"sub_sea"`
-	TVD             float64    `json:"tvd"`
-	LocalNCoord     float64    `json:"local_n_coord"`
-	LocalECoord     float64    `json:"local_e_coord"`
-	GlobalNCoord    float64    `json:"global_n_coord"`
-	GlobalECoord    float64    `json:"global_e_coord"`
-	Dogleg          float64    `json:"dogleg"`
-	VerticalSection float64    `json:"vertical_section"`
-	CreatedAt       time.Time  `gorm:"not null" json:"created_at"`
-	Trajectory      Trajectory `gorm:"foreignKey:TrajectoryID;constraint:OnDelete:CASCADE;" json:"trajectory"`
+	ID              uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	TrajectoryID    uuid.UUID `gorm:"type:uuid;not null" json:"trajectory_id"`
+	MD              float64   `json:"md"`
+	Incl            float64   `json:"incl"`
+	Azim            float64   `json:"azim"`
+	SubSea          float64   `json:"sub_sea"`
+	TVD             float64   `json:"tvd"`
+	LocalNCoord     float64   `json:"local_n_coord"`
+	LocalECoord     float64   `json:"local_e_coord"`
+	GlobalNCoord    float64   `json:"global_n_coord"`
+	GlobalECoord    float64   `json:"global_e_coord"`
+	Dogleg          float64   `json:"dogleg"`
+	VerticalSection float64   `json:"vertical_section"`
+	CreatedAt       time.Time `gorm:"not null" json:"created_at"`
 }
 
 // Holes table
@@ -303,9 +301,11 @@ type Section struct {
 // SectionValues table
 type SectionValue struct {
 	BaseModel
-	SectionID   uuid.UUID `gorm:"type:uuid;not null" json:"section_id"`
-	AttributeID uuid.UUID `gorm:"type:uuid;not null" json:"attribute_id"`
-	Value       string    `gorm:"type:text;not null" json:"value"`
+	SectionID   uuid.UUID        `gorm:"type:uuid;not null" json:"section_id"`
+	Section     Section          `gorm:"foreignKey:SectionID;constraint:OnDelete:CASCADE;" json:"section"`
+	AttributeID uuid.UUID        `gorm:"type:uuid;not null" json:"attribute_id"`
+	Attribute   SectionAttribute `gorm:"foreignKey:AttributeID;constraint:OnDelete:CASCADE;" json:"attribute"`
+	Value       string           `gorm:"type:text;not null" json:"value"`
 }
 
 // SectionValueTypes table
@@ -323,21 +323,26 @@ type Language struct {
 // SectionAttributesU18n table (for translations)
 type SectionAttributeU18n struct {
 	BaseModel
-	AttributeID uuid.UUID `gorm:"type:uuid;not null" json:"attribute_id"`
-	LanguageID  uuid.UUID `gorm:"type:uuid;not null" json:"language_id"`
-	Name        string    `gorm:"type:varchar(255);not null" json:"name"`
-	Unit        string    `gorm:"type:varchar(50)" json:"unit"`
+	AttributeID uuid.UUID        `gorm:"type:uuid;not null" json:"attribute_id"`
+	Attribute   SectionAttribute `gorm:"foreignKey:AttributeID;constraint:OnDelete:CASCADE;" json:"attribute"`
+	LanguageID  uuid.UUID        `gorm:"type:uuid;not null" json:"language_id"`
+	Language    Language         `gorm:"foreignKey:LanguageID;constraint:OnDelete:CASCADE;" json:"language"`
+	Name        string           `gorm:"type:varchar(255);not null" json:"name"`
+	Unit        string           `gorm:"type:varchar(50)" json:"unit"`
 }
 
 // Fluids table
 type Fluid struct {
 	BaseModel
 	CaseID          uuid.UUID `gorm:"type:uuid;not null" json:"case_id"`
+	Case            Case      `gorm:"foreignKey:CaseID;constraint:OnDelete:CASCADE;" json:"case"`
 	Name            string    `gorm:"type:text;not null" json:"name"`
 	Description     string    `gorm:"type:text" json:"description"`
 	Density         float64   `gorm:"type:decimal;not null" json:"density"`
 	FluidBaseTypeID uuid.UUID `gorm:"type:uuid;not null" json:"fluid_base_type_id"`
+	FluidBaseType   FluidType `gorm:"foreignKey:FluidBaseTypeID;constraint:OnDelete:CASCADE;" json:"fluid_base_type"`
 	BaseFluidID     uuid.UUID `gorm:"type:uuid;not null" json:"base_fluid_id"`
+	BaseFluid       FluidType `gorm:"foreignKey:BaseFluidID;constraint:OnDelete:CASCADE;" json:"base_fluid"`
 }
 
 // FluidTypes table
