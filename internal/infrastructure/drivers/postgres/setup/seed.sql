@@ -27,14 +27,6 @@ BEGIN
     -- Fetch the organization ID
     SELECT id INTO org_id FROM organizations WHERE email = 'kazmunaigas@gmail.com' LIMIT 1;
 
-    -- Insert Users
-    INSERT INTO users (id, organization_id, name, surname, email, password, phone, created_at, updated_at)
-    VALUES
-    (uuid_generate_v4(), org_id, 'John', 'Doe', 'test1@gmail.com', crypt('password1', gen_salt('bf')), '1111111111', now(), now()),
-    (uuid_generate_v4(), org_id, 'Jane', 'Smith', 'test2@gmail.com', crypt('password2', gen_salt('bf')), '2222222222', now(), now()),
-    (uuid_generate_v4(), org_id, 'Alex', 'Johnson', 'test2johnson@gmail.com', crypt('password3', gen_salt('bf')), '3333333333', now(), now())
-    ON CONFLICT (email) WHERE deleted_at IS NULL DO NOTHING;
-
     -- Insert Companies
     INSERT INTO companies (id, organization_id, name, division, "group", representative, address, phone, created_at, updated_at)
     VALUES
