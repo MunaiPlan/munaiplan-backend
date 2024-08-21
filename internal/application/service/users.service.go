@@ -31,12 +31,7 @@ func NewUsersService(repo repository.UsersRepository, commonRepo repository.Comm
 }
 
 func (s *usersService) SignUp(ctx context.Context, input *requests.UserSignUpRequest) error {
-	if err := s.commonRepo.CheckIfUserExistsByEmail(ctx, input.Body.Email); err != nil {
-		return err
-	}
-
-	// Check if user with the same email already exists
-	if _, err := s.repo.GetByEmail(ctx, input.Body.Email); err == nil {
+	if err := s.commonRepo.CheckIfUserExistsByEmail(ctx, input.Body.Email); err == nil {
 		return domainErrors.ErrUserAlreadyExists
 	}
 
