@@ -72,8 +72,7 @@ func NewDatabase() *Database {
 			logrus.Fatalf("failed to connect database: %v", err)
 		}
 
-		err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/setup.sql")
-		if err != nil {
+		if err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/setup.sql"); err != nil {
 			logrus.Fatalf("failed to execute setup sql file: %v", err)
 		}
 
@@ -110,15 +109,13 @@ func NewDatabase() *Database {
 			logrus.Fatalf("failed to auto-migrate database: %v", err)
 		}
 
-		err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/indexes.sql")
-		if err != nil {
+		if err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/indexes.sql"); err != nil {
 			logrus.Fatalf("failed to execute indexes sql file: %v", err)
 		}
 		logrus.Print("Indexes created")
 
-		err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/seed.sql")
-		if err != nil {
-			logrus.Fatalf("failed to execute seed sql file: %v", err)
+		if err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/seed.sql"); err != nil {
+				logrus.Fatalf("failed to execute seed sql file: %v", err)
 		}
 
 		dbInstance = &Database{Conn: db}

@@ -140,6 +140,9 @@ type Case struct {
 	PipeSize        float64   `json:"pipe_size"`
 	DesignID        uuid.UUID `gorm:"type:uuid;not null" json:"design_id"`
 	Design          Design    `gorm:"foreignKey:DesignID;constraint:OnDelete:CASCADE;" json:"design"`
+	Holes           []Hole    `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
+	Strings         []String  `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
+	Fluids          []Fluid   `gorm:"constraint:OnDelete:CASCADE;" json:"fluids"`
 }
 
 // Trajectory model with UUID primary key and foreign key.
@@ -193,13 +196,18 @@ type TrajectoryUnit struct {
 // Holes table
 type Hole struct {
 	BaseModel
-	CaseID uuid.UUID `gorm:"type:uuid;not null" json:"case_id"`
+	CaseID          uuid.UUID        `gorm:"type:uuid;not null" json:"case_id"`
+	Case            Case             `gorm:"foreignKey:CaseID;constraint:OnDelete:CASCADE;" json:"case"`
+	HoleCasings     []HoleCasing     `gorm:"constraint:OnDelete:CASCADE;" json:"hole_casings"`
+	OpenHoles       []OpenHole       `gorm:"constraint:OnDelete:CASCADE;" json:"open_holes"`
+	FrictionFactors []FrictionFactor `gorm:"constraint:OnDelete:CASCADE;" json:"friction_factors"`
 }
 
 // HoleCasings table
 type HoleCasing struct {
 	BaseModel
 	HoleID                uuid.UUID `gorm:"type:uuid;not null" json:"hole_id"`
+	Hole                  Hole      `gorm:"foreignKey:HoleID;constraint:OnDelete:CASCADE;" json:"hole"`
 	MDTop                 float64   `gorm:"not null" json:"md_top"`
 	MDBase                float64   `gorm:"not null" json:"md_base"`
 	Length                float64   `gorm:"not null" json:"length"`
@@ -224,6 +232,7 @@ type HoleCasing struct {
 type OpenHole struct {
 	BaseModel
 	HoleID            uuid.UUID `gorm:"type:uuid;not null" json:"hole_id"`
+	Hole              Hole      `gorm:"foreignKey:HoleID;constraint:OnDelete:CASCADE;" json:"hole"`
 	MDTop             float64   `gorm:"not null" json:"md_top"`
 	MDBase            float64   `gorm:"not null" json:"md_base"`
 	Length            float64   `gorm:"not null" json:"length"`
@@ -239,6 +248,7 @@ type OpenHole struct {
 type FrictionFactor struct {
 	BaseModel
 	HoleID                    uuid.UUID `gorm:"type:uuid;not null" json:"hole_id"`
+	Hole                      Hole      `gorm:"foreignKey:HoleID;constraint:OnDelete:CASCADE;" json:"hole"`
 	TrippingInCasing          float64   `gorm:"not null" json:"tripping_in_casing"`
 	TrippingOutCasing         float64   `gorm:"not null" json:"tripping_out_casing"`
 	RotatingOnBottomCasing    float64   `gorm:"not null" json:"rotating_on_bottom_casing"`
@@ -256,31 +266,38 @@ type FrictionFactor struct {
 // Strings table
 type String struct {
 	BaseModel
-	Name   string    `gorm:"type:text;not null" json:"name"`
-	Depth  float64   `gorm:"not null" json:"depth"`
-	CaseID uuid.UUID `gorm:"type:uuid;not null" json:"case_id"`
+	Name     string    `gorm:"type:text;not null" json:"name"`
+	Depth    float64   `gorm:"not null" json:"depth"`
+	CaseID   uuid.UUID `gorm:"type:uuid;not null" json:"case_id"`
+	Case     Case      `gorm:"foreignKey:CaseID;constraint:OnDelete:CASCADE;" json:"case"`
+	Sections []Section `gorm:"constraint:OnDelete:CASCADE;" json:"sections"`
 }
 
 // SectionTypes table
 type SectionType struct {
 	BaseModel
-	Name string `gorm:"type:varchar(255);not null" json:"name"`
+	Name       string             `gorm:"type:varchar(255);not null" json:"name"`
+	Attributes []SectionAttribute `gorm:"constraint:OnDelete:CASCADE;" json:"attributes"`
 }
 
 // SectionAttributes table
 type SectionAttribute struct {
 	BaseModel
-	Name          string    `gorm:"type:varchar(255);not null" json:"name"`
-	Unit          string    `gorm:"type:varchar(50)" json:"unit"`
-	ValueTypeID   uuid.UUID `gorm:"type:uuid;not null" json:"value_type_id"`
-	SectionTypeID uuid.UUID `gorm:"type:uuid;not null" json:"section_type_id"`
+	Name          string           `gorm:"type:varchar(255);not null" json:"name"`
+	Unit          string           `gorm:"type:varchar(50)" json:"unit"`
+	ValueTypeID   uuid.UUID        `gorm:"type:uuid;not null" json:"value_type_id"`
+	ValueType     SectionValueType `gorm:"constraint:OnDelete:CASCADE;" json:"value_type"`
+	SectionTypeID uuid.UUID        `gorm:"type:uuid;not null" json:"section_type_id"`
+	SectionType   SectionType      `gorm:"constraint:OnDelete:CASCADE;" json:"section_type"`
 }
 
 // Sections table
 type Section struct {
 	BaseModel
-	StringID      uuid.UUID `gorm:"type:uuid;not null" json:"string_id"`
-	SectionTypeID uuid.UUID `gorm:"type:uuid;not null" json:"section_type_id"`
+	StringID      uuid.UUID   `gorm:"type:uuid;not null" json:"string_id"`
+	String        String      `gorm:"foreignKey:StringID;constraint:OnDelete:CASCADE;" json:"string"`
+	SectionTypeID uuid.UUID   `gorm:"type:uuid;not null" json:"section_type_id"`
+	SectionType   SectionType `gorm:"foreignKey:SectionTypeID;constraint:OnDelete:CASCADE;" json:"section_type"`
 }
 
 // SectionValues table
