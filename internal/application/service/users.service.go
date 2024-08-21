@@ -36,8 +36,8 @@ func (s *usersService) SignUp(ctx context.Context, input *requests.UserSignUpReq
 	}
 
 	// Check if user with the same email already exists
-	if _, err := s.repo.GetByEmail(ctx, input.Body.Email); err != nil {
-		return err
+	if _, err := s.repo.GetByEmail(ctx, input.Body.Email); err == nil {
+		return domainErrors.ErrUserAlreadyExists
 	}
 
 	// Hash the password
