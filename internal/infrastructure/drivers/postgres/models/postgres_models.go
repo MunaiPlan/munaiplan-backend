@@ -127,22 +127,7 @@ type Design struct {
 	ActualDate   time.Time    `json:"actual_date"`
 	WellboreID   uuid.UUID    `gorm:"type:uuid;not null" json:"wellbore_id"`
 	Wellbore     Wellbore     `gorm:"foreignKey:WellboreID;constraint:OnDelete:CASCADE;" json:"wellbore"`
-	Cases        []Case       `gorm:"constraint:OnDelete:CASCADE;" json:"cases"`
 	Trajectories []Trajectory `gorm:"constraint:OnDelete:CASCADE;" json:"trajectories"`
-}
-
-// Case model with UUID primary key and foreign key.
-type Case struct {
-	BaseModel
-	CaseName        string    `json:"case_name"`
-	CaseDescription string    `json:"case_description"`
-	DrillDepth      float64   `json:"drill_depth"`
-	PipeSize        float64   `json:"pipe_size"`
-	DesignID        uuid.UUID `gorm:"type:uuid;not null" json:"design_id"`
-	Design          Design    `gorm:"foreignKey:DesignID;constraint:OnDelete:CASCADE;" json:"design"`
-	Holes           []Hole    `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
-	Strings         []String  `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
-	Fluids          []Fluid   `gorm:"constraint:OnDelete:CASCADE;" json:"fluids"`
 }
 
 // Trajectory model with UUID primary key and foreign key.
@@ -154,6 +139,21 @@ type Trajectory struct {
 	Design      Design             `gorm:"foreignKey:DesignID;constraint:OnDelete:CASCADE;" json:"design"`
 	Headers     []TrajectoryHeader `gorm:"constraint:OnDelete:CASCADE;" json:"headers"`
 	Units       []TrajectoryUnit   `gorm:"constraint:OnDelete:CASCADE;" json:"units"`
+	Cases       []Case             `gorm:"constraint:OnDelete:CASCADE;" json:"cases"`
+}
+
+// Case model with UUID primary key and foreign key.
+type Case struct {
+	BaseModel
+	CaseName        string     `json:"case_name"`
+	CaseDescription string     `json:"case_description"`
+	DrillDepth      float64    `json:"drill_depth"`
+	PipeSize        float64    `json:"pipe_size"`
+	TrajectoryID    uuid.UUID  `gorm:"type:uuid;not null" json:"trajectory_id"`
+	Trajectory      Trajectory `gorm:"foreignKey:TrajectoryID;constraint:OnDelete:CASCADE;" json:"trajectory"`
+	Holes           []Hole     `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
+	Strings         []String   `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
+	Fluids          []Fluid    `gorm:"constraint:OnDelete:CASCADE;" json:"fluids"`
 }
 
 // TrajectoryHeader model with UUID primary key and foreign key.

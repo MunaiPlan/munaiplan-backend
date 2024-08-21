@@ -8,6 +8,7 @@ type Trajectory struct {
 	Description string              `json:"description"`
 	Headers     []*TrajectoryHeader `json:"headers"`
 	Units       []*TrajectoryUnit   `json:"units"`
+	Cases       []*Case             `json:"cases"`
 	CreatedAt   time.Time           `json:"created_at"`
 }
 

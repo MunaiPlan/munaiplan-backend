@@ -30,5 +30,6 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initWellboresRoutes(v1)
 		h.initDesignsRoutes(v1)
 		h.initTrajectoriesRoutes(v1)
+		h.initCasesRoutes(v1)
 	}
 }

@@ -9,4 +9,7 @@ type Case struct {
 	DrillDepth      float64   `json:"drill_depth"`
 	PipeSize        float64   `json:"pipe_size"`
 	CreatedAt       time.Time `json:"created_at"`
+	Fluids          []*Fluid  `json:"fluids"`
+	Strings         []*String `json:"strings"`
+	Holes           []*Hole   `json:"holes"`
 }

@@ -48,3 +48,7 @@ var (
 	ErrTrajectoryHeaderIdNotFound = errors.New("trajectory header ID was not found")
 	ErrTrajectoryUnitIdNotFound   = errors.New("trajectory unit ID was not found")
 )
+
+var (
+	ErrCaseNotChanged = errors.New("case was not changed")
+)

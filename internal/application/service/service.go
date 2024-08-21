@@ -79,6 +79,14 @@ type Trajectories interface {
 	DeleteTrajectory(ctx context.Context, input *requests.DeleteTrajectoryRequest) error
 }
 
+type Cases interface {
+	GetCases(ctx context.Context, input *requests.GetCasesRequest) ([]*entities.Case, error)
+	GetCaseByID(ctx context.Context, input *requests.GetCaseByIDRequest) (*entities.Case, error)
+	CreateCase(ctx context.Context, input *requests.CreateCaseRequest) error
+	UpdateCase(ctx context.Context, input *requests.UpdateCaseRequest) (*entities.Case, error)
+	DeleteCase(ctx context.Context, input *requests.DeleteCaseRequest) error
+}
+
 type Services struct {
 	// TODO() Implement cache
 	// CatalogCache *catalog.CatalogCache
@@ -91,6 +99,7 @@ type Services struct {
 	Wellbores
 	Designs
 	Trajectories
+	Cases
 }
 
 func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
@@ -103,7 +112,8 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
 		Wells:         NewWellsService(repos.Wells, repos.Common),
 		Wellbores:     NewWellboresService(repos.Wellbores, repos.Common),
 		Designs:       NewDesignsService(repos.Designs, repos.Common),
-		Trajectories: NewTrajectoriesService(repos.Trajectories, repos.Common),
+		Trajectories:  NewTrajectoriesService(repos.Trajectories, repos.Common),
+		Cases:         NewCasesService(repos.Cases, repos.Common),
 		// CatalogCache: deps.CatalogCache,
 	}
 }

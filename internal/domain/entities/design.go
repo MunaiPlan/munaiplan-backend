@@ -9,7 +9,6 @@ type Design struct {
     Stage        string        `json:"stage"`
     Version      string        `json:"version"`
     ActualDate   time.Time     `json:"actual_date"`
-    Cases        []*Case       `json:"cases"`
     Trajectories []*Trajectory `json:"trajectories"`
     CreatedAt    time.Time     `json:"created_at"`
 }

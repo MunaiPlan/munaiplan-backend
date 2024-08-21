@@ -103,3 +103,14 @@ func (r *commonRepository) CheckIfDesignExists(ctx context.Context, designId str
 	}
 	return nil
 }
+
+func (r *commonRepository) CheckIfTrajectoryExists(ctx context.Context, trajectoryId string) error {
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&models.Trajectory{}).Where("id = ?", trajectoryId).Count(&count).Error; err != nil {
+		return fmt.Errorf("error checking trajectory existence: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("trajectory with id %s does not exist", trajectoryId)
+	}
+	return nil
+}
