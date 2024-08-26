@@ -29,6 +29,7 @@ func (h *Handler) initWellboresRoutes(api *gin.RouterGroup) {
 // @Description Retrieves all wellbores
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param wellId query string true "Well ID"
 // @Success 200 {array} entities.Wellbore
 // @Failure 500 {object} helpers.Response
@@ -55,6 +56,7 @@ func (h *Handler) getWellbores(c *gin.Context) {
 // @Description Creates a new wellbore
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param wellId query string true "Well ID"
 // @Param input body requests.CreateWellboreRequest true "Wellbore input"
 // @Success 201 {object} helpers.Response
@@ -86,6 +88,7 @@ func (h *Handler) createWellbore(c *gin.Context) {
 // @Description Updates an existing wellbore
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Wellbore ID"
 // @Param input body requests.UpdateWellboreRequest true "Wellbore input"
 // @Success 200 {object} entities.Wellbore
@@ -118,6 +121,7 @@ func (h *Handler) updateWellbore(c *gin.Context) {
 // @Description Deletes an existing wellbore
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Wellbore ID"
 // @Success 200 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
@@ -144,6 +148,7 @@ func (h *Handler) deleteWellbore(c *gin.Context) {
 // @Description Retrieves a wellbore by its ID
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Wellbore ID"
 // @Success 200 {object} entities.Wellbore
 // @Failure 500 {object} helpers.Response

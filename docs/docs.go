@@ -15,6 +15,264 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/cases": {
+            "get": {
+                "description": "Retrieves all cases",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cases"
+                ],
+                "summary": "Get Cases",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Trajectory ID",
+                        "name": "trajectoryId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Case"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new case",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cases"
+                ],
+                "summary": "Create Case",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Trajectory ID",
+                        "name": "trajectoryId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Case input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateCaseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cases/{id}": {
+            "get": {
+                "description": "Retrieves a case by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cases"
+                ],
+                "summary": "Get Case by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Case ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Case"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing case",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cases"
+                ],
+                "summary": "Update Case",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Case ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Case input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateCaseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Case"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing case",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cases"
+                ],
+                "summary": "Delete Case",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Case ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/companies": {
             "get": {
                 "description": "Retrieves all companies",
@@ -29,6 +287,13 @@ const docTemplate = `{
                 ],
                 "summary": "Get Companies",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Organization ID",
@@ -68,6 +333,13 @@ const docTemplate = `{
                 ],
                 "summary": "Create Company",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Organization ID",
@@ -121,6 +393,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Company",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Company ID",
@@ -188,6 +467,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Company ID",
                         "name": "id",
                         "in": "path",
@@ -232,6 +518,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Organization ID",
                         "name": "organizationId",
                         "in": "query",
@@ -261,6 +554,264 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/datums": {
+            "get": {
+                "description": "Retrieves all datums associated with a specific case ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "datums"
+                ],
+                "summary": "Get Datums",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Case ID",
+                        "name": "caseId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Datum"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new datum",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "datums"
+                ],
+                "summary": "Create Datum",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Case ID",
+                        "name": "caseId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Datum input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateDatumRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/datums/{id}": {
+            "get": {
+                "description": "Retrieves a datum by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "datums"
+                ],
+                "summary": "Get Datum by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Datum ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Datum"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing datum",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "datums"
+                ],
+                "summary": "Update Datum",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Datum ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datum input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateDatumRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Datum"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing datum",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "datums"
+                ],
+                "summary": "Delete Datum",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Datum ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/designs": {
             "get": {
                 "description": "Retrieves all designs",
@@ -275,6 +826,13 @@ const docTemplate = `{
                 ],
                 "summary": "Get Designs",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Wellbore ID",
@@ -314,6 +872,13 @@ const docTemplate = `{
                 ],
                 "summary": "Create Design",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Wellbore ID",
@@ -369,6 +934,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Design ID",
                         "name": "id",
                         "in": "path",
@@ -403,6 +975,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Design",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Design ID",
@@ -456,6 +1035,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Design ID",
                         "name": "id",
                         "in": "path",
@@ -500,6 +1086,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Company ID",
                         "name": "companyId",
                         "in": "query",
@@ -537,6 +1130,13 @@ const docTemplate = `{
                 ],
                 "summary": "Create Field",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Company ID",
@@ -592,6 +1192,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Field ID",
                         "name": "id",
                         "in": "path",
@@ -626,6 +1233,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Field",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Field ID",
@@ -677,6 +1291,13 @@ const docTemplate = `{
                 ],
                 "summary": "Delete Field",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Field ID",
@@ -932,6 +1553,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Field ID",
                         "name": "fieldId",
                         "in": "query",
@@ -969,6 +1597,13 @@ const docTemplate = `{
                 ],
                 "summary": "Create Site",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Field ID",
@@ -1024,6 +1659,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Site ID",
                         "name": "id",
                         "in": "path",
@@ -1058,6 +1700,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Site",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Site ID",
@@ -1111,7 +1760,272 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Site ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/trajectories": {
+            "get": {
+                "description": "Retrieves all trajectories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trajectories"
+                ],
+                "summary": "Get Trajectories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Design ID",
+                        "name": "designId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Trajectory"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new trajectory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trajectories"
+                ],
+                "summary": "Create Trajectory",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Design ID",
+                        "name": "designId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Trajectory input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateTrajectoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/trajectories/{id}": {
+            "get": {
+                "description": "Retrieves a trajectory by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trajectories"
+                ],
+                "summary": "Get Trajectory by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Trajectory ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Trajectory"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing trajectory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trajectories"
+                ],
+                "summary": "Update Trajectory",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Trajectory ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Trajectory input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateTrajectoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Trajectory"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing trajectory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trajectories"
+                ],
+                "summary": "Delete Trajectory",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Trajectory ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1279,6 +2193,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Well ID",
                         "name": "wellId",
                         "in": "query",
@@ -1316,6 +2237,13 @@ const docTemplate = `{
                 ],
                 "summary": "Create Wellbore",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Well ID",
@@ -1371,6 +2299,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Wellbore ID",
                         "name": "id",
                         "in": "path",
@@ -1405,6 +2340,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Wellbore",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Wellbore ID",
@@ -1458,6 +2400,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Wellbore ID",
                         "name": "id",
                         "in": "path",
@@ -1502,6 +2451,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Site ID",
                         "name": "siteId",
                         "in": "query",
@@ -1539,6 +2495,13 @@ const docTemplate = `{
                 ],
                 "summary": "Create Well",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Site ID",
@@ -1594,6 +2557,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Well ID",
                         "name": "id",
                         "in": "path",
@@ -1628,6 +2598,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Well",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Well ID",
@@ -1681,6 +2658,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Well ID",
                         "name": "id",
                         "in": "path",
@@ -1723,14 +2707,38 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "datums": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Datum"
+                    }
+                },
                 "drill_depth": {
                     "type": "number"
+                },
+                "fluids": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Fluid"
+                    }
+                },
+                "holes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Hole"
+                    }
                 },
                 "id": {
                     "type": "string"
                 },
                 "pipe_size": {
                     "type": "number"
+                },
+                "strings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.String"
+                    }
                 }
             }
         },
@@ -1766,17 +2774,49 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.Datum": {
+            "type": "object",
+            "properties": {
+                "air_gap": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "datum_description": {
+                    "type": "string"
+                },
+                "datum_elevation": {
+                    "type": "number"
+                },
+                "ground_elevation": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "system_description": {
+                    "type": "string"
+                },
+                "system_elevation": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "wellhead_elevation": {
+                    "type": "number"
+                }
+            }
+        },
         "entities.Design": {
             "type": "object",
             "properties": {
                 "actual_date": {
                     "type": "string"
-                },
-                "cases": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.Case"
-                    }
                 },
                 "created_at": {
                     "type": "string"
@@ -1827,6 +2867,228 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.Fluid": {
+            "type": "object",
+            "properties": {
+                "base_fluid_id": {
+                    "type": "string"
+                },
+                "case_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "density": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "fluid_base_type_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.FrictionFactor": {
+            "type": "object",
+            "properties": {
+                "back_reaming_casing": {
+                    "type": "number"
+                },
+                "back_reaming_open_hole": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "hole_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "rotating_off_bottom_casing": {
+                    "type": "number"
+                },
+                "rotating_off_bottom_open_hole": {
+                    "type": "number"
+                },
+                "rotating_on_bottom_casing": {
+                    "type": "number"
+                },
+                "rotating_on_bottom_open_hole": {
+                    "type": "number"
+                },
+                "slide_drilling_casing": {
+                    "type": "number"
+                },
+                "slide_drilling_open_hole": {
+                    "type": "number"
+                },
+                "tripping_in_casing": {
+                    "type": "number"
+                },
+                "tripping_in_open_hole": {
+                    "type": "number"
+                },
+                "tripping_out_casing": {
+                    "type": "number"
+                },
+                "tripping_out_open_hole": {
+                    "type": "number"
+                }
+            }
+        },
+        "entities.Hole": {
+            "type": "object",
+            "properties": {
+                "case_id": {
+                    "type": "string"
+                },
+                "casings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.HoleCasing"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "friction_factors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.FrictionFactor"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "open_holes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.OpenHole"
+                    }
+                }
+            }
+        },
+        "entities.HoleCasing": {
+            "type": "object",
+            "properties": {
+                "burst_rating": {
+                    "type": "number"
+                },
+                "collapse_rating": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "drift_id": {
+                    "type": "number"
+                },
+                "effective_hole_diameter": {
+                    "type": "number"
+                },
+                "friction_factor": {
+                    "type": "number"
+                },
+                "grade": {
+                    "type": "string"
+                },
+                "hole_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "id_value": {
+                    "description": "To avoid collision with ID field",
+                    "type": "number"
+                },
+                "length": {
+                    "type": "number"
+                },
+                "linear_capacity": {
+                    "type": "number"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "md_base": {
+                    "type": "number"
+                },
+                "md_top": {
+                    "type": "number"
+                },
+                "min_yield_strength": {
+                    "type": "number"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "od": {
+                    "type": "number"
+                },
+                "shoe_md": {
+                    "type": "number"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "entities.OpenHole": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "effective_diameter": {
+                    "type": "number"
+                },
+                "friction_factor": {
+                    "type": "number"
+                },
+                "hole_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "id_value": {
+                    "description": "To avoid collision with ID field",
+                    "type": "number"
+                },
+                "length": {
+                    "type": "number"
+                },
+                "linear_capacity": {
+                    "type": "number"
+                },
+                "md_base": {
+                    "type": "number"
+                },
+                "md_top": {
+                    "type": "number"
+                },
+                "volume_excess": {
+                    "type": "number"
+                }
+            }
+        },
         "entities.Organization": {
             "type": "object",
             "properties": {
@@ -1859,6 +3121,49 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/entities.User"
                     }
+                }
+            }
+        },
+        "entities.Section": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "section_type_id": {
+                    "type": "string"
+                },
+                "string_id": {
+                    "type": "string"
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.SectionValue"
+                    }
+                }
+            }
+        },
+        "entities.SectionValue": {
+            "type": "object",
+            "properties": {
+                "attribute_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "section_id": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
                 }
             }
         },
@@ -1897,9 +3202,41 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.String": {
+            "type": "object",
+            "properties": {
+                "case_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "depth": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Section"
+                    }
+                }
+            }
+        },
         "entities.Trajectory": {
             "type": "object",
             "properties": {
+                "cases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Case"
+                    }
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2148,6 +3485,34 @@ const docTemplate = `{
                 }
             }
         },
+        "requests.CreateCaseRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateCaseRequestBody"
+                },
+                "trajectoryID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateCaseRequestBody": {
+            "type": "object",
+            "properties": {
+                "case_description": {
+                    "type": "string"
+                },
+                "case_name": {
+                    "type": "string"
+                },
+                "drill_depth": {
+                    "type": "number"
+                },
+                "pipe_size": {
+                    "type": "number"
+                }
+            }
+        },
         "requests.CreateCompanyRequest": {
             "type": "object",
             "properties": {
@@ -2179,6 +3544,49 @@ const docTemplate = `{
                 },
                 "representative": {
                     "type": "string"
+                }
+            }
+        },
+        "requests.CreateDatumRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateDatumRequestBody"
+                },
+                "caseID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateDatumRequestBody": {
+            "type": "object",
+            "properties": {
+                "air_gap": {
+                    "type": "number"
+                },
+                "datum_description": {
+                    "type": "string"
+                },
+                "datum_elevation": {
+                    "type": "number"
+                },
+                "ground_elevation": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "system_description": {
+                    "type": "string"
+                },
+                "system_elevation": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "wellhead_elevation": {
+                    "type": "number"
                 }
             }
         },
@@ -2292,6 +3700,113 @@ const docTemplate = `{
                 }
             }
         },
+        "requests.CreateTrajectoryHeaderRequestBody": {
+            "type": "object",
+            "properties": {
+                "customer": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "job_number": {
+                    "type": "string"
+                },
+                "kelly_bushing_elev": {
+                    "type": "number"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "profile_type": {
+                    "type": "string"
+                },
+                "project": {
+                    "type": "string"
+                },
+                "structure": {
+                    "type": "string"
+                },
+                "wellhead": {
+                    "type": "string"
+                },
+                "your_ref": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateTrajectoryRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateTrajectoryRequestBody"
+                },
+                "designID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateTrajectoryRequestBody": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/requests.CreateTrajectoryHeaderRequestBody"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "units": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/requests.CreateTrajectoryUnitRequestBody"
+                    }
+                }
+            }
+        },
+        "requests.CreateTrajectoryUnitRequestBody": {
+            "type": "object",
+            "properties": {
+                "azim": {
+                    "type": "number"
+                },
+                "dogleg": {
+                    "type": "number"
+                },
+                "global_e_coord": {
+                    "type": "number"
+                },
+                "global_n_coord": {
+                    "type": "number"
+                },
+                "incl": {
+                    "type": "number"
+                },
+                "local_e_coord": {
+                    "type": "number"
+                },
+                "local_n_coord": {
+                    "type": "number"
+                },
+                "md": {
+                    "type": "number"
+                },
+                "sub_sea": {
+                    "type": "number"
+                },
+                "tvd": {
+                    "type": "number"
+                },
+                "vertical_section": {
+                    "type": "number"
+                }
+            }
+        },
         "requests.CreateWellRequest": {
             "type": "object",
             "properties": {
@@ -2390,6 +3905,34 @@ const docTemplate = `{
                 }
             }
         },
+        "requests.UpdateCaseRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UpdateCaseRequestBody"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateCaseRequestBody": {
+            "type": "object",
+            "properties": {
+                "case_description": {
+                    "type": "string"
+                },
+                "case_name": {
+                    "type": "string"
+                },
+                "drill_depth": {
+                    "type": "number"
+                },
+                "pipe_size": {
+                    "type": "number"
+                }
+            }
+        },
         "requests.UpdateCompanyRequest": {
             "type": "object",
             "properties": {
@@ -2424,6 +3967,49 @@ const docTemplate = `{
                 },
                 "representative": {
                     "type": "string"
+                }
+            }
+        },
+        "requests.UpdateDatumRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UpdateDatumRequestBody"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateDatumRequestBody": {
+            "type": "object",
+            "properties": {
+                "air_gap": {
+                    "type": "number"
+                },
+                "datum_description": {
+                    "type": "string"
+                },
+                "datum_elevation": {
+                    "type": "number"
+                },
+                "ground_elevation": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "system_description": {
+                    "type": "string"
+                },
+                "system_elevation": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "wellhead_elevation": {
+                    "type": "number"
                 }
             }
         },
@@ -2537,6 +4123,124 @@ const docTemplate = `{
                 },
                 "state": {
                     "type": "string"
+                }
+            }
+        },
+        "requests.UpdateTrajectoryHeaderRequestBody": {
+            "type": "object",
+            "properties": {
+                "customer": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "job_number": {
+                    "type": "string"
+                },
+                "kelly_bushing_elev": {
+                    "type": "number"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "profile_type": {
+                    "type": "string"
+                },
+                "project": {
+                    "type": "string"
+                },
+                "structure": {
+                    "type": "string"
+                },
+                "wellhead": {
+                    "type": "string"
+                },
+                "your_ref": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateTrajectoryRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "description": "The structure is identical to the create request",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/requests.UpdateTrajectoryRequestBody"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateTrajectoryRequestBody": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/requests.UpdateTrajectoryHeaderRequestBody"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "units": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/requests.UpdateTrajectoryUnitRequestBody"
+                    }
+                }
+            }
+        },
+        "requests.UpdateTrajectoryUnitRequestBody": {
+            "type": "object",
+            "properties": {
+                "azim": {
+                    "type": "number"
+                },
+                "dogleg": {
+                    "type": "number"
+                },
+                "global_e_coord": {
+                    "type": "number"
+                },
+                "global_n_coord": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "incl": {
+                    "type": "number"
+                },
+                "local_e_coord": {
+                    "type": "number"
+                },
+                "local_n_coord": {
+                    "type": "number"
+                },
+                "md": {
+                    "type": "number"
+                },
+                "sub_sea": {
+                    "type": "number"
+                },
+                "tvd": {
+                    "type": "number"
+                },
+                "vertical_section": {
+                    "type": "number"
                 }
             }
         },

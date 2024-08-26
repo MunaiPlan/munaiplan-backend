@@ -29,6 +29,7 @@ func (h *Handler) initSitesRoutes(api *gin.RouterGroup) {
 // @Description Retrieves all sites
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param fieldId query string true "Field ID"
 // @Success 200 {array} entities.Site
 // @Failure 500 {object} helpers.Response
@@ -55,6 +56,7 @@ func (h *Handler) getSites(c *gin.Context) {
 // @Description Creates a new site
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param fieldId query string true "Field ID"
 // @Param input body requests.CreateSiteRequest true "Site input"
 // @Success 201 {object} helpers.Response
@@ -86,6 +88,7 @@ func (h *Handler) createSite(c *gin.Context) {
 // @Description Updates an existing site
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Site ID"
 // @Param input body requests.UpdateSiteRequest true "Site input"
 // @Success 200 {object} entities.Site
@@ -118,6 +121,7 @@ func (h *Handler) updateSite(c *gin.Context) {
 // @Description Deletes an existing site
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Site ID"
 // @Success 200 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
@@ -144,6 +148,7 @@ func (h *Handler) deleteSite(c *gin.Context) {
 // @Description Retrieves a site by its ID
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Site ID"
 // @Success 200 {object} entities.Site
 // @Failure 500 {object} helpers.Response

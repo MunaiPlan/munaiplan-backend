@@ -87,6 +87,14 @@ type Cases interface {
 	DeleteCase(ctx context.Context, input *requests.DeleteCaseRequest) error
 }
 
+type Datums interface {
+	GetDatumsByCaseID(ctx context.Context, input *requests.GetDatumsByCaseIDRequest) ([]*entities.Datum, error)
+	GetDatumByID(ctx context.Context, input *requests.GetDatumByIDRequest) (*entities.Datum, error)
+	CreateDatum(ctx context.Context, input *requests.CreateDatumRequest) error
+	UpdateDatum(ctx context.Context, input *requests.UpdateDatumRequest) (*entities.Datum, error)
+	DeleteDatum(ctx context.Context, input *requests.DeleteDatumRequest) error
+}
+
 type Services struct {
 	// TODO() Implement cache
 	// CatalogCache *catalog.CatalogCache
@@ -100,6 +108,7 @@ type Services struct {
 	Designs
 	Trajectories
 	Cases
+	Datums
 }
 
 func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
@@ -114,6 +123,7 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
 		Designs:       NewDesignsService(repos.Designs, repos.Common),
 		Trajectories:  NewTrajectoriesService(repos.Trajectories, repos.Common),
 		Cases:         NewCasesService(repos.Cases, repos.Common),
+		Datums:        NewDatumsService(repos.Datums, repos.Common),
 		// CatalogCache: deps.CatalogCache,
 	}
 }

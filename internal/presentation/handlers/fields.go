@@ -29,6 +29,7 @@ func (h *Handler) initFieldsRoutes(api *gin.RouterGroup) {
 // @Description Retrieves all fields
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param companyId query string true "Company ID"
 // @Success 200 {array} entities.Field
 // @Failure 500 {object} helpers.Response
@@ -55,6 +56,7 @@ func (h *Handler) getFields(c *gin.Context) {
 // @Description Creates a new field
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param companyId query string true "Company ID"
 // @Param input body requests.CreateFieldRequest true "Field input"
 // @Success 201 {object} helpers.Response
@@ -86,6 +88,7 @@ func (h *Handler) createField(c *gin.Context) {
 // @Description Updates an existing field
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Field ID"
 // @Param input body requests.UpdateFieldRequest true "Field input"
 // @Success 200 {object} entities.Field
@@ -118,6 +121,7 @@ func (h *Handler) updateField(c *gin.Context) {
 // @Description Deletes an existing field
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Field ID"
 // @Success 200 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
@@ -144,6 +148,7 @@ func (h *Handler) deleteField(c *gin.Context) {
 // @Description Retrieves a field by its ID
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Field ID"
 // @Success 200 {object} entities.Field
 // @Failure 500 {object} helpers.Response

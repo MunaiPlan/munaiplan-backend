@@ -29,6 +29,7 @@ func (h *Handler) initDesignsRoutes(api *gin.RouterGroup) {
 // @Description Retrieves all designs
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param wellboreId query string true "Wellbore ID"
 // @Success 200 {array} entities.Design
 // @Failure 500 {object} helpers.Response
@@ -55,6 +56,7 @@ func (h *Handler) getDesigns(c *gin.Context) {
 // @Description Creates a new design
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param wellboreId query string true "Wellbore ID"
 // @Param input body requests.CreateDesignRequest true "Design input"
 // @Success 201 {object} helpers.Response
@@ -86,6 +88,7 @@ func (h *Handler) createDesign(c *gin.Context) {
 // @Description Updates an existing design
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Design ID"
 // @Param input body requests.UpdateDesignRequest true "Design input"
 // @Success 200 {object} entities.Design
@@ -118,6 +121,7 @@ func (h *Handler) updateDesign(c *gin.Context) {
 // @Description Deletes an existing design
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Design ID"
 // @Success 200 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
@@ -144,6 +148,7 @@ func (h *Handler) deleteDesign(c *gin.Context) {
 // @Description Retrieves a design by its ID
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Design ID"
 // @Success 200 {object} entities.Design
 // @Failure 500 {object} helpers.Response

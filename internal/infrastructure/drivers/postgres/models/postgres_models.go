@@ -142,20 +142,6 @@ type Trajectory struct {
 	Cases       []Case             `gorm:"constraint:OnDelete:CASCADE;" json:"cases"`
 }
 
-// Case model with UUID primary key and foreign key.
-type Case struct {
-	BaseModel
-	CaseName        string     `json:"case_name"`
-	CaseDescription string     `json:"case_description"`
-	DrillDepth      float64    `json:"drill_depth"`
-	PipeSize        float64    `json:"pipe_size"`
-	TrajectoryID    uuid.UUID  `gorm:"type:uuid;not null" json:"trajectory_id"`
-	Trajectory      Trajectory `gorm:"foreignKey:TrajectoryID;constraint:OnDelete:CASCADE;" json:"trajectory"`
-	Holes           []Hole     `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
-	Strings         []String   `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
-	Fluids          []Fluid    `gorm:"constraint:OnDelete:CASCADE;" json:"fluids"`
-}
-
 // TrajectoryHeader model with UUID primary key and foreign key.
 type TrajectoryHeader struct {
 	ID               uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
@@ -189,6 +175,37 @@ type TrajectoryUnit struct {
 	Dogleg          float64   `json:"dogleg"`
 	VerticalSection float64   `json:"vertical_section"`
 	CreatedAt       time.Time `gorm:"not null" json:"created_at"`
+}
+
+// Case model with UUID primary key and foreign key.
+type Case struct {
+	BaseModel
+	CaseName        string     `json:"case_name"`
+	CaseDescription string     `json:"case_description"`
+	DrillDepth      float64    `json:"drill_depth"`
+	PipeSize        float64    `json:"pipe_size"`
+	TrajectoryID    uuid.UUID  `gorm:"type:uuid;not null" json:"trajectory_id"`
+	Trajectory      Trajectory `gorm:"foreignKey:TrajectoryID;constraint:OnDelete:CASCADE;" json:"trajectory"`
+	Holes           []Hole     `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
+	Strings         []String   `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
+	Fluids          []Fluid    `gorm:"constraint:OnDelete:CASCADE;" json:"fluids"`
+	Datums          []Datum    `gorm:"constraint:OnDelete:CASCADE;" json:"datums"`
+}
+
+// Datum model with UUID primary key and foreign key.
+type Datum struct {
+	BaseModel
+	Name              string    `gorm:"type:text;not null" json:"name"`
+	SystemDescription string    `gorm:"type:text;not null" json:"system_description"`
+	SystemElevation   float64   `gorm:"not null" json:"system_elevation"`
+	DatumDescription  string    `gorm:"type:text;not null" json:"datum_description"`
+	WellheadElevation float64   `gorm:"type:float" json:"wellhead_elevation"`
+	DatumElevation    float64   `gorm:"type:float" json:"datum_elevation"`
+	AirGap            float64   `gorm:"type:float" json:"air_gap"`
+	GroundElevation   float64   `gorm:"type:float" json:"ground_elevation"`
+	Type              string    `gorm:"type:text" json:"type"`
+	CaseID            uuid.UUID `gorm:"type:uuid;not null" json:"case_id"`
+	Case              Case      `gorm:"foreignKey:CaseID;constraint:OnDelete:CASCADE;" json:"case"`
 }
 
 // Holes table

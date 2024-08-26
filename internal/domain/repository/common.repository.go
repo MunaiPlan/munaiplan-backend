@@ -12,4 +12,5 @@ type CommonRepository interface {
 	CheckIfWellboreExists(ctx context.Context, wellboreId string) error
 	CheckIfDesignExists(ctx context.Context, designId string) error
 	CheckIfTrajectoryExists(ctx context.Context, trajectoryId string) error
+	CheckIfCaseExists(ctx context.Context, caseId string) error
 }

@@ -9,6 +9,7 @@ const (
 	WellboreIdQueryParam     = "wellboreId"
 	DesignIdQueryParam       = "designId"
 	TrajectoryIdQueryParam   = "trajectoryId"
+	CaseIdQueryParam		 = "caseId"
 	NameQueryParam           = "name"
 	IdQueryParam             = "id"
 )

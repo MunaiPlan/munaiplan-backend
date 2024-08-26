@@ -52,3 +52,7 @@ var (
 var (
 	ErrCaseNotChanged = errors.New("case was not changed")
 )
+
+var (
+	ErrDatumNotChanged = errors.New("datum was not changed")
+)

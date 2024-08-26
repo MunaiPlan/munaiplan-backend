@@ -29,6 +29,7 @@ func (h *Handler) initWellsRoutes(api *gin.RouterGroup) {
 // @Description Retrieves all wells
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param siteId query string true "Site ID"
 // @Success 200 {array} entities.Well
 // @Failure 500 {object} helpers.Response
@@ -55,6 +56,7 @@ func (h *Handler) getWells(c *gin.Context) {
 // @Description Creates a new well
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param siteId query string true "Site ID"
 // @Param input body requests.CreateWellRequest true "Well input"
 // @Success 201 {object} helpers.Response
@@ -86,6 +88,7 @@ func (h *Handler) createWell(c *gin.Context) {
 // @Description Updates an existing well
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Well ID"
 // @Param input body requests.UpdateWellRequest true "Well input"
 // @Success 200 {object} entities.Well
@@ -118,6 +121,7 @@ func (h *Handler) updateWell(c *gin.Context) {
 // @Description Deletes an existing well
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Well ID"
 // @Success 200 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
@@ -144,6 +148,7 @@ func (h *Handler) deleteWell(c *gin.Context) {
 // @Description Retrieves a well by its ID
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Well ID"
 // @Success 200 {object} entities.Well
 // @Failure 500 {object} helpers.Response

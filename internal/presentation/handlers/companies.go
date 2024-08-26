@@ -29,6 +29,7 @@ func (h *Handler) initCompaniesRoutes(api *gin.RouterGroup) {
 // @Description Retrieves all companies
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param organizationId query string true "Organization ID"
 // @Success 200 {array} entities.Company
 // @Failure 500 {object} helpers.Response
@@ -55,6 +56,7 @@ func (h *Handler) getCompanies(c *gin.Context) {
 // @Description Creates a new company
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param organizationId query string true "Organization ID"
 // @Param input body requests.CreateCompanyRequest true "Company input"
 // @Success 201 {object} helpers.Response
@@ -85,6 +87,7 @@ func (h *Handler) createCompany(c *gin.Context) {
 // @Description Updates an existing company
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Company ID"
 // @Param organizationId query string true "Organization ID"
 // @Param input body requests.UpdateCompanyRequest true "Company input"
@@ -122,6 +125,7 @@ func (h *Handler) updateCompany(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param organizationId query string true "Organization ID"
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Company ID"
 // @Success 200 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
@@ -152,6 +156,7 @@ func (h *Handler) deleteCompany(c *gin.Context) {
 // @Description Retrieves a company by its name
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param organizationId query string true "Organization ID"
 // @Param companyName path string true "Company Name"
 // @Success 200 {object} entities.Company

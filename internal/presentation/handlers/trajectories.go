@@ -29,6 +29,7 @@ func (h *Handler) initTrajectoriesRoutes(api *gin.RouterGroup) {
 // @Description Retrieves all trajectories
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param designId query string true "Design ID"
 // @Success 200 {array} entities.Trajectory
 // @Failure 500 {object} helpers.Response
@@ -56,6 +57,7 @@ func (h *Handler) getTrajectories(c *gin.Context) {
 // @Description Creates a new trajectory
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param designId query string true "Design ID"
 // @Param input body requests.CreateTrajectoryRequest true "Trajectory input"
 // @Success 201 {object} helpers.Response
@@ -87,6 +89,7 @@ func (h *Handler) createTrajectory(c *gin.Context) {
 // @Description Updates an existing trajectory
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Trajectory ID"
 // @Param input body requests.UpdateTrajectoryRequest true "Trajectory input"
 // @Success 200 {object} entities.Trajectory
@@ -120,6 +123,7 @@ func (h *Handler) updateTrajectory(c *gin.Context) {
 // @Description Deletes an existing trajectory
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Trajectory ID"
 // @Success 200 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
@@ -146,6 +150,7 @@ func (h *Handler) deleteTrajectory(c *gin.Context) {
 // @Description Retrieves a trajectory by its ID
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Trajectory ID"
 // @Success 200 {object} entities.Trajectory
 // @Failure 500 {object} helpers.Response

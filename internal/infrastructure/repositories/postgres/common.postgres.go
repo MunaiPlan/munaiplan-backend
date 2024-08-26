@@ -114,3 +114,14 @@ func (r *commonRepository) CheckIfTrajectoryExists(ctx context.Context, trajecto
 	}
 	return nil
 }
+
+func (r *commonRepository) CheckIfCaseExists(ctx context.Context, caseId string) error {
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&models.Case{}).Where("id = ?", caseId).Count(&count).Error; err != nil {
+		return fmt.Errorf("error checking case existence: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("case with id %s does not exist", caseId)
+	}
+	return nil
+}
