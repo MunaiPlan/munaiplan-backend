@@ -110,6 +110,9 @@ func (r *organizationsRepository) DeleteOrganization(ctx context.Context, id str
 		if query.Error != nil {
 			return query.Error
 		}
+		if query.RowsAffected == 0 {
+			return gorm.ErrRecordNotFound
+		}
 
 		return nil
 	})

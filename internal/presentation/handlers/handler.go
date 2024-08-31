@@ -32,5 +32,6 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initTrajectoriesRoutes(v1)
 		h.initCasesRoutes(v1)
 		h.initDatumRoutes(v1)
+		h.initHolesRoutes(v1)
 	}
 }

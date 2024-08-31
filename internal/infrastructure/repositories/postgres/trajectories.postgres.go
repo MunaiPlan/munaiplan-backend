@@ -19,6 +19,7 @@ func NewTrajectoriesRepository(db *gorm.DB) *trajectoriesRepository {
 	return &trajectoriesRepository{db: db}
 }
 
+// CreateTrajectory creates a new trajectory in the database.
 func (r *trajectoriesRepository) CreateTrajectory(ctx context.Context, designID string, trajectory *entities.Trajectory) error {
 	gormTrajectory := r.toGormTrajectory(trajectory)
 	var err error
@@ -36,8 +37,7 @@ func (r *trajectoriesRepository) CreateTrajectory(ctx context.Context, designID 
 	return err
 }
 
-
-
+// GetTrajectoryByID retrieves a trajectory by its ID from the database.
 func (r *trajectoriesRepository) GetTrajectoryByID(ctx context.Context, id string) (*entities.Trajectory, error) {
 	var trajectory models.Trajectory
 	var res entities.Trajectory
@@ -65,6 +65,7 @@ func (r *trajectoriesRepository) GetTrajectories(ctx context.Context, designID s
 	return res, nil
 }
 
+// UpdateTrajectory updates a trajectory in the database.
 func (r *trajectoriesRepository) UpdateTrajectory(ctx context.Context, trajectory *entities.Trajectory) (*entities.Trajectory, error) {
 	var updatedTrajectory models.Trajectory
 
@@ -152,8 +153,7 @@ func (r *trajectoriesRepository) UpdateTrajectory(ctx context.Context, trajector
 	return &res, nil
 }
 
-
-
+// DeleteTrajectory deletes a trajectory from the database.
 func (r *trajectoriesRepository) DeleteTrajectory(ctx context.Context, id string) error {
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		result := tx.Where("id = ?", id).Delete(&models.Trajectory{})
@@ -169,7 +169,6 @@ func (r *trajectoriesRepository) DeleteTrajectory(ctx context.Context, id string
 
 	return err
 }
-
 
 // toDomainTrajectory maps the GORM Trajectory model to the domain Trajectory entity.
 func (r *trajectoriesRepository) toDomainTrajectory(trajectoryModel *models.Trajectory) entities.Trajectory {

@@ -18,6 +18,7 @@ type Repository struct {
 	Trajectories  TrajectoriesRepository
 	Cases         CasesRepository
 	Datums        DatumsRepository
+	Holes         HolesRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repository {
@@ -34,5 +35,6 @@ func NewRepositories(db *gorm.DB) *Repository {
 		Trajectories:  postgres.NewTrajectoriesRepository(db),
 		Cases:         postgres.NewCasesRepository(db),
 		Datums:        postgres.NewDatumsRepository(db),
+		Holes:         postgres.NewHolesRepository(db),
 	}
 }

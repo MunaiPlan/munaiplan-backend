@@ -95,6 +95,14 @@ type Datums interface {
 	DeleteDatum(ctx context.Context, input *requests.DeleteDatumRequest) error
 }
 
+type Holes interface {
+	GetHoles(ctx context.Context, input *requests.GetHolesRequest) ([]*entities.Hole, error)
+	GetHoleByID(ctx context.Context, input *requests.GetHoleByIDRequest) (*entities.Hole, error)
+	CreateHole(ctx context.Context, input *requests.CreateHoleRequest) error
+	UpdateHole(ctx context.Context, input *requests.UpdateHoleRequest) (*entities.Hole, error)
+	DeleteHole(ctx context.Context, input *requests.DeleteHoleRequest) error
+}
+
 type Services struct {
 	// TODO() Implement cache
 	// CatalogCache *catalog.CatalogCache
@@ -109,6 +117,7 @@ type Services struct {
 	Trajectories
 	Cases
 	Datums
+	Holes
 }
 
 func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
@@ -124,6 +133,7 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
 		Trajectories:  NewTrajectoriesService(repos.Trajectories, repos.Common),
 		Cases:         NewCasesService(repos.Cases, repos.Common),
 		Datums:        NewDatumsService(repos.Datums, repos.Common),
+		Holes:         NewHolesService(repos.Holes, repos.Common),
 		// CatalogCache: deps.CatalogCache,
 	}
 }

@@ -96,6 +96,9 @@ func (r *fieldsRepository) DeleteField(ctx context.Context, id string) error {
 	if result.Error != nil {
 		return result.Error
 	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
 	return nil
 }
 

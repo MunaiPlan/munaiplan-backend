@@ -4,7 +4,7 @@ package entities
 
 // Куст (под месторождением)
 type Site struct {
-	ID      string  `json:"field_id"`
+	ID      string  `json:"id"`
 	Name    string  `json:"name"`
 	Area    float64 `json:"area"`
 	Block   string  `json:"block"`
