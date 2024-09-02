@@ -28,6 +28,14 @@ func (s *companiesService) GetCompanies(ctx context.Context, input *requests.Get
 	return s.repo.GetCompanies(ctx, input.OrganizationID)
 }
 
+func (s *companiesService) GetCompaniesWithComponents(ctx context.Context, input *requests.GetCompaniesRequest) ([]*entities.Company, error) {
+	if err := s.commonRepo.CheckIfOrganizationExists(ctx, input.OrganizationID); err != nil {
+		return nil, err
+	}
+
+	return s.repo.GetCompaniesWithComponents(ctx, input.OrganizationID)
+}
+
 func (s *companiesService) GetCompanyByID(ctx context.Context, input *requests.GetCompanyByIDRequest) (*entities.Company, error) {
 	if err := s.commonRepo.CheckIfOrganizationExists(ctx, input.OrganizationID); err != nil {
 		return nil, err

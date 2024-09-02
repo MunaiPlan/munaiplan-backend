@@ -25,6 +25,7 @@ type Organizations interface {
 
 type Companies interface {
 	GetCompanies(ctx context.Context, input *requests.GetCompaniesRequest) ([]*entities.Company, error)
+	GetCompaniesWithComponents(ctx context.Context, input *requests.GetCompaniesRequest) ([]*entities.Company, error)
 	GetCompanyByID(ctx context.Context, input *requests.GetCompanyByIDRequest) (*entities.Company, error)
 	CreateCompany(ctx context.Context, input *requests.CreateCompanyRequest) error
 	UpdateCompany(ctx context.Context, input *requests.UpdateCompanyRequest) (*entities.Company, error)
@@ -87,14 +88,6 @@ type Cases interface {
 	DeleteCase(ctx context.Context, input *requests.DeleteCaseRequest) error
 }
 
-type Datums interface {
-	GetDatumsByCaseID(ctx context.Context, input *requests.GetDatumsByCaseIDRequest) ([]*entities.Datum, error)
-	GetDatumByID(ctx context.Context, input *requests.GetDatumByIDRequest) (*entities.Datum, error)
-	CreateDatum(ctx context.Context, input *requests.CreateDatumRequest) error
-	UpdateDatum(ctx context.Context, input *requests.UpdateDatumRequest) (*entities.Datum, error)
-	DeleteDatum(ctx context.Context, input *requests.DeleteDatumRequest) error
-}
-
 type Holes interface {
 	GetHoles(ctx context.Context, input *requests.GetHolesRequest) ([]*entities.Hole, error)
 	GetHoleByID(ctx context.Context, input *requests.GetHoleByIDRequest) (*entities.Hole, error)
@@ -116,7 +109,6 @@ type Services struct {
 	Designs
 	Trajectories
 	Cases
-	Datums
 	Holes
 }
 
@@ -132,7 +124,6 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
 		Designs:       NewDesignsService(repos.Designs, repos.Common),
 		Trajectories:  NewTrajectoriesService(repos.Trajectories, repos.Common),
 		Cases:         NewCasesService(repos.Cases, repos.Common),
-		Datums:        NewDatumsService(repos.Datums, repos.Common),
 		Holes:         NewHolesService(repos.Holes, repos.Common),
 		// CatalogCache: deps.CatalogCache,
 	}

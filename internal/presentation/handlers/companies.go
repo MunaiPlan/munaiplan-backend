@@ -16,6 +16,7 @@ func (h *Handler) initCompaniesRoutes(api *gin.RouterGroup) {
 	companies := api.Group("/companies", h.authMiddleware.UserIdentity)
 	{
 		companies.GET("/", h.getCompanies)
+		companies.GET("/all", h.getCompaniesWithComponents)
 		companies.POST("/", h.createCompany)
 		companies.GET("/:id", h.getCompanyByID)
 		companies.PUT("/:id", h.updateCompany)
@@ -37,11 +38,37 @@ func (h *Handler) initCompaniesRoutes(api *gin.RouterGroup) {
 func (h *Handler) getCompanies(c *gin.Context) {
 	var inp requests.GetCompaniesRequest
 	var err error
-	inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdCtx)
-	if err != nil {
+	if inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdCtx); err != nil {
 		return
 	}
 	companies, err := h.services.Companies.GetCompanies(c.Request.Context(), &inp)
+	if err != nil {
+		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, companies)
+}
+
+// getCompaniesWithComponents retrieves companies along with their components up to the cases level.
+// @Summary Get Companies with Components
+// @Description Retrieves companies within the specified organization, including all associated fields, sites, wells, wellbores, designs, trajectories, and cases (with metadata).
+// @Tags companies
+// @Accept json
+// @Produce json
+// @Param OrganizationID path string true "Organization ID"
+// @Success 200 {array} entities.Company "List of companies with components"
+// @Failure 400 {object} helpers.Response "Invalid Organization ID"
+// @Failure 500 {object} helpers.Response "Internal Server Error"
+// @Router /api/v1/companies/with-components/{OrganizationID} [get]
+// @Security Bearer
+func (h *Handler) getCompaniesWithComponents(c *gin.Context) {
+	var inp requests.GetCompaniesRequest
+	var err error
+	if inp.OrganizationID, err = h.validateContextIDKey(c, values.OrganizationIdCtx); err != nil {
+		return
+	}
+	companies, err := h.services.Companies.GetCompaniesWithComponents(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

@@ -20,7 +20,7 @@ func NewFieldsRepository(db *gorm.DB) *fieldsRepository {
 }
 
 func (r *fieldsRepository) CreateField(ctx context.Context, companyID string, field *entities.Field) error {
-	gormField := r.toGormField(field)
+	gormField := toGormField(field)
 	companyId, err := uuid.Parse(companyID)
 	if err != nil {
 		return err
@@ -37,14 +37,13 @@ func (r *fieldsRepository) CreateField(ctx context.Context, companyID string, fi
 
 func (r *fieldsRepository) GetFieldByID(ctx context.Context, id string) (*entities.Field, error) {
 	var field models.Field
-	var res entities.Field
 	result := r.db.WithContext(ctx).Where("id = ?", id).First(&field)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	res = r.toDomainField(&field)
-	return &res, nil
+	res := toDomainField(&field)
+	return res, nil
 }
 
 func (r *fieldsRepository) GetFields(ctx context.Context, companyID string) ([]*entities.Field, error) {
@@ -56,14 +55,14 @@ func (r *fieldsRepository) GetFields(ctx context.Context, companyID string) ([]*
 	}
 
 	for _, field := range fields {
-		temp := r.toDomainField(field)
-		res = append(res, &temp)
+		temp := toDomainField(field)
+		res = append(res, temp)
 	}
 	return res, nil
 }
 
 func (r *fieldsRepository) UpdateField(ctx context.Context, field *entities.Field) (*entities.Field, error) {
-	gormField := r.toGormField(field)
+	gormField := toGormField(field)
 	oldField := models.Field{}
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		query := tx.WithContext(ctx).Where("id = ?", field.ID).First(&oldField)
@@ -86,9 +85,9 @@ func (r *fieldsRepository) UpdateField(ctx context.Context, field *entities.Fiel
 		return nil, err
 	}
 
-	res := r.toDomainField(&oldField)
+	res := toDomainField(&oldField)
 
-	return &res, nil
+	return res, nil
 }
 
 func (r *fieldsRepository) DeleteField(ctx context.Context, id string) error {
@@ -100,27 +99,4 @@ func (r *fieldsRepository) DeleteField(ctx context.Context, id string) error {
 		return gorm.ErrRecordNotFound
 	}
 	return nil
-}
-
-// toDomainField maps the GORM Field model to the domain Field entity.
-func (r *fieldsRepository) toDomainField(fieldModel *models.Field) entities.Field {
-	return entities.Field{
-		ID:              fieldModel.ID.String(),
-		Name:            fieldModel.Name,
-		Description:     fieldModel.Description,
-		ReductionLevel:  fieldModel.ReductionLevel,
-		ActiveFieldUnit: fieldModel.ActiveFieldUnit,
-		// Sites mapping can be added if needed
-	}
-}
-
-// toGormField maps the domain Field entity to the GORM Field model.
-func (r *fieldsRepository) toGormField(field *entities.Field) *models.Field {
-	return &models.Field{
-		Name:            field.Name,
-		Description:     field.Description,
-		ReductionLevel:  field.ReductionLevel,
-		ActiveFieldUnit: field.ActiveFieldUnit,
-		// Sites mapping can be added if needed
-	}
 }

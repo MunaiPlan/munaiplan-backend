@@ -19,7 +19,7 @@ func NewOrganizationsRepository(db *gorm.DB) *organizationsRepository {
 }
 
 func (r *organizationsRepository) CreateOrganization(ctx context.Context, organization *entities.Organization) error {
-	gormOrganization := r.toGormOrganization(organization)
+	gormOrganization := toGormOrganization(organization)
 	result := r.db.Where("email = ? AND deleted_at IS NULL", organization.Email).FirstOrCreate(&gormOrganization)
 
 	if result.Error != nil {
@@ -39,8 +39,8 @@ func (r *organizationsRepository) GetOrganizationByID(ctx context.Context, id st
 		return nil, query.Error
 	}
 
-	res := r.toDomainOrganization(&organization)
-	return &res, nil
+	res := toDomainOrganization(&organization)
+	return res, nil
 }
 
 func (r *organizationsRepository) GetOrganizationByName(ctx context.Context, name string) (*entities.Organization, error) {
@@ -50,8 +50,8 @@ func (r *organizationsRepository) GetOrganizationByName(ctx context.Context, nam
 		return nil, query.Error
 	}
 
-	res := r.toDomainOrganization(&organization)
-	return &res, nil
+	res := toDomainOrganization(&organization)
+	return res, nil
 }
 
 func (r *organizationsRepository) GetOrganizations(ctx context.Context) ([]*entities.Organization, error) {
@@ -63,14 +63,14 @@ func (r *organizationsRepository) GetOrganizations(ctx context.Context) ([]*enti
 	}
 
 	for _, organization := range organizations {
-		temp := r.toDomainOrganization(organization)
-		res = append(res, &temp)
+		temp := toDomainOrganization(organization)
+		res = append(res, temp)
 	}
 	return res, nil
 }
 
 func (r *organizationsRepository) UpdateOrganization(ctx context.Context, organization *entities.Organization) (*entities.Organization, error) {
-    gormOrg := r.toGormOrganization(organization)
+    gormOrg := toGormOrganization(organization)
 
     err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
         var oldOrg models.Organization
@@ -116,23 +116,4 @@ func (r *organizationsRepository) DeleteOrganization(ctx context.Context, id str
 
 		return nil
 	})
-}
-
-func (r *organizationsRepository) toGormOrganization(organization *entities.Organization) *models.Organization {
-	return &models.Organization{
-		Name:    organization.Name,
-		Email:   organization.Email,
-		Phone:   organization.Phone,
-		Address: organization.Address,
-	}
-}
-
-func (r *organizationsRepository) toDomainOrganization(organization *models.Organization) entities.Organization {
-	return entities.Organization{
-		ID:      organization.ID.String(),
-		Name:    organization.Name,
-		Email:   organization.Email,
-		Phone:   organization.Phone,
-		Address: organization.Address,
-	}
 }

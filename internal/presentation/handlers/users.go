@@ -36,7 +36,8 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 func (h *Handler) signUp(c *gin.Context) {
 	var inp requests.UserSignUpRequest
 	var err error
-	if inp.OrganizationID, err = h.validateQueryIDParam(c, values.OrganizationIdQueryParam); err != nil {		return
+	if inp.OrganizationID, err = h.validateQueryIDParam(c, values.OrganizationIdQueryParam); err != nil {		
+		return
 	}
 
 	if err := c.BindJSON(&inp.Body); err != nil {

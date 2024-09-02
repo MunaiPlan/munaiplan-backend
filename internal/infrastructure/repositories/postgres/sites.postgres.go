@@ -20,7 +20,7 @@ func NewSitesRepository(db *gorm.DB) *sitesRepository {
 }
 
 func (r *sitesRepository) CreateSite(ctx context.Context, fieldID string, site *entities.Site) error {
-	gormSite := r.toGormSite(site)
+	gormSite := toGormSite(site)
 	fieldId, err := uuid.Parse(fieldID)
 	if err != nil {
 		return err
@@ -37,14 +37,13 @@ func (r *sitesRepository) CreateSite(ctx context.Context, fieldID string, site *
 
 func (r *sitesRepository) GetSiteByID(ctx context.Context, id string) (*entities.Site, error) {
 	var site models.Site
-	var res entities.Site
 	result := r.db.WithContext(ctx).Where("id = ?", id).First(&site)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	res = r.toDomainSite(&site)
-	return &res, nil
+	res := toDomainSite(&site)
+	return res, nil
 }
 
 func (r *sitesRepository) GetSites(ctx context.Context, fieldID string) ([]*entities.Site, error) {
@@ -56,14 +55,14 @@ func (r *sitesRepository) GetSites(ctx context.Context, fieldID string) ([]*enti
 	}
 
 	for _, site := range sites {
-		temp := r.toDomainSite(site)
-		res = append(res, &temp)
+		temp := toDomainSite(site)
+		res = append(res, temp)
 	}
 	return res, nil
 }
 
 func (r *sitesRepository) UpdateSite(ctx context.Context, site *entities.Site) (*entities.Site, error) {
-	gormSite := r.toGormSite(site)
+	gormSite := toGormSite(site)
 	oldSite := models.Site{}
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		query := tx.WithContext(ctx).Where("id = ?", site.ID).First(&oldSite)
@@ -86,9 +85,9 @@ func (r *sitesRepository) UpdateSite(ctx context.Context, site *entities.Site) (
 		return nil, err
 	}
 
-	res := r.toDomainSite(&oldSite)
+	res := toDomainSite(&oldSite)
 
-	return &res, nil
+	return res, nil
 }
 
 func (r *sitesRepository) DeleteSite(ctx context.Context, id string) error {
@@ -100,33 +99,4 @@ func (r *sitesRepository) DeleteSite(ctx context.Context, id string) error {
 		return gorm.ErrRecordNotFound
 	}
 	return nil
-}
-
-// toDomainSite maps the GORM Site model to the domain Site entity.
-func (r *sitesRepository) toDomainSite(siteModel *models.Site) entities.Site {
-	return entities.Site{
-		ID:      siteModel.ID.String(),
-		Name:    siteModel.Name,
-		Area:    siteModel.Area,
-		Block:   siteModel.Block,
-		Azimuth: siteModel.Azimuth,
-		Country: siteModel.Country,
-		State:   siteModel.State,
-		Region:  siteModel.Region,
-		// Wells mapping can be added if needed
-	}
-}
-
-// toGormSite maps the domain Site entity to the GORM Site model.
-func (r *sitesRepository) toGormSite(site *entities.Site) *models.Site {
-	return &models.Site{
-		Name:    site.Name,
-		Area:    site.Area,
-		Block:   site.Block,
-		Azimuth: site.Azimuth,
-		Country: site.Country,
-		State:   site.State,
-		Region:  site.Region,
-		// Wells mapping can be added if needed
-	}
 }

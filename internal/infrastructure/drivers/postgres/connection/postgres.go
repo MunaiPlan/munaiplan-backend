@@ -90,7 +90,6 @@ func NewDatabase() *Database {
 			&models.TrajectoryHeader{},
 			&models.TrajectoryUnit{},
 			&models.Case{},
-			&models.Datum{},
 			&models.Hole{},
 			&models.String{},
 			&models.SectionType{},

@@ -12,5 +12,4 @@ type Case struct {
 	Fluids          []*Fluid  `json:"fluids"`
 	Strings         []*String `json:"strings"`
 	Holes           []*Hole   `json:"holes"`
-	Datums          []*Datum  `json:"datums"`
 }

@@ -20,7 +20,7 @@ func NewHolesRepository(db *gorm.DB) *holesRepository {
 }
 
 func (r *holesRepository) CreateHole(ctx context.Context, caseID string, hole *entities.Hole) error {
-	gormHole := r.toGormHole(hole)
+	gormHole := toGormHole(hole)
 	caseId, err := uuid.Parse(caseID)
 	if err != nil {
 		return err
@@ -43,7 +43,7 @@ func (r *holesRepository) GetHoleByID(ctx context.Context, id string) (*entities
 		return nil, result.Error
 	}
 
-	res = r.toDomainHole(&hole)
+	res = toDomainHole(&hole)
 	return &res, nil
 }
 
@@ -56,14 +56,14 @@ func (r *holesRepository) GetHoles(ctx context.Context, caseID string) ([]*entit
 	}
 
 	for _, hole := range holes {
-		temp := r.toDomainHole(hole)
+		temp := toDomainHole(hole)
 		res = append(res, &temp)
 	}
 	return res, nil
 }
 
 func (r *holesRepository) UpdateHole(ctx context.Context, hole *entities.Hole) (*entities.Hole, error) {
-	gormHole := r.toGormHole(hole)
+	gormHole := toGormHole(hole)
 	oldHole := models.Hole{}
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		query := tx.WithContext(ctx).Where("id = ?", hole.ID).First(&oldHole)
@@ -86,7 +86,7 @@ func (r *holesRepository) UpdateHole(ctx context.Context, hole *entities.Hole) (
 		return nil, err
 	}
 
-	res := r.toDomainHole(&oldHole)
+	res := toDomainHole(&oldHole)
 
 	return &res, nil
 }
@@ -100,97 +100,4 @@ func (r *holesRepository) DeleteHole(ctx context.Context, id string) error {
 		return gorm.ErrRecordNotFound
 	}
 	return nil
-}
-
-// toDomainHole maps the GORM Hole model to the domain Hole entity.
-func (r *holesRepository) toDomainHole(holeModel *models.Hole) entities.Hole {
-	return entities.Hole{
-		ID:                        holeModel.ID.String(),
-		CaseID:                    holeModel.CaseID.String(),
-		CreatedAt:                 holeModel.CreatedAt,
-		MDTop:                     holeModel.MDTop,
-		MDBase:                    holeModel.MDBase,
-		Length:                    holeModel.Length,
-		ShoeMD:                    holeModel.ShoeMD,
-		OD:                        holeModel.OD,
-		CaisingInternalDiameter:   holeModel.CaisingInternalDiameter,
-		DriftInternalDiameter:     holeModel.DriftInternalDiameter,
-		EffectiveHoleDiameter:     holeModel.EffectiveHoleDiameter,
-		Weight:                    holeModel.Weight,
-		Grade:                     holeModel.Grade,
-		MinYieldStrength:          holeModel.MinYieldStrength,
-		BurstRating:               holeModel.BurstRating,
-		CollapseRating:            holeModel.CollapseRating,
-		FrictionFactorCasing:      holeModel.FrictionFactorCasing,
-		LinearCapacityCasing:      holeModel.LinearCapacityCasing,
-		DescriptionCasing:         holeModel.DescriptionCasing,
-		ManufacturerCasing:        holeModel.ManufacturerCasing,
-		ModelCasing:               holeModel.ModelCasing,
-		OpenHoleMDTop:             holeModel.OpenHoleMDTop,
-		OpenHoleMDBase:            holeModel.OpenHoleMDBase,
-		OpenHoleLength:            holeModel.OpenHoleLength,
-		OpenHoleInternalDiameter:  holeModel.OpenHoleInternalDiameter,
-		EffectiveDiameter:         holeModel.EffectiveDiameter,
-		FrictionFactorOpenHole:    holeModel.FrictionFactorOpenHole,
-		LinearCapacityOpenHole:    holeModel.LinearCapacityOpenHole,
-		VolumeExcess:              holeModel.VolumeExcess,
-		DescriptionOpenHole:       holeModel.DescriptionOpenHole,
-		TrippingInCasing:          holeModel.TrippingInCasing,
-		TrippingOutCasing:         holeModel.TrippingOutCasing,
-		RotatingOnBottomCasing:    holeModel.RotatingOnBottomCasing,
-		SlideDrillingCasing:       holeModel.SlideDrillingCasing,
-		BackReamingCasing:         holeModel.BackReamingCasing,
-		RotatingOffBottomCasing:   holeModel.RotatingOffBottomCasing,
-		TrippingInOpenHole:        holeModel.TrippingInOpenHole,
-		TrippingOutOpenHole:       holeModel.TrippingOutOpenHole,
-		RotatingOnBottomOpenHole:  holeModel.RotatingOnBottomOpenHole,
-		SlideDrillingOpenHole:     holeModel.SlideDrillingOpenHole,
-		BackReamingOpenHole:       holeModel.BackReamingOpenHole,
-		RotatingOffBottomOpenHole: holeModel.RotatingOffBottomOpenHole,
-	}
-}
-
-// toGormHole maps the domain Hole entity to the GORM Hole model.
-func (r *holesRepository) toGormHole(hole *entities.Hole) *models.Hole {
-	return &models.Hole{
-		MDTop:                     hole.MDTop,
-		MDBase:                    hole.MDBase,
-		Length:                    hole.Length,
-		ShoeMD:                    hole.ShoeMD,
-		OD:                        hole.OD,
-		CaisingInternalDiameter:   hole.CaisingInternalDiameter,
-		DriftInternalDiameter:     hole.DriftInternalDiameter,
-		EffectiveHoleDiameter:     hole.EffectiveHoleDiameter,
-		Weight:                    hole.Weight,
-		Grade:                     hole.Grade,
-		MinYieldStrength:          hole.MinYieldStrength,
-		BurstRating:               hole.BurstRating,
-		CollapseRating:            hole.CollapseRating,
-		FrictionFactorCasing:      hole.FrictionFactorCasing,
-		LinearCapacityCasing:      hole.LinearCapacityCasing,
-		DescriptionCasing:         hole.DescriptionCasing,
-		ManufacturerCasing:        hole.ManufacturerCasing,
-		ModelCasing:               hole.ModelCasing,
-		OpenHoleMDTop:             hole.OpenHoleMDTop,
-		OpenHoleMDBase:            hole.OpenHoleMDBase,
-		OpenHoleLength:            hole.OpenHoleLength,
-		OpenHoleInternalDiameter:  hole.OpenHoleInternalDiameter,
-		EffectiveDiameter:         hole.EffectiveDiameter,
-		FrictionFactorOpenHole:    hole.FrictionFactorOpenHole,
-		LinearCapacityOpenHole:    hole.LinearCapacityOpenHole,
-		VolumeExcess:              hole.VolumeExcess,
-		DescriptionOpenHole:       hole.DescriptionOpenHole,
-		TrippingInCasing:          hole.TrippingInCasing,
-		TrippingOutCasing:         hole.TrippingOutCasing,
-		RotatingOnBottomCasing:    hole.RotatingOnBottomCasing,
-		SlideDrillingCasing:       hole.SlideDrillingCasing,
-		BackReamingCasing:         hole.BackReamingCasing,
-		RotatingOffBottomCasing:   hole.RotatingOffBottomCasing,
-		TrippingInOpenHole:        hole.TrippingInOpenHole,
-		TrippingOutOpenHole:       hole.TrippingOutOpenHole,
-		RotatingOnBottomOpenHole:  hole.RotatingOnBottomOpenHole,
-		SlideDrillingOpenHole:     hole.SlideDrillingOpenHole,
-		BackReamingOpenHole:       hole.BackReamingOpenHole,
-		RotatingOffBottomOpenHole: hole.RotatingOffBottomOpenHole,
-	}
 }

@@ -7,10 +7,6 @@ definitions:
         type: string
       created_at:
         type: string
-      datums:
-        items:
-          $ref: '#/definitions/entities.Datum'
-        type: array
       drill_depth:
         type: number
       fluids:
@@ -50,31 +46,6 @@ definitions:
         type: string
       representative:
         type: string
-    type: object
-  entities.Datum:
-    properties:
-      air_gap:
-        type: number
-      created_at:
-        type: string
-      datum_description:
-        type: string
-      datum_elevation:
-        type: number
-      ground_elevation:
-        type: number
-      id:
-        type: string
-      name:
-        type: string
-      system_description:
-        type: string
-      system_elevation:
-        type: number
-      type:
-        type: string
-      wellhead_elevation:
-        type: number
     type: object
   entities.Design:
     properties:
@@ -131,18 +102,66 @@ definitions:
       name:
         type: string
     type: object
-  entities.FrictionFactor:
+  entities.Hole:
     properties:
       back_reaming_casing:
         type: number
       back_reaming_open_hole:
         type: number
+      burst_rating:
+        type: number
+      caising_internal_diameter:
+        type: number
+      case_id:
+        type: string
+      collapse_rating:
+        type: number
       created_at:
         type: string
-      hole_id:
+      description_casing:
+        type: string
+      description_open_hole:
+        type: string
+      drift_internal_diameter:
+        type: number
+      effective_diameter:
+        type: number
+      effective_hole_diameter:
+        type: number
+      friction_factor_casing:
+        type: number
+      friction_factor_open_hole:
+        type: number
+      grade:
         type: string
       id:
         type: string
+      length:
+        type: number
+      linear_capacity_casing:
+        type: number
+      linear_capacity_open_hole:
+        type: number
+      manufacturer_casing:
+        type: string
+      md_base:
+        type: number
+      md_top:
+        type: number
+      min_yield_strength:
+        type: number
+      model_casing:
+        type: string
+      od:
+        type: number
+      open_hole_internal_diameter:
+        type: number
+      open_hole_length:
+        type: number
+      open_hole_md_base:
+        type: number
+      open_hole_md_top:
+        type: number
       rotating_off_bottom_casing:
         type: number
       rotating_off_bottom_open_hole:
@@ -150,6 +169,8 @@ definitions:
       rotating_on_bottom_casing:
         type: number
       rotating_on_bottom_open_hole:
+        type: number
+      shoe_md:
         type: number
       slide_drilling_casing:
         type: number
@@ -163,100 +184,9 @@ definitions:
         type: number
       tripping_out_open_hole:
         type: number
-    type: object
-  entities.Hole:
-    properties:
-      case_id:
-        type: string
-      casings:
-        items:
-          $ref: '#/definitions/entities.HoleCasing'
-        type: array
-      created_at:
-        type: string
-      friction_factors:
-        items:
-          $ref: '#/definitions/entities.FrictionFactor'
-        type: array
-      id:
-        type: string
-      open_holes:
-        items:
-          $ref: '#/definitions/entities.OpenHole'
-        type: array
-    type: object
-  entities.HoleCasing:
-    properties:
-      burst_rating:
-        type: number
-      collapse_rating:
-        type: number
-      created_at:
-        type: string
-      description:
-        type: string
-      drift_id:
-        type: number
-      effective_hole_diameter:
-        type: number
-      friction_factor:
-        type: number
-      grade:
-        type: string
-      hole_id:
-        type: string
-      id:
-        type: string
-      id_value:
-        description: To avoid collision with ID field
-        type: number
-      length:
-        type: number
-      linear_capacity:
-        type: number
-      manufacturer:
-        type: string
-      md_base:
-        type: number
-      md_top:
-        type: number
-      min_yield_strength:
-        type: number
-      model:
-        type: string
-      od:
-        type: number
-      shoe_md:
+      volume_excess:
         type: number
       weight:
-        type: number
-    type: object
-  entities.OpenHole:
-    properties:
-      created_at:
-        type: string
-      description:
-        type: string
-      effective_diameter:
-        type: number
-      friction_factor:
-        type: number
-      hole_id:
-        type: string
-      id:
-        type: string
-      id_value:
-        description: To avoid collision with ID field
-        type: number
-      length:
-        type: number
-      linear_capacity:
-        type: number
-      md_base:
-        type: number
-      md_top:
-        type: number
-      volume_excess:
         type: number
     type: object
   entities.Organization:
@@ -320,7 +250,7 @@ definitions:
         type: string
       country:
         type: string
-      field_id:
+      id:
         type: string
       name:
         type: string
@@ -559,34 +489,6 @@ definitions:
       representative:
         type: string
     type: object
-  requests.CreateDatumRequest:
-    properties:
-      body:
-        $ref: '#/definitions/requests.CreateDatumRequestBody'
-      caseID:
-        type: string
-    type: object
-  requests.CreateDatumRequestBody:
-    properties:
-      air_gap:
-        type: number
-      datum_description:
-        type: string
-      datum_elevation:
-        type: number
-      ground_elevation:
-        type: number
-      name:
-        type: string
-      system_description:
-        type: string
-      system_elevation:
-        type: number
-      type:
-        type: string
-      wellhead_elevation:
-        type: number
-    type: object
   requests.CreateDesignRequest:
     properties:
       body:
@@ -622,6 +524,94 @@ definitions:
         type: string
       reduction_level:
         type: string
+    type: object
+  requests.CreateHoleRequest:
+    properties:
+      body:
+        $ref: '#/definitions/requests.CreateHoleRequestBody'
+      case_id:
+        type: string
+    type: object
+  requests.CreateHoleRequestBody:
+    properties:
+      back_reaming_casing:
+        type: number
+      back_reaming_open_hole:
+        type: number
+      burst_rating:
+        type: number
+      caising_internal_diameter:
+        type: number
+      collapse_rating:
+        type: number
+      description_casing:
+        type: string
+      description_open_hole:
+        type: string
+      drift_internal_diameter:
+        type: number
+      effective_diameter:
+        type: number
+      effective_hole_diameter:
+        type: number
+      friction_factor_casing:
+        type: number
+      friction_factor_open_hole:
+        type: number
+      grade:
+        type: string
+      length:
+        type: number
+      linear_capacity_casing:
+        type: number
+      linear_capacity_open_hole:
+        type: number
+      manufacturer_casing:
+        type: string
+      md_base:
+        type: number
+      md_top:
+        type: number
+      min_yield_strength:
+        type: number
+      model_casing:
+        type: string
+      od:
+        type: number
+      open_hole_internal_diameter:
+        type: number
+      open_hole_length:
+        type: number
+      open_hole_md_base:
+        type: number
+      open_hole_md_top:
+        type: number
+      rotating_off_bottom_casing:
+        type: number
+      rotating_off_bottom_open_hole:
+        type: number
+      rotating_on_bottom_casing:
+        type: number
+      rotating_on_bottom_open_hole:
+        type: number
+      shoe_md:
+        type: number
+      slide_drilling_casing:
+        type: number
+      slide_drilling_open_hole:
+        type: number
+      tripping_in_casing:
+        type: number
+      tripping_in_open_hole:
+        type: number
+      tripping_out_casing:
+        type: number
+      tripping_out_open_hole:
+        type: number
+      volume_excess:
+        type: number
+      weight:
+        type: number
     type: object
   requests.CreateOrganizationRequest:
     properties:
@@ -834,34 +824,6 @@ definitions:
       representative:
         type: string
     type: object
-  requests.UpdateDatumRequest:
-    properties:
-      body:
-        $ref: '#/definitions/requests.UpdateDatumRequestBody'
-      id:
-        type: string
-    type: object
-  requests.UpdateDatumRequestBody:
-    properties:
-      air_gap:
-        type: number
-      datum_description:
-        type: string
-      datum_elevation:
-        type: number
-      ground_elevation:
-        type: number
-      name:
-        type: string
-      system_description:
-        type: string
-      system_elevation:
-        type: number
-      type:
-        type: string
-      wellhead_elevation:
-        type: number
-    type: object
   requests.UpdateDesignRequest:
     properties:
       body:
@@ -897,6 +859,94 @@ definitions:
         type: string
       reduction_level:
         type: string
+    type: object
+  requests.UpdateHoleRequest:
+    properties:
+      body:
+        $ref: '#/definitions/requests.UpdateHoleRequestBody'
+      id:
+        type: string
+    type: object
+  requests.UpdateHoleRequestBody:
+    properties:
+      back_reaming_casing:
+        type: number
+      back_reaming_open_hole:
+        type: number
+      burst_rating:
+        type: number
+      caising_internal_diameter:
+        type: number
+      collapse_rating:
+        type: number
+      description_casing:
+        type: string
+      description_open_hole:
+        type: string
+      drift_internal_diameter:
+        type: number
+      effective_diameter:
+        type: number
+      effective_hole_diameter:
+        type: number
+      friction_factor_casing:
+        type: number
+      friction_factor_open_hole:
+        type: number
+      grade:
+        type: string
+      length:
+        type: number
+      linear_capacity_casing:
+        type: number
+      linear_capacity_open_hole:
+        type: number
+      manufacturer_casing:
+        type: string
+      md_base:
+        type: number
+      md_top:
+        type: number
+      min_yield_strength:
+        type: number
+      model_casing:
+        type: string
+      od:
+        type: number
+      open_hole_internal_diameter:
+        type: number
+      open_hole_length:
+        type: number
+      open_hole_md_base:
+        type: number
+      open_hole_md_top:
+        type: number
+      rotating_off_bottom_casing:
+        type: number
+      rotating_off_bottom_open_hole:
+        type: number
+      rotating_on_bottom_casing:
+        type: number
+      rotating_on_bottom_open_hole:
+        type: number
+      shoe_md:
+        type: number
+      slide_drilling_casing:
+        type: number
+      slide_drilling_open_hole:
+        type: number
+      tripping_in_casing:
+        type: number
+      tripping_in_open_hole:
+        type: number
+      tripping_out_casing:
+        type: number
+      tripping_out_open_hole:
+        type: number
+      volume_excess:
+        type: number
+      weight:
+        type: number
     type: object
   requests.UpdateOrganizationRequest:
     properties:
@@ -1504,179 +1554,6 @@ paths:
       summary: Get Company by Name
       tags:
       - companies
-  /api/v1/datums:
-    get:
-      consumes:
-      - application/json
-      description: Retrieves all datums associated with a specific case ID
-      parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Case ID
-        in: query
-        name: caseId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entities.Datum'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/helpers.Response'
-      summary: Get Datums
-      tags:
-      - datums
-    post:
-      consumes:
-      - application/json
-      description: Creates a new datum
-      parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Case ID
-        in: query
-        name: caseId
-        required: true
-        type: string
-      - description: Datum input
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/requests.CreateDatumRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/helpers.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/helpers.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/helpers.Response'
-      summary: Create Datum
-      tags:
-      - datums
-  /api/v1/datums/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes an existing datum
-      parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Datum ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/helpers.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/helpers.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/helpers.Response'
-      summary: Delete Datum
-      tags:
-      - datums
-    get:
-      consumes:
-      - application/json
-      description: Retrieves a datum by its ID
-      parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Datum ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.Datum'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/helpers.Response'
-      summary: Get Datum by ID
-      tags:
-      - datums
-    put:
-      consumes:
-      - application/json
-      description: Updates an existing datum
-      parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Datum ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Datum input
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/requests.UpdateDatumRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.Datum'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/helpers.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/helpers.Response'
-      summary: Update Datum
-      tags:
-      - datums
   /api/v1/designs:
     get:
       consumes:
@@ -2023,6 +1900,179 @@ paths:
       summary: Update Field
       tags:
       - fields
+  /api/v1/holes:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all holes
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Case ID
+        in: query
+        name: caseId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Hole'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.Response'
+      summary: Get Holes
+      tags:
+      - holes
+    post:
+      consumes:
+      - application/json
+      description: Creates a new hole
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Case ID
+        in: query
+        name: caseId
+        required: true
+        type: string
+      - description: Hole input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CreateHoleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/helpers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.Response'
+      summary: Create Hole
+      tags:
+      - holes
+  /api/v1/holes/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an existing hole
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Hole ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.Response'
+      summary: Delete Hole
+      tags:
+      - holes
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a hole by its ID
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Hole ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Hole'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.Response'
+      summary: Get Hole by ID
+      tags:
+      - holes
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing hole
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Hole ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Hole input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateHoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Hole'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.Response'
+      summary: Update Hole
+      tags:
+      - holes
   /api/v1/organizations:
     get:
       consumes:

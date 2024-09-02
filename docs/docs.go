@@ -554,264 +554,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/datums": {
-            "get": {
-                "description": "Retrieves all datums associated with a specific case ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "datums"
-                ],
-                "summary": "Get Datums",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Case ID",
-                        "name": "caseId",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entities.Datum"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a new datum",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "datums"
-                ],
-                "summary": "Create Datum",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Case ID",
-                        "name": "caseId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "description": "Datum input",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/requests.CreateDatumRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/datums/{id}": {
-            "get": {
-                "description": "Retrieves a datum by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "datums"
-                ],
-                "summary": "Get Datum by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Datum ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.Datum"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Updates an existing datum",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "datums"
-                ],
-                "summary": "Update Datum",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Datum ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Datum input",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/requests.UpdateDatumRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.Datum"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an existing datum",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "datums"
-                ],
-                "summary": "Delete Datum",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Datum ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/helpers.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/designs": {
             "get": {
                 "description": "Retrieves all designs",
@@ -1301,6 +1043,264 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Field ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/holes": {
+            "get": {
+                "description": "Retrieves all holes",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "holes"
+                ],
+                "summary": "Get Holes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Case ID",
+                        "name": "caseId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Hole"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new hole",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "holes"
+                ],
+                "summary": "Create Hole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Case ID",
+                        "name": "caseId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Hole input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateHoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/holes/{id}": {
+            "get": {
+                "description": "Retrieves a hole by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "holes"
+                ],
+                "summary": "Get Hole by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hole ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Hole"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an existing hole",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "holes"
+                ],
+                "summary": "Update Hole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hole ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Hole input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateHoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Hole"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an existing hole",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "holes"
+                ],
+                "summary": "Delete Hole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hole ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2707,12 +2707,6 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "datums": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.Datum"
-                    }
-                },
                 "drill_depth": {
                     "type": "number"
                 },
@@ -2771,44 +2765,6 @@ const docTemplate = `{
                 },
                 "representative": {
                     "type": "string"
-                }
-            }
-        },
-        "entities.Datum": {
-            "type": "object",
-            "properties": {
-                "air_gap": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "datum_description": {
-                    "type": "string"
-                },
-                "datum_elevation": {
-                    "type": "number"
-                },
-                "ground_elevation": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "system_description": {
-                    "type": "string"
-                },
-                "system_elevation": {
-                    "type": "number"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "wellhead_elevation": {
-                    "type": "number"
                 }
             }
         },
@@ -2896,7 +2852,7 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.FrictionFactor": {
+        "entities.Hole": {
             "type": "object",
             "properties": {
                 "back_reaming_casing": {
@@ -2905,14 +2861,86 @@ const docTemplate = `{
                 "back_reaming_open_hole": {
                     "type": "number"
                 },
+                "burst_rating": {
+                    "type": "number"
+                },
+                "caising_internal_diameter": {
+                    "type": "number"
+                },
+                "case_id": {
+                    "type": "string"
+                },
+                "collapse_rating": {
+                    "type": "number"
+                },
                 "created_at": {
                     "type": "string"
                 },
-                "hole_id": {
+                "description_casing": {
+                    "type": "string"
+                },
+                "description_open_hole": {
+                    "type": "string"
+                },
+                "drift_internal_diameter": {
+                    "type": "number"
+                },
+                "effective_diameter": {
+                    "type": "number"
+                },
+                "effective_hole_diameter": {
+                    "type": "number"
+                },
+                "friction_factor_casing": {
+                    "type": "number"
+                },
+                "friction_factor_open_hole": {
+                    "type": "number"
+                },
+                "grade": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
+                },
+                "length": {
+                    "type": "number"
+                },
+                "linear_capacity_casing": {
+                    "type": "number"
+                },
+                "linear_capacity_open_hole": {
+                    "type": "number"
+                },
+                "manufacturer_casing": {
+                    "type": "string"
+                },
+                "md_base": {
+                    "type": "number"
+                },
+                "md_top": {
+                    "type": "number"
+                },
+                "min_yield_strength": {
+                    "type": "number"
+                },
+                "model_casing": {
+                    "type": "string"
+                },
+                "od": {
+                    "type": "number"
+                },
+                "open_hole_internal_diameter": {
+                    "type": "number"
+                },
+                "open_hole_length": {
+                    "type": "number"
+                },
+                "open_hole_md_base": {
+                    "type": "number"
+                },
+                "open_hole_md_top": {
+                    "type": "number"
                 },
                 "rotating_off_bottom_casing": {
                     "type": "number"
@@ -2924,6 +2952,9 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "rotating_on_bottom_open_hole": {
+                    "type": "number"
+                },
+                "shoe_md": {
                     "type": "number"
                 },
                 "slide_drilling_casing": {
@@ -2943,148 +2974,11 @@ const docTemplate = `{
                 },
                 "tripping_out_open_hole": {
                     "type": "number"
-                }
-            }
-        },
-        "entities.Hole": {
-            "type": "object",
-            "properties": {
-                "case_id": {
-                    "type": "string"
                 },
-                "casings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.HoleCasing"
-                    }
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "friction_factors": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.FrictionFactor"
-                    }
-                },
-                "id": {
-                    "type": "string"
-                },
-                "open_holes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.OpenHole"
-                    }
-                }
-            }
-        },
-        "entities.HoleCasing": {
-            "type": "object",
-            "properties": {
-                "burst_rating": {
-                    "type": "number"
-                },
-                "collapse_rating": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "drift_id": {
-                    "type": "number"
-                },
-                "effective_hole_diameter": {
-                    "type": "number"
-                },
-                "friction_factor": {
-                    "type": "number"
-                },
-                "grade": {
-                    "type": "string"
-                },
-                "hole_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "id_value": {
-                    "description": "To avoid collision with ID field",
-                    "type": "number"
-                },
-                "length": {
-                    "type": "number"
-                },
-                "linear_capacity": {
-                    "type": "number"
-                },
-                "manufacturer": {
-                    "type": "string"
-                },
-                "md_base": {
-                    "type": "number"
-                },
-                "md_top": {
-                    "type": "number"
-                },
-                "min_yield_strength": {
-                    "type": "number"
-                },
-                "model": {
-                    "type": "string"
-                },
-                "od": {
-                    "type": "number"
-                },
-                "shoe_md": {
+                "volume_excess": {
                     "type": "number"
                 },
                 "weight": {
-                    "type": "number"
-                }
-            }
-        },
-        "entities.OpenHole": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "effective_diameter": {
-                    "type": "number"
-                },
-                "friction_factor": {
-                    "type": "number"
-                },
-                "hole_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "id_value": {
-                    "description": "To avoid collision with ID field",
-                    "type": "number"
-                },
-                "length": {
-                    "type": "number"
-                },
-                "linear_capacity": {
-                    "type": "number"
-                },
-                "md_base": {
-                    "type": "number"
-                },
-                "md_top": {
-                    "type": "number"
-                },
-                "volume_excess": {
                     "type": "number"
                 }
             }
@@ -3182,7 +3076,7 @@ const docTemplate = `{
                 "country": {
                     "type": "string"
                 },
-                "field_id": {
+                "id": {
                     "type": "string"
                 },
                 "name": {
@@ -3547,49 +3441,6 @@ const docTemplate = `{
                 }
             }
         },
-        "requests.CreateDatumRequest": {
-            "type": "object",
-            "properties": {
-                "body": {
-                    "$ref": "#/definitions/requests.CreateDatumRequestBody"
-                },
-                "caseID": {
-                    "type": "string"
-                }
-            }
-        },
-        "requests.CreateDatumRequestBody": {
-            "type": "object",
-            "properties": {
-                "air_gap": {
-                    "type": "number"
-                },
-                "datum_description": {
-                    "type": "string"
-                },
-                "datum_elevation": {
-                    "type": "number"
-                },
-                "ground_elevation": {
-                    "type": "number"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "system_description": {
-                    "type": "string"
-                },
-                "system_elevation": {
-                    "type": "number"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "wellhead_elevation": {
-                    "type": "number"
-                }
-            }
-        },
         "requests.CreateDesignRequest": {
             "type": "object",
             "properties": {
@@ -3643,6 +3494,139 @@ const docTemplate = `{
                 },
                 "reduction_level": {
                     "type": "string"
+                }
+            }
+        },
+        "requests.CreateHoleRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.CreateHoleRequestBody"
+                },
+                "case_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.CreateHoleRequestBody": {
+            "type": "object",
+            "properties": {
+                "back_reaming_casing": {
+                    "type": "number"
+                },
+                "back_reaming_open_hole": {
+                    "type": "number"
+                },
+                "burst_rating": {
+                    "type": "number"
+                },
+                "caising_internal_diameter": {
+                    "type": "number"
+                },
+                "collapse_rating": {
+                    "type": "number"
+                },
+                "description_casing": {
+                    "type": "string"
+                },
+                "description_open_hole": {
+                    "type": "string"
+                },
+                "drift_internal_diameter": {
+                    "type": "number"
+                },
+                "effective_diameter": {
+                    "type": "number"
+                },
+                "effective_hole_diameter": {
+                    "type": "number"
+                },
+                "friction_factor_casing": {
+                    "type": "number"
+                },
+                "friction_factor_open_hole": {
+                    "type": "number"
+                },
+                "grade": {
+                    "type": "string"
+                },
+                "length": {
+                    "type": "number"
+                },
+                "linear_capacity_casing": {
+                    "type": "number"
+                },
+                "linear_capacity_open_hole": {
+                    "type": "number"
+                },
+                "manufacturer_casing": {
+                    "type": "string"
+                },
+                "md_base": {
+                    "type": "number"
+                },
+                "md_top": {
+                    "type": "number"
+                },
+                "min_yield_strength": {
+                    "type": "number"
+                },
+                "model_casing": {
+                    "type": "string"
+                },
+                "od": {
+                    "type": "number"
+                },
+                "open_hole_internal_diameter": {
+                    "type": "number"
+                },
+                "open_hole_length": {
+                    "type": "number"
+                },
+                "open_hole_md_base": {
+                    "type": "number"
+                },
+                "open_hole_md_top": {
+                    "type": "number"
+                },
+                "rotating_off_bottom_casing": {
+                    "type": "number"
+                },
+                "rotating_off_bottom_open_hole": {
+                    "type": "number"
+                },
+                "rotating_on_bottom_casing": {
+                    "type": "number"
+                },
+                "rotating_on_bottom_open_hole": {
+                    "type": "number"
+                },
+                "shoe_md": {
+                    "type": "number"
+                },
+                "slide_drilling_casing": {
+                    "type": "number"
+                },
+                "slide_drilling_open_hole": {
+                    "type": "number"
+                },
+                "tripping_in_casing": {
+                    "type": "number"
+                },
+                "tripping_in_open_hole": {
+                    "type": "number"
+                },
+                "tripping_out_casing": {
+                    "type": "number"
+                },
+                "tripping_out_open_hole": {
+                    "type": "number"
+                },
+                "volume_excess": {
+                    "type": "number"
+                },
+                "weight": {
+                    "type": "number"
                 }
             }
         },
@@ -3970,49 +3954,6 @@ const docTemplate = `{
                 }
             }
         },
-        "requests.UpdateDatumRequest": {
-            "type": "object",
-            "properties": {
-                "body": {
-                    "$ref": "#/definitions/requests.UpdateDatumRequestBody"
-                },
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "requests.UpdateDatumRequestBody": {
-            "type": "object",
-            "properties": {
-                "air_gap": {
-                    "type": "number"
-                },
-                "datum_description": {
-                    "type": "string"
-                },
-                "datum_elevation": {
-                    "type": "number"
-                },
-                "ground_elevation": {
-                    "type": "number"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "system_description": {
-                    "type": "string"
-                },
-                "system_elevation": {
-                    "type": "number"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "wellhead_elevation": {
-                    "type": "number"
-                }
-            }
-        },
         "requests.UpdateDesignRequest": {
             "type": "object",
             "properties": {
@@ -4066,6 +4007,139 @@ const docTemplate = `{
                 },
                 "reduction_level": {
                     "type": "string"
+                }
+            }
+        },
+        "requests.UpdateHoleRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/requests.UpdateHoleRequestBody"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.UpdateHoleRequestBody": {
+            "type": "object",
+            "properties": {
+                "back_reaming_casing": {
+                    "type": "number"
+                },
+                "back_reaming_open_hole": {
+                    "type": "number"
+                },
+                "burst_rating": {
+                    "type": "number"
+                },
+                "caising_internal_diameter": {
+                    "type": "number"
+                },
+                "collapse_rating": {
+                    "type": "number"
+                },
+                "description_casing": {
+                    "type": "string"
+                },
+                "description_open_hole": {
+                    "type": "string"
+                },
+                "drift_internal_diameter": {
+                    "type": "number"
+                },
+                "effective_diameter": {
+                    "type": "number"
+                },
+                "effective_hole_diameter": {
+                    "type": "number"
+                },
+                "friction_factor_casing": {
+                    "type": "number"
+                },
+                "friction_factor_open_hole": {
+                    "type": "number"
+                },
+                "grade": {
+                    "type": "string"
+                },
+                "length": {
+                    "type": "number"
+                },
+                "linear_capacity_casing": {
+                    "type": "number"
+                },
+                "linear_capacity_open_hole": {
+                    "type": "number"
+                },
+                "manufacturer_casing": {
+                    "type": "string"
+                },
+                "md_base": {
+                    "type": "number"
+                },
+                "md_top": {
+                    "type": "number"
+                },
+                "min_yield_strength": {
+                    "type": "number"
+                },
+                "model_casing": {
+                    "type": "string"
+                },
+                "od": {
+                    "type": "number"
+                },
+                "open_hole_internal_diameter": {
+                    "type": "number"
+                },
+                "open_hole_length": {
+                    "type": "number"
+                },
+                "open_hole_md_base": {
+                    "type": "number"
+                },
+                "open_hole_md_top": {
+                    "type": "number"
+                },
+                "rotating_off_bottom_casing": {
+                    "type": "number"
+                },
+                "rotating_off_bottom_open_hole": {
+                    "type": "number"
+                },
+                "rotating_on_bottom_casing": {
+                    "type": "number"
+                },
+                "rotating_on_bottom_open_hole": {
+                    "type": "number"
+                },
+                "shoe_md": {
+                    "type": "number"
+                },
+                "slide_drilling_casing": {
+                    "type": "number"
+                },
+                "slide_drilling_open_hole": {
+                    "type": "number"
+                },
+                "tripping_in_casing": {
+                    "type": "number"
+                },
+                "tripping_in_open_hole": {
+                    "type": "number"
+                },
+                "tripping_out_casing": {
+                    "type": "number"
+                },
+                "tripping_out_open_hole": {
+                    "type": "number"
+                },
+                "volume_excess": {
+                    "type": "number"
+                },
+                "weight": {
+                    "type": "number"
                 }
             }
         },

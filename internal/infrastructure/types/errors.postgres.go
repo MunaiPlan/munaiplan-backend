@@ -54,9 +54,5 @@ var (
 )
 
 var (
-	ErrDatumNotChanged = errors.New("datum was not changed")
-)
-
-var (
 	ErrHoleNotChanged = errors.New("hole was not changed")
 )
