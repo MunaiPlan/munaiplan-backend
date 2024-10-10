@@ -32,5 +32,8 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initTrajectoriesRoutes(v1)
 		h.initCasesRoutes(v1)
 		h.initHolesRoutes(v1)
+		h.initFluidsRoutes(v1)
+		h.initRigsRoutes(v1)
+		h.initPorePressureRoutes(v1)
 	}
 }

@@ -11,61 +11,61 @@ import (
 	"github.com/munaiplan/munaiplan-backend/pkg/values"
 )
 
-// initHolesRoutes initializes the routes for the holes API.
-func (h *Handler) initHolesRoutes(api *gin.RouterGroup) {
-	holes := api.Group("/holes", h.authMiddleware.UserIdentity)
+// initFluidsRoutes initializes the routes for the fluids API.
+func (h *Handler) initFluidsRoutes(api *gin.RouterGroup) {
+	fluids := api.Group("/fluids", h.authMiddleware.UserIdentity)
 	{
-		holes.GET("/", h.getHoles)
-		holes.POST("/", h.createHole)
-		holes.GET("/:id", h.getHoleByID)
-		holes.PUT("/:id", h.updateHole)
-		holes.DELETE("/:id", h.deleteHole)
+		fluids.GET("/", h.getFluids)
+		fluids.POST("/", h.createFluid)
+		fluids.GET("/:id", h.getFluidByID)
+		fluids.PUT("/:id", h.updateFluid)
+		fluids.DELETE("/:id", h.deleteFluid)
 	}
 }
 
-// getHoles retrieves all holes.
-// @Summary Get Holes
-// @Tags holes
-// @Description Retrieves all holes
+// getFluids retrieves all fluids associated with a case.
+// @Summary Get Fluids
+// @Tags fluids
+// @Description Retrieves all fluids associated with a case
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Bearer token"
 // @Param caseId query string true "Case ID"
-// @Success 200 {array} entities.Hole
+// @Success 200 {array} entities.Fluid
 // @Failure 500 {object} helpers.Response
-// @Router /api/v1/holes [get]
-func (h *Handler) getHoles(c *gin.Context) {
-	var inp requests.GetHolesRequest
+// @Router /api/v1/fluids [get]
+func (h *Handler) getFluids(c *gin.Context) {
+	var inp requests.GetFluidsRequest
 	var err error
-	var holes []*entities.Hole
+	var fluids []*entities.Fluid
 
 	if inp.CaseID, err = h.validateQueryIDParam(c, values.CaseIdQueryParam); err != nil {
 		return
 	}
 
-	if holes, err = h.services.Holes.GetHoles(c.Request.Context(), &inp); err != nil {
+	if fluids, err = h.services.Fluids.GetFluids(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, holes)
+	c.JSON(http.StatusOK, fluids)
 }
 
-// createHole creates a new hole.
-// @Summary Create Hole
-// @Tags holes
-// @Description Creates a new hole
+// createFluid creates a new fluid.
+// @Summary Create Fluid
+// @Tags fluids
+// @Description Creates a new fluid
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Bearer token"
 // @Param caseId query string true "Case ID"
-// @Param input body requests.CreateHoleRequest true "Hole input"
+// @Param input body requests.CreateFluidRequest true "Fluid input"
 // @Success 201 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
 // @Failure 500 {object} helpers.Response
-// @Router /api/v1/holes [post]
-func (h *Handler) createHole(c *gin.Context) {
-	var inp requests.CreateHoleRequest
+// @Router /api/v1/fluids [post]
+func (h *Handler) createFluid(c *gin.Context) {
+	var inp requests.CreateFluidRequest
 	var err error
 
 	if err = c.BindJSON(&inp.Body); err != nil {
@@ -75,29 +75,29 @@ func (h *Handler) createHole(c *gin.Context) {
 	if inp.CaseID, err = h.validateQueryIDParam(c, values.CaseIdQueryParam); err != nil {
 		return
 	}
-	if err = h.services.Holes.CreateHole(c.Request.Context(), &inp); err != nil {
+	if err = h.services.Fluids.CreateFluid(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusCreated, helpers.NewResponse("hole created"))
+	c.JSON(http.StatusCreated, helpers.NewResponse("fluid created"))
 }
 
-// updateHole updates an existing hole.
-// @Summary Update Hole
-// @Tags holes
-// @Description Updates an existing hole
+// updateFluid updates an existing fluid.
+// @Summary Update Fluid
+// @Tags fluids
+// @Description Updates an existing fluid
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Bearer token"
-// @Param id path string true "Hole ID"
-// @Param input body requests.UpdateHoleRequest true "Hole input"
-// @Success 200 {object} entities.Hole
+// @Param id path string true "Fluid ID"
+// @Param input body requests.UpdateFluidRequest true "Fluid input"
+// @Success 200 {object} entities.Fluid
 // @Failure 400 {object} helpers.Response
 // @Failure 500 {object} helpers.Response
-// @Router /api/v1/holes/{id} [put]
-func (h *Handler) updateHole(c *gin.Context) {
-	var inp requests.UpdateHoleRequest
+// @Router /api/v1/fluids/{id} [put]
+func (h *Handler) updateFluid(c *gin.Context) {
+	var inp requests.UpdateFluidRequest
 	var err error
 
 	if err := c.BindJSON(&inp.Body); err != nil {
@@ -108,65 +108,65 @@ func (h *Handler) updateHole(c *gin.Context) {
 		return
 	}
 
-	hole, err := h.services.Holes.UpdateHole(c.Request.Context(), &inp)
+	fluid, err := h.services.Fluids.UpdateFluid(c.Request.Context(), &inp)
 	if err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, hole)
+	c.JSON(http.StatusOK, fluid)
 }
 
-// deleteHole deletes an existing hole.
-// @Summary Delete Hole
-// @Tags holes
-// @Description Deletes an existing hole
+// deleteFluid deletes an existing fluid.
+// @Summary Delete Fluid
+// @Tags fluids
+// @Description Deletes an existing fluid
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Bearer token"
-// @Param id path string true "Hole ID"
+// @Param id path string true "Fluid ID"
 // @Success 200 {object} helpers.Response
 // @Failure 400 {object} helpers.Response
 // @Failure 500 {object} helpers.Response
-// @Router /api/v1/holes/{id} [delete]
-func (h *Handler) deleteHole(c *gin.Context) {
-	var inp requests.DeleteHoleRequest
+// @Router /api/v1/fluids/{id} [delete]
+func (h *Handler) deleteFluid(c *gin.Context) {
+	var inp requests.DeleteFluidRequest
 	var err error
 
 	if inp.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
 		return
 	}
-	if err = h.services.Holes.DeleteHole(c.Request.Context(), &inp); err != nil {
+	if err = h.services.Fluids.DeleteFluid(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, helpers.NewResponse("hole deleted"))
+	c.JSON(http.StatusOK, helpers.NewResponse("fluid deleted"))
 }
 
-// getHoleByID retrieves a hole by its ID.
-// @Summary Get Hole by ID
-// @Tags holes
-// @Description Retrieves a hole by its ID
+// getFluidByID retrieves a fluid by its ID.
+// @Summary Get Fluid by ID
+// @Tags fluids
+// @Description Retrieves a fluid by its ID
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Bearer token"
-// @Param id path string true "Hole ID"
-// @Success 200 {object} entities.Hole
+// @Param id path string true "Fluid ID"
+// @Success 200 {object} entities.Fluid
 // @Failure 500 {object} helpers.Response
-// @Router /api/v1/holes/{id} [get]
-func (h *Handler) getHoleByID(c *gin.Context) {
-	var inp requests.GetHoleByIDRequest
+// @Router /api/v1/fluids/{id} [get]
+func (h *Handler) getFluidByID(c *gin.Context) {
+	var inp requests.GetFluidByIDRequest
 	var err error
-	var hole *entities.Hole
+	var fluid *entities.Fluid
 
 	if inp.ID, err = h.validateRequestIDParam(c, values.IdQueryParam); err != nil {
 		return
 	}
-	if hole, err = h.services.Holes.GetHoleByID(c.Request.Context(), &inp); err != nil {
+	if fluid, err = h.services.Fluids.GetFluidByID(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, hole)
+	c.JSON(http.StatusOK, fluid)
 }

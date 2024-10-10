@@ -1554,6 +1554,41 @@ paths:
       summary: Get Company by Name
       tags:
       - companies
+  /api/v1/companies/with-components/{OrganizationID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves companies within the specified organization, including
+        all associated fields, sites, wells, wellbores, designs, trajectories, and
+        cases (with metadata).
+      parameters:
+      - description: Organization ID
+        in: path
+        name: OrganizationID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of companies with components
+          schema:
+            items:
+              $ref: '#/definitions/entities.Company'
+            type: array
+        "400":
+          description: Invalid Organization ID
+          schema:
+            $ref: '#/definitions/helpers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.Response'
+      security:
+      - Bearer: []
+      summary: Get Companies with Components
+      tags:
+      - companies
   /api/v1/designs:
     get:
       consumes:

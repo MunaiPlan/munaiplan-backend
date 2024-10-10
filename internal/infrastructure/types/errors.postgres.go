@@ -54,5 +54,6 @@ var (
 )
 
 var (
-	ErrHoleNotChanged = errors.New("hole was not changed")
+	ErrHoleNotChanged    = errors.New("hole was not changed")
+	ErrCaisingIdNotFound = errors.New("caising ID was not found")
 )

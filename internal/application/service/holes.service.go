@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
@@ -38,100 +37,123 @@ func (s *holesService) CreateHole(ctx context.Context, input *requests.CreateHol
 		return err
 	}
 
-	hole := &entities.Hole{
-		CaseID:                    input.CaseID,
-		MDTop:                     input.Body.MDTop,
-		MDBase:                    input.Body.MDBase,
-		Length:                    input.Body.Length,
-		ShoeMD:                    input.Body.ShoeMD,
-		OD:                        input.Body.OD,
-		CaisingInternalDiameter:   input.Body.CaisingInternalDiameter,
-		DriftInternalDiameter:     input.Body.DriftInternalDiameter,
-		EffectiveHoleDiameter:     input.Body.EffectiveHoleDiameter,
-		Weight:                    input.Body.Weight,
-		Grade:                     input.Body.Grade,
-		MinYieldStrength:          input.Body.MinYieldStrength,
-		BurstRating:               input.Body.BurstRating,
-		CollapseRating:            input.Body.CollapseRating,
-		FrictionFactorCasing:      input.Body.FrictionFactorCasing,
-		LinearCapacityCasing:      input.Body.LinearCapacityCasing,
-		DescriptionCasing:         input.Body.DescriptionCasing,
-		ManufacturerCasing:        input.Body.ManufacturerCasing,
-		ModelCasing:               input.Body.ModelCasing,
-		OpenHoleMDTop:             input.Body.OpenHoleMDTop,
-		OpenHoleMDBase:            input.Body.OpenHoleMDBase,
-		OpenHoleLength:            input.Body.OpenHoleLength,
-		OpenHoleInternalDiameter:  input.Body.OpenHoleInternalDiameter,
-		EffectiveDiameter:         input.Body.EffectiveDiameter,
-		FrictionFactorOpenHole:    input.Body.FrictionFactorOpenHole,
-		LinearCapacityOpenHole:    input.Body.LinearCapacityOpenHole,
-		VolumeExcess:              input.Body.VolumeExcess,
-		DescriptionOpenHole:       input.Body.DescriptionOpenHole,
-		TrippingInCasing:          input.Body.TrippingInCasing,
-		TrippingOutCasing:         input.Body.TrippingOutCasing,
-		RotatingOnBottomCasing:    input.Body.RotatingOnBottomCasing,
-		SlideDrillingCasing:       input.Body.SlideDrillingCasing,
-		BackReamingCasing:         input.Body.BackReamingCasing,
-		RotatingOffBottomCasing:   input.Body.RotatingOffBottomCasing,
-		TrippingInOpenHole:        input.Body.TrippingInOpenHole,
-		TrippingOutOpenHole:       input.Body.TrippingOutOpenHole,
-		RotatingOnBottomOpenHole:  input.Body.RotatingOnBottomOpenHole,
-		SlideDrillingOpenHole:     input.Body.SlideDrillingOpenHole,
-		BackReamingOpenHole:       input.Body.BackReamingOpenHole,
-		RotatingOffBottomOpenHole: input.Body.RotatingOffBottomOpenHole,
-	}
-
+	hole := s.CreateHoleRequestToEntity(&input.Body)
 	return s.repo.CreateHole(ctx, input.CaseID, hole)
 }
 
 func (s *holesService) UpdateHole(ctx context.Context, input *requests.UpdateHoleRequest) (*entities.Hole, error) {
-	fmt.Println("service id is " + input.ID)
-	hole := &entities.Hole{
-		ID:                        input.ID,
-		MDTop:                     input.Body.MDTop,
-		MDBase:                    input.Body.MDBase,
-		Length:                    input.Body.Length,
-		ShoeMD:                    input.Body.ShoeMD,
-		OD:                        input.Body.OD,
-		CaisingInternalDiameter:   input.Body.CaisingInternalDiameter,
-		DriftInternalDiameter:     input.Body.DriftInternalDiameter,
-		EffectiveHoleDiameter:     input.Body.EffectiveHoleDiameter,
-		Weight:                    input.Body.Weight,
-		Grade:                     input.Body.Grade,
-		MinYieldStrength:          input.Body.MinYieldStrength,
-		BurstRating:               input.Body.BurstRating,
-		CollapseRating:            input.Body.CollapseRating,
-		FrictionFactorCasing:      input.Body.FrictionFactorCasing,
-		LinearCapacityCasing:      input.Body.LinearCapacityCasing,
-		DescriptionCasing:         input.Body.DescriptionCasing,
-		ManufacturerCasing:        input.Body.ManufacturerCasing,
-		ModelCasing:               input.Body.ModelCasing,
-		OpenHoleMDTop:             input.Body.OpenHoleMDTop,
-		OpenHoleMDBase:            input.Body.OpenHoleMDBase,
-		OpenHoleLength:            input.Body.OpenHoleLength,
-		OpenHoleInternalDiameter:  input.Body.OpenHoleInternalDiameter,
-		EffectiveDiameter:         input.Body.EffectiveDiameter,
-		FrictionFactorOpenHole:    input.Body.FrictionFactorOpenHole,
-		LinearCapacityOpenHole:    input.Body.LinearCapacityOpenHole,
-		VolumeExcess:              input.Body.VolumeExcess,
-		DescriptionOpenHole:       input.Body.DescriptionOpenHole,
-		TrippingInCasing:          input.Body.TrippingInCasing,
-		TrippingOutCasing:         input.Body.TrippingOutCasing,
-		RotatingOnBottomCasing:    input.Body.RotatingOnBottomCasing,
-		SlideDrillingCasing:       input.Body.SlideDrillingCasing,
-		BackReamingCasing:         input.Body.BackReamingCasing,
-		RotatingOffBottomCasing:   input.Body.RotatingOffBottomCasing,
-		TrippingInOpenHole:        input.Body.TrippingInOpenHole,
-		TrippingOutOpenHole:       input.Body.TrippingOutOpenHole,
-		RotatingOnBottomOpenHole:  input.Body.RotatingOnBottomOpenHole,
-		SlideDrillingOpenHole:     input.Body.SlideDrillingOpenHole,
-		BackReamingOpenHole:       input.Body.BackReamingOpenHole,
-		RotatingOffBottomOpenHole: input.Body.RotatingOffBottomOpenHole,
-	}
-
+	hole := s.UpdateHoleRequestToEntity(&input.Body)
+	hole.ID = input.ID
 	return s.repo.UpdateHole(ctx, hole)
 }
 
 func (s *holesService) DeleteHole(ctx context.Context, input *requests.DeleteHoleRequest) error {
 	return s.repo.DeleteHole(ctx, input.ID)
+}
+
+func (s *holesService) CreateHoleRequestToEntity(input *requests.CreateHoleRequestBody) *entities.Hole {
+	caisings := make([]*entities.Caising, len(input.Caisings))
+	for i, caising := range input.Caisings {
+		caisings[i] = &entities.Caising{
+			MDTop:                 caising.MDTop,
+			MDBase:                caising.MDBase,
+			Length:                caising.Length,
+			ShoeMD:                caising.ShoeMD,
+			OD:                    caising.OD,
+			VD:                    caising.VD,
+			DriftID:               caising.DriftID,
+			EffectiveHoleDiameter: caising.EffectiveHoleDiameter,
+			Weight:                caising.Weight,
+			Grade:                 caising.Grade,
+			MinYieldStrength:      caising.MinYieldStrength,
+			BurstRating:           caising.BurstRating,
+			CollapseRating:        caising.CollapseRating,
+			FrictionFactorCaising: caising.FrictionFactorCaising,
+			LinearCapacityCaising: caising.LinearCapacityCaising,
+			DescriptionCaising:    caising.DescriptionCaising,
+			ManufacturerCaising:   caising.ManufacturerCaising,
+			ModelCaising:          caising.ModelCaising,
+		}
+	}
+
+	hole := &entities.Hole{
+		OpenHoleMDTop:             input.OpenHoleMDTop,
+		OpenHoleMDBase:            input.OpenHoleMDBase,
+		OpenHoleLength:            input.OpenHoleLength,
+		OpenHoleVD:                input.OpenHoleVD,
+		EffectiveDiameter:         input.EffectiveDiameter,
+		FrictionFactorOpenHole:    input.FrictionFactorOpenHole,
+		LinearCapacityOpenHole:    input.LinearCapacityOpenHole,
+		VolumeExcess:              input.VolumeExcess,
+		DescriptionOpenHole:       input.DescriptionOpenHole,
+		TrippingInCasing:          input.TrippingInCasing,
+		TrippingOutCasing:         input.TrippingOutCasing,
+		RotatingOnBottomCasing:    input.RotatingOnBottomCasing,
+		SlideDrillingCasing:       input.SlideDrillingCasing,
+		BackReamingCasing:         input.BackReamingCasing,
+		RotatingOffBottomCasing:   input.RotatingOffBottomCasing,
+		TrippingInOpenHole:        input.TrippingInOpenHole,
+		TrippingOutOpenHole:       input.TrippingOutOpenHole,
+		RotatingOnBottomOpenHole:  input.RotatingOnBottomOpenHole,
+		SlideDrillingOpenHole:     input.SlideDrillingOpenHole,
+		BackReamingOpenHole:       input.BackReamingOpenHole,
+		RotatingOffBottomOpenHole: input.RotatingOffBottomOpenHole,
+		Caisings:                  caisings,
+	}
+
+	return hole
+}
+
+func (s *holesService) UpdateHoleRequestToEntity(input *requests.UpdateHoleRequestBody) *entities.Hole {
+	caisings := make([]*entities.Caising, len(input.Caisings))
+	for i, caising := range input.Caisings {
+		caisings[i] = &entities.Caising{
+			ID:                    caising.ID,
+			MDTop:                 caising.MDTop,
+			MDBase:                caising.MDBase,
+			Length:                caising.Length,
+			ShoeMD:                caising.ShoeMD,
+			OD:                    caising.OD,
+			VD:                    caising.VD,
+			DriftID:               caising.DriftID,
+			EffectiveHoleDiameter: caising.EffectiveHoleDiameter,
+			Weight:                caising.Weight,
+			Grade:                 caising.Grade,
+			MinYieldStrength:      caising.MinYieldStrength,
+			BurstRating:           caising.BurstRating,
+			CollapseRating:        caising.CollapseRating,
+			FrictionFactorCaising: caising.FrictionFactorCaising,
+			LinearCapacityCaising: caising.LinearCapacityCaising,
+			DescriptionCaising:    caising.DescriptionCaising,
+			ManufacturerCaising:   caising.ManufacturerCaising,
+			ModelCaising:          caising.ModelCaising,
+		}
+	}
+
+	hole := &entities.Hole{
+		OpenHoleMDTop:             input.OpenHoleMDTop,
+		OpenHoleMDBase:            input.OpenHoleMDBase,
+		OpenHoleLength:            input.OpenHoleLength,
+		OpenHoleVD:                input.OpenHoleVD,
+		EffectiveDiameter:         input.EffectiveDiameter,
+		FrictionFactorOpenHole:    input.FrictionFactorOpenHole,
+		LinearCapacityOpenHole:    input.LinearCapacityOpenHole,
+		VolumeExcess:              input.VolumeExcess,
+		DescriptionOpenHole:       input.DescriptionOpenHole,
+		TrippingInCasing:          input.TrippingInCasing,
+		TrippingOutCasing:         input.TrippingOutCasing,
+		RotatingOnBottomCasing:    input.RotatingOnBottomCasing,
+		SlideDrillingCasing:       input.SlideDrillingCasing,
+		BackReamingCasing:         input.BackReamingCasing,
+		RotatingOffBottomCasing:   input.RotatingOffBottomCasing,
+		TrippingInOpenHole:        input.TrippingInOpenHole,
+		TrippingOutOpenHole:       input.TrippingOutOpenHole,
+		RotatingOnBottomOpenHole:  input.RotatingOnBottomOpenHole,
+		SlideDrillingOpenHole:     input.SlideDrillingOpenHole,
+		BackReamingOpenHole:       input.BackReamingOpenHole,
+		RotatingOffBottomOpenHole: input.RotatingOffBottomOpenHole,
+		Caisings:                  caisings,
+	}
+
+	return hole
 }

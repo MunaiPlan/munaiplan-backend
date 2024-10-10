@@ -8,7 +8,9 @@ import (
 
 // toGormOrganization converts a domain organization to a gorm organization.
 func toGormOrganization(organization *entities.Organization) *models.Organization {
+	orgID, _ := validateGormId(organization.ID)
 	org := &models.Organization{
+		ID:      orgID,
 		Name:    organization.Name,
 		Email:   organization.Email,
 		Phone:   organization.Phone,
@@ -60,7 +62,9 @@ func toDomainCompany(companyModel *models.Company) *entities.Company {
 
 // toGormCompany maps the domain Company entity to the GORM Company model.
 func toGormCompany(company *entities.Company) *models.Company {
+	companyID, _ := validateGormId(company.ID)
 	comp := &models.Company{
+		ID:             companyID,
 		Name:           company.Name,
 		Division:       company.Division,
 		Group:          company.Group,
@@ -98,7 +102,9 @@ func toDomainSite(siteModel *models.Site) *entities.Site {
 
 // toGormSite maps the domain Site entity to the GORM Site model.
 func toGormSite(site *entities.Site) *models.Site {
+	siteID, _ := validateGormId(site.ID)
 	newSite := &models.Site{
+		ID:      siteID,
 		Name:    site.Name,
 		Area:    site.Area,
 		Block:   site.Block,
@@ -139,7 +145,9 @@ func toDomainWell(wellModel *models.Well) *entities.Well {
 
 // toGormWell maps the domain Well entity to the GORM Well model.
 func toGormWell(well *entities.Well) *models.Well {
+	wellID, _ := validateGormId(well.ID)
 	newWell := &models.Well{
+		ID:                      wellID,
 		Name:                    well.Name,
 		Description:             well.Description,
 		Location:                well.Location,
@@ -187,7 +195,9 @@ func toDomainWellbore(wellboreModel *models.Wellbore) *entities.Wellbore {
 
 // toGormWellbore maps the domain Wellbore entity to the GORM Wellbore model.
 func toGormWellbore(wellbore *entities.Wellbore) *models.Wellbore {
+	wellboreID, _ := validateGormId(wellbore.ID)
 	newWellbore := &models.Wellbore{
+		ID:                             wellboreID,
 		Name:                           wellbore.Name,
 		BottomHoleLocation:             wellbore.BottomHoleLocation,
 		WellboreDepth:                  wellbore.WellboreDepth,
@@ -231,7 +241,9 @@ func toDomainField(fieldModel *models.Field) *entities.Field {
 
 // toGormField maps the domain Field entity to the GORM Field model.
 func toGormField(field *entities.Field) *models.Field {
+	fieldID, _ := validateGormId(field.ID)
 	newField := &models.Field{
+		ID:              fieldID,
 		Name:            field.Name,
 		Description:     field.Description,
 		ReductionLevel:  field.ReductionLevel,
@@ -265,7 +277,9 @@ func toDomainDesign(designModel *models.Design) *entities.Design {
 
 // toGormDesign maps the domain Design entity to the GORM Design model.
 func toGormDesign(design *entities.Design) *models.Design {
+	designID, _ := validateGormId(design.ID)
 	newDesign := &models.Design{
+		ID:         designID,
 		PlanName:   design.PlanName,
 		Stage:      design.Stage,
 		Version:    design.Version,
@@ -311,6 +325,7 @@ func toDomainTrajectory(trajectoryModel *models.Trajectory) *entities.Trajectory
 
 // toGormTrajectory maps the domain Trajectory entity to the GORM Trajectory model.
 func toGormTrajectory(trajectory *entities.Trajectory) *models.Trajectory {
+	trajectoryID, _ := validateGormId(trajectory.ID)
 	headers := make([]models.TrajectoryHeader, len(trajectory.Headers))
 	units := make([]models.TrajectoryUnit, len(trajectory.Units))
 	cases := make([]models.Case, len(trajectory.Cases))
@@ -327,6 +342,7 @@ func toGormTrajectory(trajectory *entities.Trajectory) *models.Trajectory {
 	}
 
 	return &models.Trajectory{
+		ID:          trajectoryID,
 		Name:        trajectory.Name,
 		Description: trajectory.Description,
 		Headers:     headers,
@@ -337,12 +353,7 @@ func toGormTrajectory(trajectory *entities.Trajectory) *models.Trajectory {
 
 // toDomainTrajectoryHeader maps the GORM TrajectoryHeader model to the domain TrajectoryHeader entity.
 func toGormTrajectoryHeader(header *entities.TrajectoryHeader) *models.TrajectoryHeader {
-	var headerID uuid.UUID
-	if header.ID != "" {
-		headerID, _ = uuid.Parse(header.ID)
-	} else {
-		headerID = uuid.Nil // Allow DB to generate if not present
-	}
+	headerID, _ := validateGormId(header.ID)
 	return &models.TrajectoryHeader{
 		ID:               headerID,
 		Customer:         header.Customer,
@@ -378,12 +389,7 @@ func toDomainTrajectoryHeader(headerModel *models.TrajectoryHeader) *entities.Tr
 
 // toGormTrajectoryUnit maps the domain TrajectoryUnit entity to the GORM TrajectoryUnit model.
 func toGormTrajectoryUnit(unit *entities.TrajectoryUnit) *models.TrajectoryUnit {
-	var unitID uuid.UUID
-	if unit.ID != "" {
-		unitID, _ = uuid.Parse(unit.ID)
-	} else {
-		unitID = uuid.Nil // Allow DB to generate if not present
-	}
+	unitID, _ := validateGormId(unit.ID)
 	return &models.TrajectoryUnit{
 		ID:              unitID,
 		MD:              unit.MD,
@@ -428,11 +434,12 @@ func toDomainCase(caseModel *models.Case) *entities.Case {
 		DrillDepth:      caseModel.DrillDepth,
 		PipeSize:        caseModel.PipeSize,
 		CreatedAt:       caseModel.CreatedAt,
+		Holes:           make([]*entities.Hole, len(caseModel.Holes)),
 	}
 
 	for _, hole := range caseModel.Holes {
 		domainHole := toDomainHole(&hole)
-		newCase.Holes = append(newCase.Holes, &domainHole)
+		newCase.Holes = append(newCase.Holes, domainHole)
 	}
 
 	return &newCase
@@ -440,11 +447,14 @@ func toDomainCase(caseModel *models.Case) *entities.Case {
 
 // toGormCase maps the domain Case entity to the GORM Case model.
 func toGormCase(caseEntity *entities.Case) *models.Case {
+	caseID, _ := validateGormId(caseEntity.ID)
 	newCase := &models.Case{
+		ID:              caseID,
 		CaseName:        caseEntity.CaseName,
 		CaseDescription: caseEntity.CaseDescription,
 		DrillDepth:      caseEntity.DrillDepth,
 		PipeSize:        caseEntity.PipeSize,
+		Holes:           make([]models.Hole, len(caseEntity.Holes)),
 	}
 
 	for _, hole := range caseEntity.Holes {
@@ -456,33 +466,13 @@ func toGormCase(caseEntity *entities.Case) *models.Case {
 }
 
 // toDomainHole maps the GORM Hole model to the domain Hole entity.
-func toDomainHole(holeModel *models.Hole) entities.Hole {
-	return entities.Hole{
+func toDomainHole(holeModel *models.Hole) *entities.Hole {
+	newHole := &entities.Hole{
 		ID:                        holeModel.ID.String(),
-		CaseID:                    holeModel.CaseID.String(),
 		CreatedAt:                 holeModel.CreatedAt,
-		MDTop:                     holeModel.MDTop,
-		MDBase:                    holeModel.MDBase,
-		Length:                    holeModel.Length,
-		ShoeMD:                    holeModel.ShoeMD,
-		OD:                        holeModel.OD,
-		CaisingInternalDiameter:   holeModel.CaisingInternalDiameter,
-		DriftInternalDiameter:     holeModel.DriftInternalDiameter,
-		EffectiveHoleDiameter:     holeModel.EffectiveHoleDiameter,
-		Weight:                    holeModel.Weight,
-		Grade:                     holeModel.Grade,
-		MinYieldStrength:          holeModel.MinYieldStrength,
-		BurstRating:               holeModel.BurstRating,
-		CollapseRating:            holeModel.CollapseRating,
-		FrictionFactorCasing:      holeModel.FrictionFactorCasing,
-		LinearCapacityCasing:      holeModel.LinearCapacityCasing,
-		DescriptionCasing:         holeModel.DescriptionCasing,
-		ManufacturerCasing:        holeModel.ManufacturerCasing,
-		ModelCasing:               holeModel.ModelCasing,
 		OpenHoleMDTop:             holeModel.OpenHoleMDTop,
 		OpenHoleMDBase:            holeModel.OpenHoleMDBase,
 		OpenHoleLength:            holeModel.OpenHoleLength,
-		OpenHoleInternalDiameter:  holeModel.OpenHoleInternalDiameter,
 		EffectiveDiameter:         holeModel.EffectiveDiameter,
 		FrictionFactorOpenHole:    holeModel.FrictionFactorOpenHole,
 		LinearCapacityOpenHole:    holeModel.LinearCapacityOpenHole,
@@ -500,34 +490,25 @@ func toDomainHole(holeModel *models.Hole) entities.Hole {
 		SlideDrillingOpenHole:     holeModel.SlideDrillingOpenHole,
 		BackReamingOpenHole:       holeModel.BackReamingOpenHole,
 		RotatingOffBottomOpenHole: holeModel.RotatingOffBottomOpenHole,
+		Caisings:                  make([]*entities.Caising, len(holeModel.Caisings)),
 	}
+
+	for _, caising := range holeModel.Caisings {
+		domainCaising := toDomainCaising(&caising)
+		newHole.Caisings = append(newHole.Caisings, domainCaising)
+	}
+
+	return newHole
 }
 
 // toGormHole maps the domain Hole entity to the GORM Hole model.
 func toGormHole(hole *entities.Hole) *models.Hole {
-	return &models.Hole{
-		MDTop:                     hole.MDTop,
-		MDBase:                    hole.MDBase,
-		Length:                    hole.Length,
-		ShoeMD:                    hole.ShoeMD,
-		OD:                        hole.OD,
-		CaisingInternalDiameter:   hole.CaisingInternalDiameter,
-		DriftInternalDiameter:     hole.DriftInternalDiameter,
-		EffectiveHoleDiameter:     hole.EffectiveHoleDiameter,
-		Weight:                    hole.Weight,
-		Grade:                     hole.Grade,
-		MinYieldStrength:          hole.MinYieldStrength,
-		BurstRating:               hole.BurstRating,
-		CollapseRating:            hole.CollapseRating,
-		FrictionFactorCasing:      hole.FrictionFactorCasing,
-		LinearCapacityCasing:      hole.LinearCapacityCasing,
-		DescriptionCasing:         hole.DescriptionCasing,
-		ManufacturerCasing:        hole.ManufacturerCasing,
-		ModelCasing:               hole.ModelCasing,
+	holeID, _ := validateGormId(hole.ID)
+	newHole := &models.Hole{
+		CaseID:                    holeID,
 		OpenHoleMDTop:             hole.OpenHoleMDTop,
 		OpenHoleMDBase:            hole.OpenHoleMDBase,
 		OpenHoleLength:            hole.OpenHoleLength,
-		OpenHoleInternalDiameter:  hole.OpenHoleInternalDiameter,
 		EffectiveDiameter:         hole.EffectiveDiameter,
 		FrictionFactorOpenHole:    hole.FrictionFactorOpenHole,
 		LinearCapacityOpenHole:    hole.LinearCapacityOpenHole,
@@ -545,5 +526,216 @@ func toGormHole(hole *entities.Hole) *models.Hole {
 		SlideDrillingOpenHole:     hole.SlideDrillingOpenHole,
 		BackReamingOpenHole:       hole.BackReamingOpenHole,
 		RotatingOffBottomOpenHole: hole.RotatingOffBottomOpenHole,
+		Caisings:                  make([]models.Caising, len(hole.Caisings)),
 	}
+
+	for _, caising := range hole.Caisings {
+		gormCaising := toGormCaising(caising)
+		newHole.Caisings = append(newHole.Caisings, *gormCaising)
+	}
+
+	return newHole
+}
+
+// toDomainCaising converts a gorm caising to a domain caising.
+func toDomainCaising(casingModel *models.Caising) *entities.Caising {
+	return &entities.Caising{
+		ID:                    casingModel.ID.String(),
+		MDTop:                 casingModel.MDTop,
+		MDBase:                casingModel.MDBase,
+		Length:                casingModel.Length,
+		ShoeMD:                casingModel.ShoeMD,
+		OD:                    casingModel.OD,
+		VD:                    casingModel.VD,
+		DriftID:               casingModel.DriftID,
+		EffectiveHoleDiameter: casingModel.EffectiveHoleDiameter,
+		Weight:                casingModel.Weight,
+		Grade:                 casingModel.Grade,
+		MinYieldStrength:      casingModel.MinYieldStrength,
+		BurstRating:           casingModel.BurstRating,
+		CollapseRating:        casingModel.CollapseRating,
+		FrictionFactorCaising: casingModel.FrictionFactorCaising,
+		LinearCapacityCaising: casingModel.LinearCapacityCaising,
+		DescriptionCaising:    casingModel.DescriptionCaising,
+		ManufacturerCaising:   casingModel.ManufacturerCaising,
+		ModelCaising:          casingModel.ModelCaising,
+	}
+}
+
+// toGormCaising converts a domain caising to a gorm caising.
+func toGormCaising(caising *entities.Caising) *models.Caising {
+	caisingID, _ := validateGormId(caising.ID)
+	return &models.Caising{
+		HoleID:                caisingID,
+		MDTop:                 caising.MDTop,
+		MDBase:                caising.MDBase,
+		Length:                caising.Length,
+		ShoeMD:                caising.ShoeMD,
+		OD:                    caising.OD,
+		VD:                    caising.VD,
+		DriftID:               caising.DriftID,
+		EffectiveHoleDiameter: caising.EffectiveHoleDiameter,
+		Weight:                caising.Weight,
+		Grade:                 caising.Grade,
+		MinYieldStrength:      caising.MinYieldStrength,
+		BurstRating:           caising.BurstRating,
+		CollapseRating:        caising.CollapseRating,
+		FrictionFactorCaising: caising.FrictionFactorCaising,
+		LinearCapacityCaising: caising.LinearCapacityCaising,
+		DescriptionCaising:    caising.DescriptionCaising,
+		ManufacturerCaising:   caising.ManufacturerCaising,
+		ModelCaising:          caising.ModelCaising,
+	}
+}
+
+// toDomainFluid converts a gorm fluid to a domain fluid.
+func toDomainFluid(fluidModel *models.Fluid) *entities.Fluid {
+	return &entities.Fluid{
+		ID:            fluidModel.ID.String(),
+		Name:          fluidModel.Name,
+		Description:   fluidModel.Description,
+		Density:       fluidModel.Density,
+		BaseFluid:     toDomainFluidType(&fluidModel.BaseFluid),
+		FluidBaseType: toDomainFluidType(&fluidModel.FluidBaseType),
+	}
+}
+
+// toDomainFluidType converts a gorm fluid type to a domain fluid type.
+func toDomainFluidType(fluidTypeModel *models.FluidType) *entities.FluidType {
+	return &entities.FluidType{
+		ID:   fluidTypeModel.ID.String(),
+		Name: fluidTypeModel.Name,
+	}
+}
+
+// toGormFluid converts a domain fluid to a gorm fluid.
+func toGormFluid(fluid *entities.Fluid) *models.Fluid {
+	fluidID, _ := validateGormId(fluid.ID)
+	return &models.Fluid{
+		ID:            fluidID,
+		Name:          fluid.Name,
+		Description:   fluid.Description,
+		Density:       fluid.Density,
+		BaseFluid:     *toGormFluidType(fluid.BaseFluid),
+		FluidBaseType: *toGormFluidType(fluid.FluidBaseType),
+	}
+}
+
+// toGormFluidType converts a domain fluid type to a gorm fluid type.
+func toGormFluidType(fluidType *entities.FluidType) *models.FluidType {
+	fluidTypeID, _ := validateGormId(fluidType.ID)
+	return &models.FluidType{
+		ID:   fluidTypeID,
+		Name: fluidType.Name,
+	}
+}
+
+// toDomainRig maps the GORM Rig model to the domain Rig entity.
+func toDomainRig(rigModel *models.Rig) *entities.Rig {
+	return &entities.Rig{
+		ID:                              rigModel.ID.String(),
+		CaseID:                          rigModel.CaseID.String(),
+		CreatedAt:                       rigModel.CreatedAt,
+		UpdatedAt:                       rigModel.UpdatedAt,
+		BlockRating:                     rigModel.BlockRating,
+		TorqueRating:                    rigModel.TorqueRating,
+		RatedWorkingPressure:            rigModel.RatedWorkingPressure,
+		BopPressureRating:               rigModel.BopPressureRating,
+		SurfacePressureLoss:             rigModel.SurfacePressureLoss,
+		StandpipeLength:                 rigModel.StandpipeLength,
+		StandpipeInternalDiameter:       rigModel.StandpipeInternalDiameter,
+		HoseLength:                      rigModel.HoseLength,
+		HoseInternalDiameter:            rigModel.HoseInternalDiameter,
+		SwivelLength:                    rigModel.SwivelLength,
+		SwivelInternalDiameter:          rigModel.SwivelInternalDiameter,
+		KellyLength:                     rigModel.KellyLength,
+		KellyInternalDiameter:           rigModel.KellyInternalDiameter,
+		PumpDischargeLineLength:         rigModel.PumpDischargeLineLength,
+		PumpDischargeLineInternalDiameter: rigModel.PumpDischargeLineInternalDiameter,
+		TopDriveStackupLength:           rigModel.TopDriveStackupLength,
+		TopDriveStackupInternalDiameter: rigModel.TopDriveStackupInternalDiameter,
+	}
+}
+
+// toGormRig maps the domain Rig entity to the GORM Rig model.
+func toGormRig(rig *entities.Rig) *models.Rig {
+	caseID, _ := uuid.Parse(rig.CaseID)
+	return &models.Rig{
+		ID:                              uuid.MustParse(rig.ID),
+		CaseID:                          caseID,
+		BlockRating:                     rig.BlockRating,
+		TorqueRating:                    rig.TorqueRating,
+		RatedWorkingPressure:            rig.RatedWorkingPressure,
+		BopPressureRating:               rig.BopPressureRating,
+		SurfacePressureLoss:             rig.SurfacePressureLoss,
+		StandpipeLength:                 rig.StandpipeLength,
+		StandpipeInternalDiameter:       rig.StandpipeInternalDiameter,
+		HoseLength:                      rig.HoseLength,
+		HoseInternalDiameter:            rig.HoseInternalDiameter,
+		SwivelLength:                    rig.SwivelLength,
+		SwivelInternalDiameter:          rig.SwivelInternalDiameter,
+		KellyLength:                     rig.KellyLength,
+		KellyInternalDiameter:           rig.KellyInternalDiameter,
+		PumpDischargeLineLength:         rig.PumpDischargeLineLength,
+		PumpDischargeLineInternalDiameter: rig.PumpDischargeLineInternalDiameter,
+		TopDriveStackupLength:           rig.TopDriveStackupLength,
+		TopDriveStackupInternalDiameter: rig.TopDriveStackupInternalDiameter,
+	}
+}
+
+// toDomainPorePressure maps the GORM PorePressure model to the domain PorePressure entity.
+func toDomainPorePressure(ppModel *models.PorePressure) *entities.PorePressure {
+	return &entities.PorePressure{
+		ID:        ppModel.ID.String(),
+		CaseID:    ppModel.CaseID.String(),
+		TVD:       ppModel.TVD,
+		Pressure:  ppModel.Pressure,
+		EMW:       ppModel.EMW,
+		CreatedAt: ppModel.CreatedAt,
+		UpdatedAt: ppModel.UpdatedAt,
+	}
+}
+
+// toGormPorePressure maps the domain PorePressure entity to the GORM PorePressure model.
+func toGormPorePressure(pp *entities.PorePressure) *models.PorePressure {
+	caseID, _ := uuid.Parse(pp.CaseID)
+	return &models.PorePressure{
+		CaseID:   caseID,
+		TVD:      pp.TVD,
+		Pressure: pp.Pressure,
+		EMW:      pp.EMW,
+	}
+}
+
+// toDomainPressureDataProfile maps the GORM PressureDataProfile model to the domain PressureDataProfile entity.
+func toDomainPressureDataProfile(profileModel *models.PressureDataProfile) *entities.PressureDataProfile {
+	return &entities.PressureDataProfile{
+		ID:        profileModel.ID.String(),
+		CaseID:    profileModel.CaseID.String(),
+		TVD:       profileModel.TVD,
+		Pressure:  profileModel.Pressure,
+		EMW:       profileModel.EMW,
+		CreatedAt: profileModel.CreatedAt,
+		UpdatedAt: profileModel.UpdatedAt,
+		DeletedAt: nil,
+	}
+}
+
+// toGormPressureDataProfile maps the domain PressureDataProfile entity to the GORM PressureDataProfile model.
+func toGormPressureDataProfile(profile *entities.PressureDataProfile) *models.PressureDataProfile {
+	caseID, _ := uuid.Parse(profile.CaseID)
+	return &models.PressureDataProfile{
+		CaseID:   caseID,
+		TVD:      profile.TVD,
+		Pressure: profile.Pressure,
+		EMW:      profile.EMW,
+	}
+}
+
+// validateGormId validates the GORM ID.
+func validateGormId(id string) (uuid.UUID, error) {
+	if id == "" {
+		return uuid.Nil, nil
+	}
+	return uuid.Parse(id)
 }

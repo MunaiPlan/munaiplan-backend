@@ -96,6 +96,38 @@ type Holes interface {
 	DeleteHole(ctx context.Context, input *requests.DeleteHoleRequest) error
 }
 
+type Fluids interface {
+	GetFluids(ctx context.Context, input *requests.GetFluidsRequest) ([]*entities.Fluid, error)
+	GetFluidByID(ctx context.Context, input *requests.GetFluidByIDRequest) (*entities.Fluid, error)
+	CreateFluid(ctx context.Context, input *requests.CreateFluidRequest) error
+	UpdateFluid(ctx context.Context, input *requests.UpdateFluidRequest) (*entities.Fluid, error)
+	DeleteFluid(ctx context.Context, input *requests.DeleteFluidRequest) error
+}
+
+type Rigs interface {
+	GetRigs(ctx context.Context, input *requests.GetRigsRequest) ([]*entities.Rig, error)
+	GetRigByID(ctx context.Context, input *requests.GetRigByIDRequest) (*entities.Rig, error)
+	CreateRig(ctx context.Context, input *requests.CreateRigRequest) error
+	UpdateRig(ctx context.Context, input *requests.UpdateRigRequest) (*entities.Rig, error)
+	DeleteRig(ctx context.Context, input *requests.DeleteRigRequest) error
+}
+
+type PorePressures interface {
+	GetPorePressures(ctx context.Context, input *requests.GetPorePressuresRequest) ([]*entities.PorePressure, error)
+	GetPorePressureByID(ctx context.Context, input *requests.GetPorePressureByIDRequest) (*entities.PorePressure, error)
+	CreatePorePressure(ctx context.Context, input *requests.CreatePorePressureRequest) error
+	UpdatePorePressure(ctx context.Context, input *requests.UpdatePorePressureRequest) (*entities.PorePressure, error)
+	DeletePorePressure(ctx context.Context, input *requests.DeletePorePressureRequest) error
+}
+
+type PressureDataProfiles interface {
+	CreatePressureDataProfile(ctx context.Context, input *requests.CreatePressureDataProfileRequest) error
+	GetPressureDataProfileByID(ctx context.Context, input *requests.GetPressureDataProfileByIDRequest) (*entities.PressureDataProfile, error)
+	GetPressureDataProfiles(ctx context.Context, input *requests.GetPressureDataProfilesRequest) ([]*entities.PressureDataProfile, error)
+	UpdatePressureDataProfile(ctx context.Context, input *requests.UpdatePressureDataProfileRequest) error
+	DeletePressureDataProfile(ctx context.Context, input *requests.DeletePressureDataProfileRequest) error
+}
+
 type Services struct {
 	// TODO() Implement cache
 	// CatalogCache *catalog.CatalogCache
@@ -110,21 +142,29 @@ type Services struct {
 	Trajectories
 	Cases
 	Holes
+	Fluids
+	Rigs
+	PorePressures
+	PressureDataProfiles
 }
 
 func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
 	return &Services{
-		Users:         NewUsersService(repos.Users, repos.Common, jwt),
-		Companies:     NewCompaniesService(repos.Companies, repos.Common),
-		Organizations: NewOrganizationsService(repos.Organizations),
-		Fields:        NewFieldsService(repos.Fields, repos.Common),
-		Sites:         NewSitesService(repos.Sites, repos.Common),
-		Wells:         NewWellsService(repos.Wells, repos.Common),
-		Wellbores:     NewWellboresService(repos.Wellbores, repos.Common),
-		Designs:       NewDesignsService(repos.Designs, repos.Common),
-		Trajectories:  NewTrajectoriesService(repos.Trajectories, repos.Common),
-		Cases:         NewCasesService(repos.Cases, repos.Common),
-		Holes:         NewHolesService(repos.Holes, repos.Common),
+		Users:                NewUsersService(repos.Users, repos.Common, jwt),
+		Companies:            NewCompaniesService(repos.Companies, repos.Common),
+		Organizations:        NewOrganizationsService(repos.Organizations),
+		Fields:               NewFieldsService(repos.Fields, repos.Common),
+		Sites:                NewSitesService(repos.Sites, repos.Common),
+		Wells:                NewWellsService(repos.Wells, repos.Common),
+		Wellbores:            NewWellboresService(repos.Wellbores, repos.Common),
+		Designs:              NewDesignsService(repos.Designs, repos.Common),
+		Trajectories:         NewTrajectoriesService(repos.Trajectories, repos.Common),
+		Cases:                NewCasesService(repos.Cases, repos.Common),
+		Holes:                NewHolesService(repos.Holes, repos.Common),
+		Fluids:               NewFluidsService(repos.Fluids, repos.Common),
+		Rigs:                 NewRigsService(repos.Rigs, repos.Common),
+		PorePressures:        NewPorePressuresService(repos.PorePressures, repos.Common),
+		PressureDataProfiles: NewPressureDataProfilesService(repos.PressureDataProfiles),
 		// CatalogCache: deps.CatalogCache,
 	}
 }

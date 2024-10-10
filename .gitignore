@@ -4,6 +4,8 @@
 .data
 vendor
 .DS_Store
+migrations
+atlas.hcl
 
 # Visual Studio Settings
 .vscode

@@ -3,6 +3,10 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
+# Install swag CLI
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+
+
 # Copy the built binary.
 COPY ./.bin/app /root/app
 

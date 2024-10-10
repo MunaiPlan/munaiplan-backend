@@ -379,6 +379,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/companies/with-components/{OrganizationID}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves companies within the specified organization, including all associated fields, sites, wells, wellbores, designs, trajectories, and cases (with metadata).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "companies"
+                ],
+                "summary": "Get Companies with Components",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "name": "OrganizationID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of companies with components",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Company"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Organization ID",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/companies/{id}": {
             "put": {
                 "description": "Updates an existing company",
