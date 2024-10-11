@@ -4,7 +4,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -69,9 +68,6 @@ type (
 // Init populates Config struct with values from config file
 // located at filepath and environment variables.
 func Init(configsDir string) (*Config, error) {
-	if err := godotenv.Load(); err != nil {
-		return nil, err
-	}
 
 	viper.AutomaticEnv()
 	populateDefaults()

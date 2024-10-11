@@ -92,13 +92,6 @@ func NewDatabase() *Database {
 			&models.Case{},
 			&models.Hole{},
 			&models.String{},
-			&models.SectionType{},
-			&models.SectionAttribute{},
-			&models.Section{},
-			&models.SectionValue{},
-			&models.SectionValueType{},
-			&models.Language{},
-			&models.SectionAttributeU18n{},
 			&models.Fluid{},
 			&models.FluidType{},
 		)
