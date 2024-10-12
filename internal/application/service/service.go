@@ -128,6 +128,22 @@ type PressureDataProfiles interface {
 	DeletePressureDataProfile(ctx context.Context, input *requests.DeletePressureDataProfileRequest) error
 }
 
+type FractureGradients interface {
+	GetFractureGradients(ctx context.Context, input *requests.GetFractureGradientsRequest) ([]*entities.FractureGradient, error)
+	GetFractureGradientByID(ctx context.Context, input *requests.GetFractureGradientByIDRequest) (*entities.FractureGradient, error)
+	CreateFractureGradient(ctx context.Context, input *requests.CreateFractureGradientRequest) error
+	UpdateFractureGradient(ctx context.Context, input *requests.UpdateFractureGradientRequest) (*entities.FractureGradient, error)
+	DeleteFractureGradient(ctx context.Context, input *requests.DeleteFractureGradientRequest) error
+}
+
+type Strings interface {
+	GetStrings(ctx context.Context, input *requests.GetStringsRequest) ([]*entities.String, error)
+	GetStringByID(ctx context.Context, input *requests.GetStringByIDRequest) (*entities.String, error)
+	CreateString(ctx context.Context, input *requests.CreateStringRequest) error
+	UpdateString(ctx context.Context, input *requests.UpdateStringRequest) (*entities.String, error)
+	DeleteString(ctx context.Context, input *requests.DeleteStringRequest) error
+}
+
 type Services struct {
 	// TODO() Implement cache
 	// CatalogCache *catalog.CatalogCache
@@ -146,6 +162,8 @@ type Services struct {
 	Rigs
 	PorePressures
 	PressureDataProfiles
+	FractureGradients
+	Strings
 }
 
 func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
@@ -165,6 +183,8 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
 		Rigs:                 NewRigsService(repos.Rigs, repos.Common),
 		PorePressures:        NewPorePressuresService(repos.PorePressures, repos.Common),
 		PressureDataProfiles: NewPressureDataProfilesService(repos.PressureDataProfiles),
+		FractureGradients:    NewFractureGradientsService(repos.FractureGradients, repos.Common),
+		Strings:              NewStringsService(repos.Strings, repos.Common),
 		// CatalogCache: deps.CatalogCache,
 	}
 }

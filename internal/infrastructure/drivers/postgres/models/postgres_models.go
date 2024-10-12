@@ -189,18 +189,23 @@ type TrajectoryUnit struct {
 
 // Case model with UUID primary key and foreign key.
 type Case struct {
-	ID              uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
-	CreatedAt       time.Time      `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt       time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
-	DeletedAt       gorm.DeletedAt `gorm:"index" json:"deleted_at"`
-	CaseName        string         `json:"case_name"`
-	CaseDescription string         `json:"case_description"`
-	DrillDepth      float64        `json:"drill_depth"`
-	PipeSize        float64        `json:"pipe_size"`
-	TrajectoryID    uuid.UUID      `gorm:"type:uuid;not null" json:"trajectory_id"`
-	Holes           []Hole         `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
-	Strings         []String       `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
-	Fluids          []Fluid        `gorm:"constraint:OnDelete:CASCADE;" json:"fluids"`
+	ID                   uuid.UUID             `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	CreatedAt            time.Time             `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt            time.Time             `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt            gorm.DeletedAt        `gorm:"index" json:"deleted_at"`
+	CaseName             string                `json:"case_name"`
+	CaseDescription      string                `json:"case_description"`
+	DrillDepth           float64               `json:"drill_depth"`
+	PipeSize             float64               `json:"pipe_size"`
+	IsComplete           bool                  `json:"is_complete"`
+	TrajectoryID         uuid.UUID             `gorm:"type:uuid;not null" json:"trajectory_id"`
+	Holes                []Hole                `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
+	Strings              []String              `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
+	Fluids               []Fluid               `gorm:"constraint:OnDelete:CASCADE;" json:"fluids"`
+	PorePressures        []PorePressure        `gorm:"constraint:OnDelete:CASCADE;" json:"pore_pressures"`
+	PressureDataProfiles []PressureDataProfile `gorm:"constraint:OnDelete:CASCADE;" json:"pressure_data_profiles"`
+	FractureGradients    []FractureGradient    `gorm:"constraint:OnDelete:CASCADE;" json:"fracture_gradients"`
+	Rigs                 []Rig                 `gorm:"constraint:OnDelete:CASCADE;" json:"rigs"`
 }
 
 // Hole model
@@ -261,30 +266,63 @@ type Caising struct {
 	ModelCaising          *string        `json:"model_caising,omitempty"`
 }
 
-// String represents the GORM model for the Strings table.
+// String represents the Strings table.
 type String struct {
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	CaseID    uuid.UUID      `gorm:"type:uuid;not null" json:"case_id"`
+	Name      string         `gorm:"type:text;not null" json:"name"`
+	Depth     float64        `gorm:"not null" json:"depth"`
+	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
+	Sections  []Section      `gorm:"foreignKey:StringID;constraint:OnDelete:CASCADE;" json:"sections"`
+}
+
+// Section represents the Sections table, which is associated with a specific String.
+type Section struct {
 	ID                  uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
-	CreatedAt           time.Time      `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt           time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
-	DeletedAt           gorm.DeletedAt `gorm:"index" json:"deleted_at"`
-	Name                string         `gorm:"type:text;not null" json:"name"`
-	Depth               float64        `gorm:"not null" json:"depth"`
+	StringID            uuid.UUID      `gorm:"type:uuid;not null" json:"string_id"`
 	Description         *string        `gorm:"type:text" json:"description,omitempty"`
 	Manufacturer        *string        `gorm:"type:text" json:"manufacturer,omitempty"`
-	CaseID              uuid.UUID      `gorm:"type:uuid;not null" json:"case_id"`
-	Type                string         `gorm:"type:text;not null" json:"type"`      // E.g., Drill Pipe
-	BodyOD              float64        `gorm:"not null" json:"body_od"`             // Outer Diameter of the body in mm
-	BodyID              float64        `gorm:"not null" json:"body_id"`             // Inner Diameter of the body in mm
-	AvgJointLength      *float64       `json:"avg_joint_length,omitempty"`          // Average joint length in m
-	StabilizerLength    *float64       `json:"stabilizer_length,omitempty"`         // Length of the stabilizer/tool joint in m
-	StabilizerOD        *float64       `json:"stabilizer_od,omitempty"`             // Outer Diameter of the stabilizer/tool joint in mm
-	StabilizerID        *float64       `json:"stabilizer_id,omitempty"`             // Inner Diameter of the stabilizer/tool joint in mm
-	Weight              *float64       `json:"weight,omitempty"`                    // Weight in appropriate unit
-	Material            *string        `gorm:"type:text" json:"material,omitempty"` // Material of the string
-	Grade               *string        `gorm:"type:text" json:"grade,omitempty"`    // Grade of the string
-	Class               *int           `json:"class,omitempty"`                     // Class of the string
-	FrictionCoefficient *float64       `json:"friction_coefficient,omitempty"`      // Coefficient of friction
-	MinYieldStrength    *float64       `json:"min_yield_strength,omitempty"`        // Minimum yield strength in psi
+	Type                string         `gorm:"type:text;not null" json:"type"`
+	BodyOD              float64        `gorm:"not null" json:"body_od"`
+	BodyID              float64        `gorm:"not null" json:"body_id"`
+	AvgJointLength      *float64       `json:"avg_joint_length,omitempty"`
+	StabilizerLength    *float64       `json:"stabilizer_length,omitempty"`
+	StabilizerOD        *float64       `json:"stabilizer_od,omitempty"`
+	StabilizerID        *float64       `json:"stabilizer_id,omitempty"`
+	Weight              *float64       `json:"weight,omitempty"`
+	Material            *string        `gorm:"type:text" json:"material,omitempty"`
+	Grade               *string        `gorm:"type:text" json:"grade,omitempty"`
+	Class               *int           `json:"class,omitempty"`
+	FrictionCoefficient *float64       `json:"friction_coefficient,omitempty"`
+	MinYieldStrength    *float64       `json:"min_yield_strength,omitempty"`
+	CreatedAt           time.Time      `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt           time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt           gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
+}
+
+// LibrarySection represents the LibrarySections table, which stores reusable sections.
+type LibrarySection struct {
+	ID                  uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	Description         *string        `gorm:"type:text" json:"description,omitempty"`
+	Manufacturer        *string        `gorm:"type:text" json:"manufacturer,omitempty"`
+	Type                string         `gorm:"type:text;not null" json:"type"`
+	BodyOD              float64        `gorm:"not null" json:"body_od"`
+	BodyID              float64        `gorm:"not null" json:"body_id"`
+	AvgJointLength      *float64       `json:"avg_joint_length,omitempty"`
+	StabilizerLength    *float64       `json:"stabilizer_length,omitempty"`
+	StabilizerOD        *float64       `json:"stabilizer_od,omitempty"`
+	StabilizerID        *float64       `json:"stabilizer_id,omitempty"`
+	Weight              *float64       `json:"weight,omitempty"`
+	Material            *string        `gorm:"type:text" json:"material,omitempty"`
+	Grade               *string        `gorm:"type:text" json:"grade,omitempty"`
+	Class               *int           `json:"class,omitempty"`
+	FrictionCoefficient *float64       `json:"friction_coefficient,omitempty"`
+	MinYieldStrength    *float64       `json:"min_yield_strength,omitempty"`
+	CreatedAt           time.Time      `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt           time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt           gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
 // Fluid model with UUID primary key and foreign keys.

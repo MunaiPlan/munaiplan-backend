@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
 	"gorm.io/gorm"
@@ -15,8 +17,13 @@ func NewPressureDataProfilesRepository(db *gorm.DB) *pressureDataProfilesReposit
 	return &pressureDataProfilesRepository{db: db}
 }
 
-func (r *pressureDataProfilesRepository) CreatePressureDataProfile(ctx context.Context, profile *entities.PressureDataProfile) error {
+func (r *pressureDataProfilesRepository) CreatePressureDataProfile(ctx context.Context, caseID string, profile *entities.PressureDataProfile) error {
 	gormProfile := toGormPressureDataProfile(profile)
+	caseIDUUID, err := uuid.Parse(caseID)
+	if err != nil {
+		return err
+	}
+	gormProfile.CaseID = caseIDUUID
 	return r.db.WithContext(ctx).Create(gormProfile).Error
 }
 

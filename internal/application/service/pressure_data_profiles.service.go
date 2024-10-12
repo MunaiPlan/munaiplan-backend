@@ -17,12 +17,11 @@ func NewPressureDataProfilesService(repo repository.PressureDataProfilesReposito
 
 func (s *pressureDataProfilesService) CreatePressureDataProfile(ctx context.Context, input *requests.CreatePressureDataProfileRequest) error {
 	profile := &entities.PressureDataProfile{
-		CaseID:   input.CaseID,
-		TVD:      input.TVD,
-		Pressure: input.Pressure,
-		EMW:      input.EMW,
+		TVD:      input.Body.TVD,
+		Pressure: input.Body.Pressure,
+		EMW:      input.Body.EMW,
 	}
-	return s.repo.CreatePressureDataProfile(ctx, profile)
+	return s.repo.CreatePressureDataProfile(ctx, input.CaseID, profile)
 }
 
 func (s *pressureDataProfilesService) GetPressureDataProfileByID(ctx context.Context, input *requests.GetPressureDataProfileByIDRequest) (*entities.PressureDataProfile, error) {
@@ -36,9 +35,9 @@ func (s *pressureDataProfilesService) GetPressureDataProfiles(ctx context.Contex
 func (s *pressureDataProfilesService) UpdatePressureDataProfile(ctx context.Context, input *requests.UpdatePressureDataProfileRequest) error {
 	profile := &entities.PressureDataProfile{
 		ID:       input.ID,
-		TVD:      input.TVD,
-		Pressure: input.Pressure,
-		EMW:      input.EMW,
+		TVD:      input.Body.TVD,
+		Pressure: input.Body.Pressure,
+		EMW:      input.Body.EMW,
 	}
 	return s.repo.UpdatePressureDataProfile(ctx, profile)
 }

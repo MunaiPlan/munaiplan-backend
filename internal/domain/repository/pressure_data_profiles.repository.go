@@ -6,7 +6,7 @@ import (
 )
 
 type PressureDataProfilesRepository interface {
-	CreatePressureDataProfile(ctx context.Context, profile *entities.PressureDataProfile) error
+	CreatePressureDataProfile(ctx context.Context, caseID string, profile *entities.PressureDataProfile) error
 	GetPressureDataProfileByID(ctx context.Context, id string) (*entities.PressureDataProfile, error)
 	GetPressureDataProfiles(ctx context.Context, caseID string) ([]*entities.PressureDataProfile, error)
 	UpdatePressureDataProfile(ctx context.Context, profile *entities.PressureDataProfile) error

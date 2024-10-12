@@ -75,7 +75,6 @@ func (s *rigsService) CreateRigRequestToEntity(input *requests.CreateRigRequestB
 // UpdateRigRequestToEntity converts an UpdateRigRequestBody to a Rig entity.
 func (s *rigsService) UpdateRigRequestToEntity(input *requests.UpdateRigRequestBody) *entities.Rig {
 	return &entities.Rig{
-		ID:                              input.ID,
 		BlockRating:                     input.BlockRating,
 		TorqueRating:                    input.TorqueRating,
 		RatedWorkingPressure:            input.RatedWorkingPressure,

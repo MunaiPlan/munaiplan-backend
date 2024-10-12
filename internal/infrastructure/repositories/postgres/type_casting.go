@@ -4,11 +4,16 @@ import (
 	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
+	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/types"
 )
 
 // toGormOrganization converts a domain organization to a gorm organization.
 func toGormOrganization(organization *entities.Organization) *models.Organization {
-	orgID, _ := validateGormId(organization.ID)
+	orgID, err := validateGormId(organization.ID)
+	if err != nil {
+		return nil
+	}
+
 	org := &models.Organization{
 		ID:      orgID,
 		Name:    organization.Name,
@@ -62,7 +67,11 @@ func toDomainCompany(companyModel *models.Company) *entities.Company {
 
 // toGormCompany maps the domain Company entity to the GORM Company model.
 func toGormCompany(company *entities.Company) *models.Company {
-	companyID, _ := validateGormId(company.ID)
+	companyID, err := validateGormId(company.ID)
+	if err != nil {
+		return nil
+	}
+
 	comp := &models.Company{
 		ID:             companyID,
 		Name:           company.Name,
@@ -102,7 +111,11 @@ func toDomainSite(siteModel *models.Site) *entities.Site {
 
 // toGormSite maps the domain Site entity to the GORM Site model.
 func toGormSite(site *entities.Site) *models.Site {
-	siteID, _ := validateGormId(site.ID)
+	siteID, err := validateGormId(site.ID)
+	if err != nil {
+		return nil
+	}
+
 	newSite := &models.Site{
 		ID:      siteID,
 		Name:    site.Name,
@@ -145,7 +158,11 @@ func toDomainWell(wellModel *models.Well) *entities.Well {
 
 // toGormWell maps the domain Well entity to the GORM Well model.
 func toGormWell(well *entities.Well) *models.Well {
-	wellID, _ := validateGormId(well.ID)
+	wellID, err := validateGormId(well.ID)
+	if err != nil {
+		return nil
+	}
+
 	newWell := &models.Well{
 		ID:                      wellID,
 		Name:                    well.Name,
@@ -195,7 +212,11 @@ func toDomainWellbore(wellboreModel *models.Wellbore) *entities.Wellbore {
 
 // toGormWellbore maps the domain Wellbore entity to the GORM Wellbore model.
 func toGormWellbore(wellbore *entities.Wellbore) *models.Wellbore {
-	wellboreID, _ := validateGormId(wellbore.ID)
+	wellboreID, err := validateGormId(wellbore.ID)
+	if err != nil {
+		return nil
+	}
+
 	newWellbore := &models.Wellbore{
 		ID:                             wellboreID,
 		Name:                           wellbore.Name,
@@ -241,7 +262,11 @@ func toDomainField(fieldModel *models.Field) *entities.Field {
 
 // toGormField maps the domain Field entity to the GORM Field model.
 func toGormField(field *entities.Field) *models.Field {
-	fieldID, _ := validateGormId(field.ID)
+	fieldID, err := validateGormId(field.ID)
+	if err != nil {
+		return nil
+	}
+
 	newField := &models.Field{
 		ID:              fieldID,
 		Name:            field.Name,
@@ -277,7 +302,11 @@ func toDomainDesign(designModel *models.Design) *entities.Design {
 
 // toGormDesign maps the domain Design entity to the GORM Design model.
 func toGormDesign(design *entities.Design) *models.Design {
-	designID, _ := validateGormId(design.ID)
+	designID, err := validateGormId(design.ID)
+	if err != nil {
+		return nil
+	}
+
 	newDesign := &models.Design{
 		ID:         designID,
 		PlanName:   design.PlanName,
@@ -325,7 +354,11 @@ func toDomainTrajectory(trajectoryModel *models.Trajectory) *entities.Trajectory
 
 // toGormTrajectory maps the domain Trajectory entity to the GORM Trajectory model.
 func toGormTrajectory(trajectory *entities.Trajectory) *models.Trajectory {
-	trajectoryID, _ := validateGormId(trajectory.ID)
+	trajectoryID, err := validateGormId(trajectory.ID)
+	if err != nil {
+		return nil
+	}
+
 	headers := make([]models.TrajectoryHeader, len(trajectory.Headers))
 	units := make([]models.TrajectoryUnit, len(trajectory.Units))
 	cases := make([]models.Case, len(trajectory.Cases))
@@ -353,7 +386,11 @@ func toGormTrajectory(trajectory *entities.Trajectory) *models.Trajectory {
 
 // toDomainTrajectoryHeader maps the GORM TrajectoryHeader model to the domain TrajectoryHeader entity.
 func toGormTrajectoryHeader(header *entities.TrajectoryHeader) *models.TrajectoryHeader {
-	headerID, _ := validateGormId(header.ID)
+	headerID, err := validateGormId(header.ID)
+	if err != nil {
+		return nil
+	}
+
 	return &models.TrajectoryHeader{
 		ID:               headerID,
 		Customer:         header.Customer,
@@ -389,7 +426,11 @@ func toDomainTrajectoryHeader(headerModel *models.TrajectoryHeader) *entities.Tr
 
 // toGormTrajectoryUnit maps the domain TrajectoryUnit entity to the GORM TrajectoryUnit model.
 func toGormTrajectoryUnit(unit *entities.TrajectoryUnit) *models.TrajectoryUnit {
-	unitID, _ := validateGormId(unit.ID)
+	unitID, err := validateGormId(unit.ID)
+	if err != nil {
+		return nil
+	}
+
 	return &models.TrajectoryUnit{
 		ID:              unitID,
 		MD:              unit.MD,
@@ -428,13 +469,19 @@ func toDomainTrajectoryUnit(unitModel *models.TrajectoryUnit) *entities.Trajecto
 // toDomainCase maps the GORM Case model to the domain Case entity.
 func toDomainCase(caseModel *models.Case) *entities.Case {
 	newCase := entities.Case{
-		ID:              caseModel.ID.String(),
-		CaseName:        caseModel.CaseName,
-		CaseDescription: caseModel.CaseDescription,
-		DrillDepth:      caseModel.DrillDepth,
-		PipeSize:        caseModel.PipeSize,
-		CreatedAt:       caseModel.CreatedAt,
-		Holes:           make([]*entities.Hole, len(caseModel.Holes)),
+		ID:                   caseModel.ID.String(),
+		CaseName:             caseModel.CaseName,
+		CaseDescription:      caseModel.CaseDescription,
+		DrillDepth:           caseModel.DrillDepth,
+		PipeSize:             caseModel.PipeSize,
+		CreatedAt:            caseModel.CreatedAt,
+		Holes:                make([]*entities.Hole, len(caseModel.Holes)),
+		Fluids:               make([]*entities.Fluid, len(caseModel.Fluids)),
+		Strings:              make([]*entities.String, len(caseModel.Strings)),
+		PorePressures:        make([]*entities.PorePressure, len(caseModel.PorePressures)),
+		PressureDataProfiles: make([]*entities.PressureDataProfile, len(caseModel.PressureDataProfiles)),
+		FractureGradients:    make([]*entities.FractureGradient, len(caseModel.FractureGradients)),
+		Rigs:                 make([]*entities.Rig, len(caseModel.Rigs)),
 	}
 
 	for _, hole := range caseModel.Holes {
@@ -442,12 +489,46 @@ func toDomainCase(caseModel *models.Case) *entities.Case {
 		newCase.Holes = append(newCase.Holes, domainHole)
 	}
 
+	for _, fluid := range caseModel.Fluids {
+		domainFluid := toDomainFluid(&fluid)
+		newCase.Fluids = append(newCase.Fluids, domainFluid)
+	}
+
+	for _, str := range caseModel.Strings {
+		domainString := toDomainString(&str)
+		newCase.Strings = append(newCase.Strings, domainString)
+	}
+
+	for _, pp := range caseModel.PorePressures {
+		domainPP := toDomainPorePressure(&pp)
+		newCase.PorePressures = append(newCase.PorePressures, domainPP)
+	}
+
+	for _, pdp := range caseModel.PressureDataProfiles {
+		domainPDP := toDomainPressureDataProfile(&pdp)
+		newCase.PressureDataProfiles = append(newCase.PressureDataProfiles, domainPDP)
+	}
+
+	for _, fg := range caseModel.FractureGradients {
+		domainFG := toDomainFractureGradient(&fg)
+		newCase.FractureGradients = append(newCase.FractureGradients, domainFG)
+	}
+
+	for _, rig := range caseModel.Rigs {
+		domainRig := toDomainRig(&rig)
+		newCase.Rigs = append(newCase.Rigs, domainRig)
+	}
+
 	return &newCase
 }
 
 // toGormCase maps the domain Case entity to the GORM Case model.
 func toGormCase(caseEntity *entities.Case) *models.Case {
-	caseID, _ := validateGormId(caseEntity.ID)
+	caseID, err := validateGormId(caseEntity.ID)
+	if err != nil {
+		return nil
+	}
+
 	newCase := &models.Case{
 		ID:              caseID,
 		CaseName:        caseEntity.CaseName,
@@ -503,9 +584,13 @@ func toDomainHole(holeModel *models.Hole) *entities.Hole {
 
 // toGormHole maps the domain Hole entity to the GORM Hole model.
 func toGormHole(hole *entities.Hole) *models.Hole {
-	holeID, _ := validateGormId(hole.ID)
+	holeID, err := validateGormId(hole.ID)
+	if err != nil {
+		return nil
+	}
+
 	newHole := &models.Hole{
-		CaseID:                    holeID,
+		ID:                        holeID,
 		OpenHoleMDTop:             hole.OpenHoleMDTop,
 		OpenHoleMDBase:            hole.OpenHoleMDBase,
 		OpenHoleLength:            hole.OpenHoleLength,
@@ -564,9 +649,13 @@ func toDomainCaising(casingModel *models.Caising) *entities.Caising {
 
 // toGormCaising converts a domain caising to a gorm caising.
 func toGormCaising(caising *entities.Caising) *models.Caising {
-	caisingID, _ := validateGormId(caising.ID)
+	caisingID, err := validateGormId(caising.ID)
+	if err != nil {
+		return nil
+	}
+
 	return &models.Caising{
-		HoleID:                caisingID,
+		ID:                    caisingID,
 		MDTop:                 caising.MDTop,
 		MDBase:                caising.MDBase,
 		Length:                caising.Length,
@@ -610,7 +699,10 @@ func toDomainFluidType(fluidTypeModel *models.FluidType) *entities.FluidType {
 
 // toGormFluid converts a domain fluid to a gorm fluid.
 func toGormFluid(fluid *entities.Fluid) *models.Fluid {
-	fluidID, _ := validateGormId(fluid.ID)
+	fluidID, err := validateGormId(fluid.ID)
+	if err != nil {
+		return nil
+	}
 	return &models.Fluid{
 		ID:            fluidID,
 		Name:          fluid.Name,
@@ -623,7 +715,11 @@ func toGormFluid(fluid *entities.Fluid) *models.Fluid {
 
 // toGormFluidType converts a domain fluid type to a gorm fluid type.
 func toGormFluidType(fluidType *entities.FluidType) *models.FluidType {
-	fluidTypeID, _ := validateGormId(fluidType.ID)
+	fluidTypeID, err := validateGormId(fluidType.ID)
+	if err != nil {
+		return nil
+	}
+
 	return &models.FluidType{
 		ID:   fluidTypeID,
 		Name: fluidType.Name,
@@ -633,53 +729,54 @@ func toGormFluidType(fluidType *entities.FluidType) *models.FluidType {
 // toDomainRig maps the GORM Rig model to the domain Rig entity.
 func toDomainRig(rigModel *models.Rig) *entities.Rig {
 	return &entities.Rig{
-		ID:                              rigModel.ID.String(),
-		CaseID:                          rigModel.CaseID.String(),
-		CreatedAt:                       rigModel.CreatedAt,
-		UpdatedAt:                       rigModel.UpdatedAt,
-		BlockRating:                     rigModel.BlockRating,
-		TorqueRating:                    rigModel.TorqueRating,
-		RatedWorkingPressure:            rigModel.RatedWorkingPressure,
-		BopPressureRating:               rigModel.BopPressureRating,
-		SurfacePressureLoss:             rigModel.SurfacePressureLoss,
-		StandpipeLength:                 rigModel.StandpipeLength,
-		StandpipeInternalDiameter:       rigModel.StandpipeInternalDiameter,
-		HoseLength:                      rigModel.HoseLength,
-		HoseInternalDiameter:            rigModel.HoseInternalDiameter,
-		SwivelLength:                    rigModel.SwivelLength,
-		SwivelInternalDiameter:          rigModel.SwivelInternalDiameter,
-		KellyLength:                     rigModel.KellyLength,
-		KellyInternalDiameter:           rigModel.KellyInternalDiameter,
-		PumpDischargeLineLength:         rigModel.PumpDischargeLineLength,
+		ID:                                rigModel.ID.String(),
+		CreatedAt:                         rigModel.CreatedAt,
+		BlockRating:                       rigModel.BlockRating,
+		TorqueRating:                      rigModel.TorqueRating,
+		RatedWorkingPressure:              rigModel.RatedWorkingPressure,
+		BopPressureRating:                 rigModel.BopPressureRating,
+		SurfacePressureLoss:               rigModel.SurfacePressureLoss,
+		StandpipeLength:                   rigModel.StandpipeLength,
+		StandpipeInternalDiameter:         rigModel.StandpipeInternalDiameter,
+		HoseLength:                        rigModel.HoseLength,
+		HoseInternalDiameter:              rigModel.HoseInternalDiameter,
+		SwivelLength:                      rigModel.SwivelLength,
+		SwivelInternalDiameter:            rigModel.SwivelInternalDiameter,
+		KellyLength:                       rigModel.KellyLength,
+		KellyInternalDiameter:             rigModel.KellyInternalDiameter,
+		PumpDischargeLineLength:           rigModel.PumpDischargeLineLength,
 		PumpDischargeLineInternalDiameter: rigModel.PumpDischargeLineInternalDiameter,
-		TopDriveStackupLength:           rigModel.TopDriveStackupLength,
-		TopDriveStackupInternalDiameter: rigModel.TopDriveStackupInternalDiameter,
+		TopDriveStackupLength:             rigModel.TopDriveStackupLength,
+		TopDriveStackupInternalDiameter:   rigModel.TopDriveStackupInternalDiameter,
 	}
 }
 
 // toGormRig maps the domain Rig entity to the GORM Rig model.
 func toGormRig(rig *entities.Rig) *models.Rig {
-	caseID, _ := uuid.Parse(rig.CaseID)
+	rigID, err := validateGormId(rig.ID)
+	if err != nil {
+		return nil
+	}
+
 	return &models.Rig{
-		ID:                              uuid.MustParse(rig.ID),
-		CaseID:                          caseID,
-		BlockRating:                     rig.BlockRating,
-		TorqueRating:                    rig.TorqueRating,
-		RatedWorkingPressure:            rig.RatedWorkingPressure,
-		BopPressureRating:               rig.BopPressureRating,
-		SurfacePressureLoss:             rig.SurfacePressureLoss,
-		StandpipeLength:                 rig.StandpipeLength,
-		StandpipeInternalDiameter:       rig.StandpipeInternalDiameter,
-		HoseLength:                      rig.HoseLength,
-		HoseInternalDiameter:            rig.HoseInternalDiameter,
-		SwivelLength:                    rig.SwivelLength,
-		SwivelInternalDiameter:          rig.SwivelInternalDiameter,
-		KellyLength:                     rig.KellyLength,
-		KellyInternalDiameter:           rig.KellyInternalDiameter,
-		PumpDischargeLineLength:         rig.PumpDischargeLineLength,
+		ID:                                rigID,
+		BlockRating:                       rig.BlockRating,
+		TorqueRating:                      rig.TorqueRating,
+		RatedWorkingPressure:              rig.RatedWorkingPressure,
+		BopPressureRating:                 rig.BopPressureRating,
+		SurfacePressureLoss:               rig.SurfacePressureLoss,
+		StandpipeLength:                   rig.StandpipeLength,
+		StandpipeInternalDiameter:         rig.StandpipeInternalDiameter,
+		HoseLength:                        rig.HoseLength,
+		HoseInternalDiameter:              rig.HoseInternalDiameter,
+		SwivelLength:                      rig.SwivelLength,
+		SwivelInternalDiameter:            rig.SwivelInternalDiameter,
+		KellyLength:                       rig.KellyLength,
+		KellyInternalDiameter:             rig.KellyInternalDiameter,
+		PumpDischargeLineLength:           rig.PumpDischargeLineLength,
 		PumpDischargeLineInternalDiameter: rig.PumpDischargeLineInternalDiameter,
-		TopDriveStackupLength:           rig.TopDriveStackupLength,
-		TopDriveStackupInternalDiameter: rig.TopDriveStackupInternalDiameter,
+		TopDriveStackupLength:             rig.TopDriveStackupLength,
+		TopDriveStackupInternalDiameter:   rig.TopDriveStackupInternalDiameter,
 	}
 }
 
@@ -687,20 +784,22 @@ func toGormRig(rig *entities.Rig) *models.Rig {
 func toDomainPorePressure(ppModel *models.PorePressure) *entities.PorePressure {
 	return &entities.PorePressure{
 		ID:        ppModel.ID.String(),
-		CaseID:    ppModel.CaseID.String(),
 		TVD:       ppModel.TVD,
 		Pressure:  ppModel.Pressure,
 		EMW:       ppModel.EMW,
 		CreatedAt: ppModel.CreatedAt,
-		UpdatedAt: ppModel.UpdatedAt,
 	}
 }
 
 // toGormPorePressure maps the domain PorePressure entity to the GORM PorePressure model.
 func toGormPorePressure(pp *entities.PorePressure) *models.PorePressure {
-	caseID, _ := uuid.Parse(pp.CaseID)
+	pressureID, err := validateGormId(pp.ID)
+	if err != nil {
+		return nil
+	}
+
 	return &models.PorePressure{
-		CaseID:   caseID,
+		ID:       pressureID,
 		TVD:      pp.TVD,
 		Pressure: pp.Pressure,
 		EMW:      pp.EMW,
@@ -711,24 +810,141 @@ func toGormPorePressure(pp *entities.PorePressure) *models.PorePressure {
 func toDomainPressureDataProfile(profileModel *models.PressureDataProfile) *entities.PressureDataProfile {
 	return &entities.PressureDataProfile{
 		ID:        profileModel.ID.String(),
-		CaseID:    profileModel.CaseID.String(),
 		TVD:       profileModel.TVD,
 		Pressure:  profileModel.Pressure,
 		EMW:       profileModel.EMW,
 		CreatedAt: profileModel.CreatedAt,
-		UpdatedAt: profileModel.UpdatedAt,
-		DeletedAt: nil,
 	}
 }
 
 // toGormPressureDataProfile maps the domain PressureDataProfile entity to the GORM PressureDataProfile model.
 func toGormPressureDataProfile(profile *entities.PressureDataProfile) *models.PressureDataProfile {
-	caseID, _ := uuid.Parse(profile.CaseID)
+	ppDataProfileID, err := validateGormId(profile.ID)
+	if err != nil {
+		return nil
+	}
+
 	return &models.PressureDataProfile{
-		CaseID:   caseID,
+		ID:       ppDataProfileID,
 		TVD:      profile.TVD,
 		Pressure: profile.Pressure,
 		EMW:      profile.EMW,
+	}
+}
+
+// toDomainFractureGradient maps the GORM FractureGradient model to the domain FractureGradient entity.
+func toDomainFractureGradient(model *models.FractureGradient) *entities.FractureGradient {
+	return &entities.FractureGradient{
+		ID:                   model.ID.String(),
+		TemperatureAtSurface: model.TemperatureAtSurface,
+		TemperatureAtWellTVD: model.TemperatureAtWellTVD,
+		TemperatureGradient:  model.TemperatureGradient,
+		WellTVD:              model.WellTVD,
+		CreatedAt:            model.CreatedAt,
+	}
+}
+
+// toGormFractureGradient maps the domain FractureGradient entity to the GORM FractureGradient model.
+func toGormFractureGradient(entity *entities.FractureGradient) *models.FractureGradient {
+	gradientID, err := validateGormId(entity.ID)
+	if err != nil {
+		return nil
+	}
+
+	return &models.FractureGradient{
+		ID:                   uuid.MustParse(entity.ID),
+		CaseID:               gradientID,
+		TemperatureAtSurface: entity.TemperatureAtSurface,
+		TemperatureAtWellTVD: entity.TemperatureAtWellTVD,
+		TemperatureGradient:  entity.TemperatureGradient,
+		WellTVD:              entity.WellTVD,
+		CreatedAt:            entity.CreatedAt,
+	}
+}
+
+// toDomainString maps the GORM String model to the domain String entity.
+func toDomainString(gormString *models.String) *entities.String {
+	sections := make([]*entities.Section, len(gormString.Sections))
+	for i, sec := range gormString.Sections {
+		sections[i] = toDomainSection(&sec)
+	}
+
+	return &entities.String{
+		ID:        gormString.ID.String(),
+		Name:      gormString.Name,
+		Depth:     gormString.Depth,
+		CreatedAt: gormString.CreatedAt,
+		Sections:  sections,
+	}
+}
+
+// toGormString maps the domain String entity to the GORM String model.
+func toGormString(stringEntity *entities.String) *models.String {
+	caseUUID, err := validateGormId(stringEntity.ID)
+	if err != nil {
+		return nil
+	}
+	sections := make([]models.Section, len(stringEntity.Sections))
+	for i, sec := range stringEntity.Sections {
+		sections[i] = *toGormSection(sec)
+	}
+
+	return &models.String{
+		ID:        caseUUID,
+		Name:      stringEntity.Name,
+		Depth:     stringEntity.Depth,
+		CreatedAt: stringEntity.CreatedAt,
+		Sections:  sections,
+	}
+}
+
+// toDomainSection maps the GORM Section model to the domain Section entity.
+func toDomainSection(gormSection *models.Section) *entities.Section {
+	return &entities.Section{
+		ID:                  gormSection.ID.String(),
+		Description:         gormSection.Description,
+		Manufacturer:        gormSection.Manufacturer,
+		Type:                gormSection.Type,
+		BodyOD:              gormSection.BodyOD,
+		BodyID:              gormSection.BodyID,
+		AvgJointLength:      gormSection.AvgJointLength,
+		StabilizerLength:    gormSection.StabilizerLength,
+		StabilizerOD:        gormSection.StabilizerOD,
+		StabilizerID:        gormSection.StabilizerID,
+		Weight:              gormSection.Weight,
+		Material:            gormSection.Material,
+		Grade:               gormSection.Grade,
+		Class:               gormSection.Class,
+		FrictionCoefficient: gormSection.FrictionCoefficient,
+		MinYieldStrength:    gormSection.MinYieldStrength,
+		CreatedAt:           gormSection.CreatedAt,
+	}
+}
+
+// toGormSection maps the domain Section entity to the GORM Section model.
+func toGormSection(sectionEntity *entities.Section) *models.Section {
+	sectionUUID, err := validateGormId(sectionEntity.ID)
+	if err != nil {
+		return nil
+	}
+	return &models.Section{
+		ID:                  sectionUUID,
+		Description:         sectionEntity.Description,
+		Manufacturer:        sectionEntity.Manufacturer,
+		Type:                sectionEntity.Type,
+		BodyOD:              sectionEntity.BodyOD,
+		BodyID:              sectionEntity.BodyID,
+		AvgJointLength:      sectionEntity.AvgJointLength,
+		StabilizerLength:    sectionEntity.StabilizerLength,
+		StabilizerOD:        sectionEntity.StabilizerOD,
+		StabilizerID:        sectionEntity.StabilizerID,
+		Weight:              sectionEntity.Weight,
+		Material:            sectionEntity.Material,
+		Grade:               sectionEntity.Grade,
+		Class:               sectionEntity.Class,
+		FrictionCoefficient: sectionEntity.FrictionCoefficient,
+		MinYieldStrength:    sectionEntity.MinYieldStrength,
+		CreatedAt:           sectionEntity.CreatedAt,
 	}
 }
 
@@ -737,5 +953,9 @@ func validateGormId(id string) (uuid.UUID, error) {
 	if id == "" {
 		return uuid.Nil, nil
 	}
-	return uuid.Parse(id)
+	newId, err := uuid.Parse(id)
+	if err != nil {
+		return uuid.Nil, types.ErrInvalidUUID
+	}
+	return newId, nil
 }

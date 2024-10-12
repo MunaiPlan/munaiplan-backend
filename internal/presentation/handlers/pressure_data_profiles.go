@@ -32,11 +32,16 @@ func (h *Handler) getPressureDataProfiles(c *gin.Context) {
 
 func (h *Handler) createPressureDataProfile(c *gin.Context) {
 	var inp requests.CreatePressureDataProfileRequest
-	if err := c.BindJSON(&inp); err != nil {
+	var err error
+
+	if err = c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-	if err := h.services.PressureDataProfiles.CreatePressureDataProfile(c.Request.Context(), &inp); err != nil {
+	if inp.CaseID, err = h.validateQueryIDParam(c, values.CaseIdQueryParam); err != nil {
+		return
+	}
+	if err = h.services.PressureDataProfiles.CreatePressureDataProfile(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -57,7 +62,7 @@ func (h *Handler) getPressureDataProfileByID(c *gin.Context) {
 func (h *Handler) updatePressureDataProfile(c *gin.Context) {
 	var inp requests.UpdatePressureDataProfileRequest
 	inp.ID = c.Param(values.IdQueryParam)
-	if err := c.BindJSON(&inp); err != nil {
+	if err := c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "Invalid request body")
 		return
 	}

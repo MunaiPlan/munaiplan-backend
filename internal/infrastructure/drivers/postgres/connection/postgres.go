@@ -92,8 +92,14 @@ func NewDatabase() *Database {
 			&models.Case{},
 			&models.Hole{},
 			&models.String{},
+			&models.Section{},
+			&models.LibrarySection{},
 			&models.Fluid{},
 			&models.FluidType{},
+			&models.PressureDataProfile{},
+			&models.PorePressure{},
+			&models.FractureGradient{},
+			&models.Rig{},
 		)
 		if err != nil {
 			logrus.Fatalf("failed to auto-migrate database: %v", err)
@@ -105,7 +111,7 @@ func NewDatabase() *Database {
 		logrus.Print("Indexes created")
 
 		if err = execSqlFromFile(db, "internal/infrastructure/drivers/postgres/setup/seed.sql"); err != nil {
-				logrus.Fatalf("failed to execute seed sql file: %v", err)
+			logrus.Fatalf("failed to execute seed sql file: %v", err)
 		}
 
 		dbInstance = &Database{Conn: db}

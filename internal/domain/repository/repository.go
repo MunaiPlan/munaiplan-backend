@@ -22,6 +22,8 @@ type Repository struct {
 	Rigs                 RigsRepository
 	PorePressures        PorePressuresRepository
 	PressureDataProfiles PressureDataProfilesRepository
+	FractureGradients    FractureGradientsRepository
+	Strings              StringsRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repository {
@@ -42,5 +44,7 @@ func NewRepositories(db *gorm.DB) *Repository {
 		Rigs:                 postgres.NewRigsRepository(db),
 		PorePressures:        postgres.NewPorePressuresRepository(db),
 		PressureDataProfiles: postgres.NewPressureDataProfilesRepository(db),
+		FractureGradients:    postgres.NewFractureGradientsRepository(db),
+		Strings:              postgres.NewStringsRepository(db),
 	}
 }

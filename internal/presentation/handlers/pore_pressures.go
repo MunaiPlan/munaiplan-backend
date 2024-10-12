@@ -64,12 +64,17 @@ func (h *Handler) getPorePressures(c *gin.Context) {
 // @Router /api/v1/pore-pressures [post]
 func (h *Handler) createPorePressure(c *gin.Context) {
 	var inp requests.CreatePorePressureRequest
-	if err := c.BindJSON(&inp); err != nil {
+	var err error
+	if err = c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
-	if err := h.services.PorePressures.CreatePorePressure(c.Request.Context(), &inp); err != nil {
+	if inp.CaseID, err = h.validateQueryIDParam(c, values.CaseIdQueryParam); err != nil {
+		return
+	}
+
+	if err = h.services.PorePressures.CreatePorePressure(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -94,7 +99,7 @@ func (h *Handler) updatePorePressure(c *gin.Context) {
 	var inp requests.UpdatePorePressureRequest
 	var err error
 
-	if err := c.BindJSON(&inp); err != nil {
+	if err = c.BindJSON(&inp.Body); err != nil {
 		helpers.NewErrorResponse(c, http.StatusBadRequest, "Invalid request body")
 		return
 	}

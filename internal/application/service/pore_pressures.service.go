@@ -26,9 +26,9 @@ func (s *porePressuresService) CreatePorePressure(ctx context.Context, input *re
 	}
 
 	porePressure := &entities.PorePressure{
-		TVD:      input.TVD,
-		Pressure: input.Pressure,
-		EMW:      input.EMW,
+		TVD:      input.Body.TVD,
+		Pressure: input.Body.Pressure,
+		EMW:      input.Body.EMW,
 	}
 
 	return s.porePressuresRepo.CreatePorePressure(ctx, input.CaseID, porePressure)
@@ -49,9 +49,9 @@ func (s *porePressuresService) GetPorePressures(ctx context.Context, input *requ
 func (s *porePressuresService) UpdatePorePressure(ctx context.Context, input *requests.UpdatePorePressureRequest) (*entities.PorePressure, error) {
 	porePressure := &entities.PorePressure{
 		ID:       input.ID,
-		TVD:      input.TVD,
-		Pressure: input.Pressure,
-		EMW:      input.EMW,
+		TVD:      input.Body.TVD,
+		Pressure: input.Body.Pressure,
+		EMW:      input.Body.EMW,
 	}
 
 	return s.porePressuresRepo.UpdatePorePressure(ctx, porePressure)

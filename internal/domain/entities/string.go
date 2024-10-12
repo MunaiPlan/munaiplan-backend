@@ -2,62 +2,32 @@ package entities
 
 import "time"
 
-// String entity
+// String represents the domain entity for a String.
 type String struct {
 	ID        string     `json:"id"`
 	Name      string     `json:"name"`
 	Depth     float64    `json:"depth"`
-	CaseID    string     `json:"case_id"`
 	CreatedAt time.Time  `json:"created_at"`
 	Sections  []*Section `json:"sections"`
 }
 
-// SectionType entity
-type SectionType struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-// SectionAttribute entity
-type SectionAttribute struct {
-	ID            string    `json:"id"`
-	Name          string    `json:"name"`
-	Unit          string    `json:"unit"`
-	ValueTypeID   string    `json:"value_type_id"`
-	SectionTypeID string    `json:"section_type_id"`
-	CreatedAt     time.Time `json:"created_at"`
-}
-
-// Section entity
+// Section represents the domain entity for a Section associated with a String.
 type Section struct {
-	ID            string          `json:"id"`
-	StringID      string          `json:"string_id"`
-	SectionTypeID string          `json:"section_type_id"`
-	CreatedAt     time.Time       `json:"created_at"`
-	Values        []*SectionValue `json:"values"`
-}
-
-// SectionValue entity
-type SectionValue struct {
-	ID          string    `json:"id"`
-	SectionID   string    `json:"section_id"`
-	AttributeID string    `json:"attribute_id"`
-	Value       string    `json:"value"`
-	CreatedAt   time.Time `json:"created_at"`
-}
-
-// SectionValueType entity
-type SectionValueType struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-// SectionAttributeTranslation entity
-type SectionAttributeTranslation struct {
-	ID          string `json:"id"`
-	AttributeID string `json:"attribute_id"`
-	LanguageID  string `json:"language_id"`
-	Name        string `json:"name"`
-	Unit        string `json:"unit"`
+	ID                  string    `json:"id"`
+	Description         *string   `json:"description,omitempty"`
+	Manufacturer        *string   `json:"manufacturer,omitempty"`
+	Type                string    `json:"type"`
+	BodyOD              float64   `json:"body_od"`
+	BodyID              float64   `json:"body_id"`
+	AvgJointLength      *float64  `json:"avg_joint_length,omitempty"`
+	StabilizerLength    *float64  `json:"stabilizer_length,omitempty"`
+	StabilizerOD        *float64  `json:"stabilizer_od,omitempty"`
+	StabilizerID        *float64  `json:"stabilizer_id,omitempty"`
+	Weight              *float64  `json:"weight,omitempty"`
+	Material            *string   `json:"material,omitempty"`
+	Grade               *string   `json:"grade,omitempty"`
+	Class               *int      `json:"class,omitempty"`
+	FrictionCoefficient *float64  `json:"friction_coefficient,omitempty"`
+	MinYieldStrength    *float64  `json:"min_yield_strength,omitempty"`
+	CreatedAt           time.Time `json:"created_at"`
 }

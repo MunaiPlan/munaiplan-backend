@@ -10,6 +10,10 @@ var (
 )
 
 var (
+	ErrInvalidUUID = errors.New("invalid UUID")
+)
+
+var (
 	ErrCompanyNotFound      = errors.New("company doesn't exists")
 	ErrCompanyAlreadyExists = errors.New("company with such name already exists")
 	ErrCompanyWasNotUpdated = errors.New("company was not updated")
@@ -56,4 +60,12 @@ var (
 var (
 	ErrHoleNotChanged    = errors.New("hole was not changed")
 	ErrCaisingIdNotFound = errors.New("caising ID was not found")
+)
+
+var (
+	ErrFractureGradientNotChanged = errors.New("fracture gradient was not changed")
+)
+
+var (
+	ErrSectionIdNotFound = errors.New("section ID was not found")
 )

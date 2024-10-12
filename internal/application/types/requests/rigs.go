@@ -23,7 +23,6 @@ type CreateRigRequestBody struct {
 
 // UpdateRigRequestBody represents the request body for updating a rig.
 type UpdateRigRequestBody struct {
-	ID                              string   `json:"id"`
 	BlockRating                     *float64 `json:"block_rating,omitempty"`
 	TorqueRating                    *float64 `json:"torque_rating,omitempty"`
 	RatedWorkingPressure            float64  `json:"rated_working_pressure"`

@@ -5,7 +5,6 @@ import "time"
 // Rig represents the rig entity with various optional properties related to rig specifications.
 type Rig struct {
 	ID                              string     `json:"id"`
-	CaseID                          string     `json:"case_id"`
 	CreatedAt                       time.Time  `json:"created_at"`
 	UpdatedAt                       time.Time  `json:"updated_at"`
 	BlockRating                     *float64   `json:"block_rating,omitempty"`
