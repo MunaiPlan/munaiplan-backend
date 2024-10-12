@@ -189,23 +189,22 @@ type TrajectoryUnit struct {
 
 // Case model with UUID primary key and foreign key.
 type Case struct {
-	ID                   uuid.UUID             `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
-	CreatedAt            time.Time             `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt            time.Time             `gorm:"autoUpdateTime" json:"updated_at"`
-	DeletedAt            gorm.DeletedAt        `gorm:"index" json:"deleted_at"`
-	CaseName             string                `json:"case_name"`
-	CaseDescription      string                `json:"case_description"`
-	DrillDepth           float64               `json:"drill_depth"`
-	PipeSize             float64               `json:"pipe_size"`
-	IsComplete           bool                  `json:"is_complete"`
-	TrajectoryID         uuid.UUID             `gorm:"type:uuid;not null" json:"trajectory_id"`
-	Holes                []Hole                `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
-	Strings              []String              `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
-	Fluids               []Fluid               `gorm:"constraint:OnDelete:CASCADE;" json:"fluids"`
-	PorePressures        []PorePressure        `gorm:"constraint:OnDelete:CASCADE;" json:"pore_pressures"`
-	PressureDataProfiles []PressureDataProfile `gorm:"constraint:OnDelete:CASCADE;" json:"pressure_data_profiles"`
-	FractureGradients    []FractureGradient    `gorm:"constraint:OnDelete:CASCADE;" json:"fracture_gradients"`
-	Rigs                 []Rig                 `gorm:"constraint:OnDelete:CASCADE;" json:"rigs"`
+	ID                uuid.UUID          `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	CreatedAt         time.Time          `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt         time.Time          `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt         gorm.DeletedAt     `gorm:"index" json:"deleted_at"`
+	CaseName          string             `json:"case_name"`
+	CaseDescription   string             `json:"case_description"`
+	DrillDepth        float64            `json:"drill_depth"`
+	PipeSize          float64            `json:"pipe_size"`
+	IsComplete        bool               `json:"is_complete"`
+	TrajectoryID      uuid.UUID          `gorm:"type:uuid;not null" json:"trajectory_id"`
+	Holes             []Hole             `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
+	Strings           []String           `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
+	Fluids            []Fluid            `gorm:"constraint:OnDelete:CASCADE;" json:"fluids"`
+	PorePressures     []PorePressure     `gorm:"constraint:OnDelete:CASCADE;" json:"pore_pressures"`
+	FractureGradients []FractureGradient `gorm:"constraint:OnDelete:CASCADE;" json:"fracture_gradients"`
+	Rigs              []Rig              `gorm:"constraint:OnDelete:CASCADE;" json:"rigs"`
 }
 
 // Hole model
@@ -353,19 +352,6 @@ type FluidType struct {
 
 // PorePressure model with UUID primary key and foreign key.
 type PorePressure struct {
-	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
-	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
-	CaseID    uuid.UUID      `gorm:"type:uuid;not null" json:"case_id"`
-	Case      Case           `gorm:"foreignKey:CaseID;constraint:OnDelete:CASCADE;" json:"-"`
-	TVD       float64        `gorm:"not null" json:"tvd"`
-	Pressure  float64        `gorm:"not null" json:"pressure"`
-	EMW       float64        `gorm:"not null" json:"emw"`
-}
-
-// PressureDataProfile model with UUID primary key and foreign key.
-type PressureDataProfile struct {
 	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
 	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`

@@ -469,19 +469,19 @@ func toDomainTrajectoryUnit(unitModel *models.TrajectoryUnit) *entities.Trajecto
 // toDomainCase maps the GORM Case model to the domain Case entity.
 func toDomainCase(caseModel *models.Case) *entities.Case {
 	newCase := entities.Case{
-		ID:                   caseModel.ID.String(),
-		CaseName:             caseModel.CaseName,
-		CaseDescription:      caseModel.CaseDescription,
-		DrillDepth:           caseModel.DrillDepth,
-		PipeSize:             caseModel.PipeSize,
-		CreatedAt:            caseModel.CreatedAt,
-		Holes:                make([]*entities.Hole, len(caseModel.Holes)),
-		Fluids:               make([]*entities.Fluid, len(caseModel.Fluids)),
-		Strings:              make([]*entities.String, len(caseModel.Strings)),
-		PorePressures:        make([]*entities.PorePressure, len(caseModel.PorePressures)),
-		PressureDataProfiles: make([]*entities.PressureDataProfile, len(caseModel.PressureDataProfiles)),
-		FractureGradients:    make([]*entities.FractureGradient, len(caseModel.FractureGradients)),
-		Rigs:                 make([]*entities.Rig, len(caseModel.Rigs)),
+		ID:                caseModel.ID.String(),
+		CaseName:          caseModel.CaseName,
+		CaseDescription:   caseModel.CaseDescription,
+		DrillDepth:        caseModel.DrillDepth,
+		PipeSize:          caseModel.PipeSize,
+		CreatedAt:         caseModel.CreatedAt,
+		IsComplete:        caseModel.IsComplete,
+		Holes:             make([]*entities.Hole, len(caseModel.Holes)),
+		Fluids:            make([]*entities.Fluid, len(caseModel.Fluids)),
+		Strings:           make([]*entities.String, len(caseModel.Strings)),
+		PorePressures:     make([]*entities.PorePressure, len(caseModel.PorePressures)),
+		FractureGradients: make([]*entities.FractureGradient, len(caseModel.FractureGradients)),
+		Rigs:              make([]*entities.Rig, len(caseModel.Rigs)),
 	}
 
 	for _, hole := range caseModel.Holes {
@@ -502,11 +502,6 @@ func toDomainCase(caseModel *models.Case) *entities.Case {
 	for _, pp := range caseModel.PorePressures {
 		domainPP := toDomainPorePressure(&pp)
 		newCase.PorePressures = append(newCase.PorePressures, domainPP)
-	}
-
-	for _, pdp := range caseModel.PressureDataProfiles {
-		domainPDP := toDomainPressureDataProfile(&pdp)
-		newCase.PressureDataProfiles = append(newCase.PressureDataProfiles, domainPDP)
 	}
 
 	for _, fg := range caseModel.FractureGradients {
@@ -803,32 +798,6 @@ func toGormPorePressure(pp *entities.PorePressure) *models.PorePressure {
 		TVD:      pp.TVD,
 		Pressure: pp.Pressure,
 		EMW:      pp.EMW,
-	}
-}
-
-// toDomainPressureDataProfile maps the GORM PressureDataProfile model to the domain PressureDataProfile entity.
-func toDomainPressureDataProfile(profileModel *models.PressureDataProfile) *entities.PressureDataProfile {
-	return &entities.PressureDataProfile{
-		ID:        profileModel.ID.String(),
-		TVD:       profileModel.TVD,
-		Pressure:  profileModel.Pressure,
-		EMW:       profileModel.EMW,
-		CreatedAt: profileModel.CreatedAt,
-	}
-}
-
-// toGormPressureDataProfile maps the domain PressureDataProfile entity to the GORM PressureDataProfile model.
-func toGormPressureDataProfile(profile *entities.PressureDataProfile) *models.PressureDataProfile {
-	ppDataProfileID, err := validateGormId(profile.ID)
-	if err != nil {
-		return nil
-	}
-
-	return &models.PressureDataProfile{
-		ID:       ppDataProfileID,
-		TVD:      profile.TVD,
-		Pressure: profile.Pressure,
-		EMW:      profile.EMW,
 	}
 }
 

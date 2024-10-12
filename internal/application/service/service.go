@@ -120,14 +120,6 @@ type PorePressures interface {
 	DeletePorePressure(ctx context.Context, input *requests.DeletePorePressureRequest) error
 }
 
-type PressureDataProfiles interface {
-	CreatePressureDataProfile(ctx context.Context, input *requests.CreatePressureDataProfileRequest) error
-	GetPressureDataProfileByID(ctx context.Context, input *requests.GetPressureDataProfileByIDRequest) (*entities.PressureDataProfile, error)
-	GetPressureDataProfiles(ctx context.Context, input *requests.GetPressureDataProfilesRequest) ([]*entities.PressureDataProfile, error)
-	UpdatePressureDataProfile(ctx context.Context, input *requests.UpdatePressureDataProfileRequest) error
-	DeletePressureDataProfile(ctx context.Context, input *requests.DeletePressureDataProfileRequest) error
-}
-
 type FractureGradients interface {
 	GetFractureGradients(ctx context.Context, input *requests.GetFractureGradientsRequest) ([]*entities.FractureGradient, error)
 	GetFractureGradientByID(ctx context.Context, input *requests.GetFractureGradientByIDRequest) (*entities.FractureGradient, error)
@@ -161,7 +153,6 @@ type Services struct {
 	Fluids
 	Rigs
 	PorePressures
-	PressureDataProfiles
 	FractureGradients
 	Strings
 }
@@ -182,7 +173,6 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
 		Fluids:               NewFluidsService(repos.Fluids, repos.Common),
 		Rigs:                 NewRigsService(repos.Rigs, repos.Common),
 		PorePressures:        NewPorePressuresService(repos.PorePressures, repos.Common),
-		PressureDataProfiles: NewPressureDataProfilesService(repos.PressureDataProfiles),
 		FractureGradients:    NewFractureGradientsService(repos.FractureGradients, repos.Common),
 		Strings:              NewStringsService(repos.Strings, repos.Common),
 		// CatalogCache: deps.CatalogCache,

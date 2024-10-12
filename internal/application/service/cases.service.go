@@ -32,6 +32,10 @@ func (s *casesService) GetCases(ctx context.Context, input *requests.GetCasesReq
 }
 
 func (s *casesService) GetCaseByID(ctx context.Context, input *requests.GetCaseByIDRequest) (*entities.Case, error) {
+	_, err := s.commonRepo.CheckCaseCompleteness(ctx, input.ID)
+	if err != nil {
+		return nil, err
+	}
 	return s.repo.GetCaseByID(ctx, input.ID)
 }
 

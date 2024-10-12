@@ -13,4 +13,5 @@ type CommonRepository interface {
 	CheckIfDesignExists(ctx context.Context, designId string) error
 	CheckIfTrajectoryExists(ctx context.Context, trajectoryId string) error
 	CheckIfCaseExists(ctx context.Context, caseId string) error
+	CheckCaseCompleteness(ctx context.Context, caseID string) (bool, error)
 }

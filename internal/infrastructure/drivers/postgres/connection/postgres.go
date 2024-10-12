@@ -96,7 +96,6 @@ func NewDatabase() *Database {
 			&models.LibrarySection{},
 			&models.Fluid{},
 			&models.FluidType{},
-			&models.PressureDataProfile{},
 			&models.PorePressure{},
 			&models.FractureGradient{},
 			&models.Rig{},

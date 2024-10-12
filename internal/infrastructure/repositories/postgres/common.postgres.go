@@ -125,3 +125,70 @@ func (r *commonRepository) CheckIfCaseExists(ctx context.Context, caseId string)
 	}
 	return nil
 }
+
+// CheckCaseCompleteness checks if a case has all required components and marks it as complete if so.
+func (r *commonRepository) CheckCaseCompleteness(ctx context.Context, caseID string) (bool, error) {
+	// Check if the case is already marked as complete
+	isComplete, err := r.getIsComplete(ctx, caseID)
+	if err != nil {
+		return false, err
+	}
+
+	if isComplete {
+		return true, nil
+	}
+
+	// List all component models required for completeness
+	requiredComponents := []interface{}{
+		&models.Hole{}, // Adjust based on actual models
+		&models.Rig{},
+		&models.String{},
+		&models.Fluid{},
+		&models.PorePressure{},
+		&models.FractureGradient{},
+	}
+
+	for _, componentModel := range requiredComponents {
+		exists, err := r.checkComponentExists(ctx, caseID, componentModel)
+		if err != nil {
+			return false, err
+		}
+		if !exists {
+			return false, nil
+		}
+	}
+
+	if err := r.db.WithContext(ctx).
+		Model(&models.Case{}).
+		Where("id = ?", caseID).
+		Update("is_complete", true).Error; err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// getIsComplete retrieves the current is_complete status of a case
+func (r *commonRepository) getIsComplete(ctx context.Context, caseID string) (bool, error) {
+	var isComplete bool
+	err := r.db.WithContext(ctx).
+		Model(&models.Case{}).
+		Select("is_complete").
+		Where("id = ?", caseID).
+		Scan(&isComplete).Error
+	return isComplete, err
+}
+
+// checkComponentExists checks if a specific component exists for a given caseID
+func (r *commonRepository) checkComponentExists(ctx context.Context, caseID string, model interface{}) (bool, error) {
+	var exists bool
+	query := "count(*) > 0"
+
+	err := r.db.WithContext(ctx).
+		Model(model).
+		Select(query).
+		Where("case_id = ?", caseID).
+		Find(&exists).Error
+
+	return exists, err
+}
