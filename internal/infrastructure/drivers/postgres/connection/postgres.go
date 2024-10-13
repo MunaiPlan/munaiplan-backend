@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
@@ -42,11 +43,11 @@ type DbCredentials struct {
 func NewDatabase() *Database {
 	once.Do(func() {
 		dbCredentials := DbCredentials{
-			Username: getEnv(dbUsernameKey, "default_user"),
-			Password: getEnv(dbPasswordKey, "default_password"),
-			Host:     getEnv(dbHostKey, "localhost"),
-			Port:     getEnv(dbPortKey, "5432"),
-			Dbname:   getEnv(dbNameKey, "default_db"),
+			Username: helpers.GetEnv(dbUsernameKey, "default_user"),
+			Password: helpers.GetEnv(dbPasswordKey, "default_password"),
+			Host:     helpers.GetEnv(dbHostKey, "localhost"),
+			Port:     helpers.GetEnv(dbPortKey, "5432"),
+			Dbname:   helpers.GetEnv(dbNameKey, "default_db"),
 		}
 
 		dsn := fmt.Sprintf(
@@ -91,6 +92,7 @@ func NewDatabase() *Database {
 			&models.TrajectoryUnit{},
 			&models.Case{},
 			&models.Hole{},
+			&models.Caising{},
 			&models.String{},
 			&models.Section{},
 			&models.LibrarySection{},
@@ -137,11 +139,4 @@ func execSqlFromFile(db *gorm.DB, filePath string) error {
 	}
 
 	return nil
-}
-
-func getEnv(key, defaultValue string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return defaultValue
 }

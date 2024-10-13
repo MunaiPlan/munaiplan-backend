@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	types "github.com/munaiplan/munaiplan-backend/internal/application/types/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
@@ -38,6 +39,12 @@ func (s *fractureGradientsService) GetFractureGradientByID(ctx context.Context, 
 func (s *fractureGradientsService) CreateFractureGradient(ctx context.Context, input *requests.CreateFractureGradientRequest) error {
 	if err := s.commonRepo.CheckIfCaseExists(ctx, input.CaseID); err != nil {
 		return err
+	}
+
+	if exists, err := s.commonRepo.CheckIfFractureGradientExists(ctx, input.CaseID); err != nil {
+		return err
+	} else if exists {
+		return types.ErrAlreadyExists
 	}
 
 	fractureGradient := &entities.FractureGradient{

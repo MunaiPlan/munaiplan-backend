@@ -61,7 +61,7 @@ func Run(configPath string) {
 	repos := repository.NewRepositories(db.Conn)
 
 	// Initializing services
-	services := service.NewServices(repos, jwt)
+	services := service.NewServices(repos, jwt, helpers.GetEnv("PREDICTION_SERVICE_URL", "http://localhost:8001"))
 
 	// Initializing middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwt)

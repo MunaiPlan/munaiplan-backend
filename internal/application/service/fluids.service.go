@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	types "github.com/munaiplan/munaiplan-backend/internal/application/types/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
@@ -39,6 +40,12 @@ func (s *fluidsService) GetFluidByID(ctx context.Context, input *requests.GetFlu
 func (s *fluidsService) CreateFluid(ctx context.Context, input *requests.CreateFluidRequest) error {
 	if err := s.commonRepo.CheckIfCaseExists(ctx, input.CaseID); err != nil {
 		return err
+	}
+
+	if exists, err := s.commonRepo.CheckIfFluidExists(ctx, input.CaseID); err != nil {
+		return err
+	} else if exists {
+		return types.ErrAlreadyExists
 	}
 
 	fluid := s.CreateFluidRequestToEntity(&input.Body)

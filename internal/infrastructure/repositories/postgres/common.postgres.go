@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
 	"gorm.io/gorm"
 )
@@ -17,25 +18,25 @@ func NewCommonRepository(db *gorm.DB) *commonRepository {
 }
 
 func (r *commonRepository) CheckIfOrganizationExists(ctx context.Context, organizationId string) error {
-    var count int64
-    if err := r.db.WithContext(ctx).Model(&models.Organization{}).Where("id = ?", organizationId).Count(&count).Error; err != nil {
-        return fmt.Errorf("error checking organization existence: %w", err)
-    }
-    if count == 0 {
-        return fmt.Errorf("organization with id %s does not exist", organizationId)
-    }
-    return nil
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&models.Organization{}).Where("id = ?", organizationId).Count(&count).Error; err != nil {
+		return fmt.Errorf("error checking organization existence: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("organization with id %s does not exist", organizationId)
+	}
+	return nil
 }
 
 func (r *commonRepository) CheckIfUserExistsByEmail(ctx context.Context, email string) error {
-    var count int64
-    if err := r.db.WithContext(ctx).Model(&models.User{}).Where("email = ?", email).Count(&count).Error; err != nil {
-        return fmt.Errorf("error checking user existence: %w", err)
-    }
-    if count == 0 {
-        return fmt.Errorf("user with email %s does not exist", email)
-    }
-    return nil
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&models.User{}).Where("email = ?", email).Count(&count).Error; err != nil {
+		return fmt.Errorf("error checking user existence: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("user with email %s does not exist", email)
+	}
+	return nil
 }
 
 func (r *commonRepository) CheckIfCompanyExists(ctx context.Context, companyId string) error {
@@ -126,6 +127,36 @@ func (r *commonRepository) CheckIfCaseExists(ctx context.Context, caseId string)
 	return nil
 }
 
+// CheckIfStringExists checks if a string component exists for a given caseID
+func (r *commonRepository) CheckIfStringExists(ctx context.Context, caseId string) (bool, error) {
+	return r.checkComponentExists(ctx, caseId, &models.String{})
+}
+
+// CheckIfFluidExists checks if a fluid component exists for a given caseID
+func (r *commonRepository) CheckIfFluidExists(ctx context.Context, caseId string) (bool, error) {
+	return r.checkComponentExists(ctx, caseId, &models.Fluid{})
+}
+
+// CheckIfPorePressureExists checks if a pore pressure component exists for a given caseID
+func (r *commonRepository) CheckIfPorePressureExists(ctx context.Context, caseId string) (bool, error) {
+	return r.checkComponentExists(ctx, caseId, &models.PorePressure{})
+}
+
+// CheckIfFractureGradientExists checks if a fracture gradient component exists for a given caseID
+func (r *commonRepository) CheckIfFractureGradientExists(ctx context.Context, caseId string) (bool, error) {
+	return r.checkComponentExists(ctx, caseId, &models.FractureGradient{})
+}
+
+// CheckIfHoleExists checks if a hole component exists for a given caseID
+func (r *commonRepository) CheckIfHoleExists(ctx context.Context, caseId string) (bool, error) {
+	return r.checkComponentExists(ctx, caseId, &models.Hole{})
+}
+
+// CheckIfRigExists checks if a rig component exists for a given caseID
+func (r *commonRepository) CheckIfRigExists(ctx context.Context, caseId string) (bool, error) {
+	return r.checkComponentExists(ctx, caseId, &models.Rig{})
+}
+
 // CheckCaseCompleteness checks if a case has all required components and marks it as complete if so.
 func (r *commonRepository) CheckCaseCompleteness(ctx context.Context, caseID string) (bool, error) {
 	// Check if the case is already marked as complete
@@ -191,4 +222,22 @@ func (r *commonRepository) checkComponentExists(ctx context.Context, caseID stri
 		Find(&exists).Error
 
 	return exists, err
+}
+
+// GetTrajectoryByCaseID retrieves the trajectory associated with the given case ID.
+// It excludes loading the "Cases" field to avoid redundant data fetching.
+func (r *commonRepository) GetTrajectoryByCaseID(ctx context.Context, caseID string) (*entities.Trajectory, error) {
+	var trajectory models.Trajectory
+	result := r.db.WithContext(ctx).
+		Preload("Headers").
+		Preload("Units").
+		Where("id IN (?)",
+			r.db.Model(&models.Case{}).Select("trajectory_id").Where("id = ?", caseID)).
+		First(&trajectory)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return toDomainTrajectory(&trajectory), nil
 }

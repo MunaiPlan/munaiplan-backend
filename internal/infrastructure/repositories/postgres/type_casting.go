@@ -821,7 +821,7 @@ func toGormFractureGradient(entity *entities.FractureGradient) *models.FractureG
 	}
 
 	return &models.FractureGradient{
-		ID:                   uuid.MustParse(entity.ID),
+		ID:                   gradientID,
 		CaseID:               gradientID,
 		TemperatureAtSurface: entity.TemperatureAtSurface,
 		TemperatureAtWellTVD: entity.TemperatureAtWellTVD,
@@ -874,6 +874,8 @@ func toDomainSection(gormSection *models.Section) *entities.Section {
 		Description:         gormSection.Description,
 		Manufacturer:        gormSection.Manufacturer,
 		Type:                gormSection.Type,
+		BodyMD:              gormSection.BodyMD,
+		BodyLength:          gormSection.BodyLength,
 		BodyOD:              gormSection.BodyOD,
 		BodyID:              gormSection.BodyID,
 		AvgJointLength:      gormSection.AvgJointLength,
@@ -901,6 +903,8 @@ func toGormSection(sectionEntity *entities.Section) *models.Section {
 		Description:         sectionEntity.Description,
 		Manufacturer:        sectionEntity.Manufacturer,
 		Type:                sectionEntity.Type,
+		BodyMD:              sectionEntity.BodyMD,
+		BodyLength:          sectionEntity.BodyLength,
 		BodyOD:              sectionEntity.BodyOD,
 		BodyID:              sectionEntity.BodyID,
 		AvgJointLength:      sectionEntity.AvgJointLength,

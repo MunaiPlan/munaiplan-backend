@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	types "github.com/munaiplan/munaiplan-backend/internal/application/types/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
@@ -35,6 +36,13 @@ func (s *rigsService) CreateRig(ctx context.Context, input *requests.CreateRigRe
 	if err := s.commonRepo.CheckIfCaseExists(ctx, input.CaseID); err != nil {
 		return err
 	}
+
+	if exists, err := s.commonRepo.CheckIfRigExists(ctx, input.CaseID); err != nil {
+		return err
+	} else if exists {
+		return types.ErrAlreadyExists
+	}
+
 	rig := s.CreateRigRequestToEntity(&input.Body)
 	return s.repo.CreateRig(ctx, input.CaseID, rig)
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
+	"github.com/munaiplan/munaiplan-backend/internal/application/types/errors"
 )
 
 type holesService struct {
@@ -35,6 +36,12 @@ func (s *holesService) GetHoleByID(ctx context.Context, input *requests.GetHoleB
 func (s *holesService) CreateHole(ctx context.Context, input *requests.CreateHoleRequest) error {
 	if err := s.commonRepo.CheckIfCaseExists(ctx, input.CaseID); err != nil {
 		return err
+	}
+
+	if exists, err := s.commonRepo.CheckIfHoleExists(ctx, input.CaseID); err != nil {
+		return err
+	} else if exists {
+		return types.ErrAlreadyExists
 	}
 
 	hole := s.CreateHoleRequestToEntity(&input.Body)

@@ -13,7 +13,7 @@ import (
 
 // initFractureGradientRoutes initializes the routes for the fracture gradients API.
 func (h *Handler) initFractureGradientRoutes(api *gin.RouterGroup) {
-	fractureGradients := api.Group("/fracture_gradients", h.authMiddleware.UserIdentity)
+	fractureGradients := api.Group("/fracture-gradients", h.authMiddleware.UserIdentity)
 	{
 		fractureGradients.GET("/", h.getFractureGradients)
 		fractureGradients.POST("/", h.createFractureGradient)
@@ -75,6 +75,7 @@ func (h *Handler) createFractureGradient(c *gin.Context) {
 	if inp.CaseID, err = h.validateQueryIDParam(c, values.CaseIdQueryParam); err != nil {
 		return
 	}
+
 	if err = h.services.FractureGradients.CreateFractureGradient(c.Request.Context(), &inp); err != nil {
 		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

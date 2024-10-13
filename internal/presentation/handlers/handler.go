@@ -37,5 +37,6 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initPorePressureRoutes(v1)
 		h.initFractureGradientRoutes(v1)
 		h.initStringsRoutes(v1)
+		h.initTorqueAndDragRoutes(v1)
 	}
 }

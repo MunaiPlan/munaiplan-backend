@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
@@ -25,8 +24,6 @@ func (s *casesService) GetCases(ctx context.Context, input *requests.GetCasesReq
 	if err := s.commonRepo.CheckIfTrajectoryExists(ctx, input.TrajectoryID); err != nil {
 		return nil, err
 	}
-
-	fmt.Println(input.TrajectoryID)
 
 	return s.repo.GetCases(ctx, input.TrajectoryID)
 }

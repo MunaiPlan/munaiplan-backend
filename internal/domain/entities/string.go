@@ -17,6 +17,8 @@ type Section struct {
 	Description         *string   `json:"description,omitempty"`
 	Manufacturer        *string   `json:"manufacturer,omitempty"`
 	Type                string    `json:"type"`
+	BodyMD              float64   `json:"body_md"`
+	BodyLength          float64   `json:"body_length"`
 	BodyOD              float64   `json:"body_od"`
 	BodyID              float64   `json:"body_id"`
 	AvgJointLength      *float64  `json:"avg_joint_length,omitempty"`

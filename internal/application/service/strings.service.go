@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	types "github.com/munaiplan/munaiplan-backend/internal/application/types/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
@@ -35,6 +36,12 @@ func (s *stringsService) GetStringByID(ctx context.Context, input *requests.GetS
 func (s *stringsService) CreateString(ctx context.Context, input *requests.CreateStringRequest) error {
 	if err := s.commonRepo.CheckIfCaseExists(ctx, input.CaseID); err != nil {
 		return err
+	}
+
+	if exists, err := s.commonRepo.CheckIfStringExists(ctx, input.CaseID); err != nil {
+		return err
+	} else if exists {
+		return types.ErrAlreadyExists
 	}
 
 	newString := s.CreateStringRequestToEntity(&input.Body)

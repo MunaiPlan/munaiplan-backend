@@ -197,7 +197,7 @@ type Case struct {
 	CaseDescription   string             `json:"case_description"`
 	DrillDepth        float64            `json:"drill_depth"`
 	PipeSize          float64            `json:"pipe_size"`
-	IsComplete        bool               `json:"is_complete"`
+	IsComplete        bool               `gorm:"not null;default:false" json:"is_complete"`
 	TrajectoryID      uuid.UUID          `gorm:"type:uuid;not null" json:"trajectory_id"`
 	Holes             []Hole             `gorm:"constraint:OnDelete:CASCADE;" json:"holes"`
 	Strings           []String           `gorm:"constraint:OnDelete:CASCADE;" json:"strings"`
@@ -284,6 +284,8 @@ type Section struct {
 	Description         *string        `gorm:"type:text" json:"description,omitempty"`
 	Manufacturer        *string        `gorm:"type:text" json:"manufacturer,omitempty"`
 	Type                string         `gorm:"type:text;not null" json:"type"`
+	BodyMD              float64        `gorm:"not null" json:"body_md"`
+	BodyLength          float64        `gorm:"not null" json:"body_length"`
 	BodyOD              float64        `gorm:"not null" json:"body_od"`
 	BodyID              float64        `gorm:"not null" json:"body_id"`
 	AvgJointLength      *float64       `json:"avg_joint_length,omitempty"`
@@ -370,7 +372,6 @@ type FractureGradient struct {
 	UpdatedAt            time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt            gorm.DeletedAt `gorm:"index" json:"deleted_at"`
 	CaseID               uuid.UUID      `gorm:"type:uuid;not null" json:"case_id"`
-	Case                 Case           `gorm:"foreignKey:CaseID;constraint:OnDelete:CASCADE;" json:"-"`
 	TemperatureAtSurface float64        `gorm:"not null" json:"temperature_at_surface"`
 	TemperatureAtWellTVD float64        `gorm:"not null" json:"temperature_at_well_tvd"`
 	TemperatureGradient  float64        `gorm:"not null" json:"temperature_gradient"`

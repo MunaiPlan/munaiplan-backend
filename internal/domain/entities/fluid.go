@@ -13,6 +13,7 @@ type Fluid struct {
 	CreatedAt     time.Time  `json:"created_at"`
 }
 
+// TODO: Remove id from FluidType entity
 // FluidType entity
 type FluidType struct {
 	ID   string `json:"id"`

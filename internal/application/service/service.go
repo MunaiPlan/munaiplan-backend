@@ -8,6 +8,7 @@ import (
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
+	client "github.com/munaiplan/munaiplan-backend/internal/infrastructure/prediction_client"
 )
 
 type Users interface {
@@ -136,6 +137,10 @@ type Strings interface {
 	DeleteString(ctx context.Context, input *requests.DeleteStringRequest) error
 }
 
+type TorqueAndDrag interface {
+	CalculateEffectiveTensionFromMLModel(ctx context.Context, caseID string) (*responses.EffectiveTensionFromMLModelResponse, error)
+}
+
 type Services struct {
 	// TODO() Implement cache
 	// CatalogCache *catalog.CatalogCache
@@ -155,26 +160,32 @@ type Services struct {
 	PorePressures
 	FractureGradients
 	Strings
+	TorqueAndDrag
 }
 
-func NewServices(repos *repository.Repository, jwt helpers.Jwt) *Services {
+func NewServices(repos *repository.Repository, jwt helpers.Jwt, mlServiceClientUrl string) *Services {
 	return &Services{
-		Users:                NewUsersService(repos.Users, repos.Common, jwt),
-		Companies:            NewCompaniesService(repos.Companies, repos.Common),
-		Organizations:        NewOrganizationsService(repos.Organizations),
-		Fields:               NewFieldsService(repos.Fields, repos.Common),
-		Sites:                NewSitesService(repos.Sites, repos.Common),
-		Wells:                NewWellsService(repos.Wells, repos.Common),
-		Wellbores:            NewWellboresService(repos.Wellbores, repos.Common),
-		Designs:              NewDesignsService(repos.Designs, repos.Common),
-		Trajectories:         NewTrajectoriesService(repos.Trajectories, repos.Common),
-		Cases:                NewCasesService(repos.Cases, repos.Common),
-		Holes:                NewHolesService(repos.Holes, repos.Common),
-		Fluids:               NewFluidsService(repos.Fluids, repos.Common),
-		Rigs:                 NewRigsService(repos.Rigs, repos.Common),
-		PorePressures:        NewPorePressuresService(repos.PorePressures, repos.Common),
-		FractureGradients:    NewFractureGradientsService(repos.FractureGradients, repos.Common),
-		Strings:              NewStringsService(repos.Strings, repos.Common),
+		Users:             NewUsersService(repos.Users, repos.Common, jwt),
+		Companies:         NewCompaniesService(repos.Companies, repos.Common),
+		Organizations:     NewOrganizationsService(repos.Organizations),
+		Fields:            NewFieldsService(repos.Fields, repos.Common),
+		Sites:             NewSitesService(repos.Sites, repos.Common),
+		Wells:             NewWellsService(repos.Wells, repos.Common),
+		Wellbores:         NewWellboresService(repos.Wellbores, repos.Common),
+		Designs:           NewDesignsService(repos.Designs, repos.Common),
+		Trajectories:      NewTrajectoriesService(repos.Trajectories, repos.Common),
+		Cases:             NewCasesService(repos.Cases, repos.Common),
+		Holes:             NewHolesService(repos.Holes, repos.Common),
+		Fluids:            NewFluidsService(repos.Fluids, repos.Common),
+		Rigs:              NewRigsService(repos.Rigs, repos.Common),
+		PorePressures:     NewPorePressuresService(repos.PorePressures, repos.Common),
+		FractureGradients: NewFractureGradientsService(repos.FractureGradients, repos.Common),
+		Strings:           NewStringsService(repos.Strings, repos.Common),
+		TorqueAndDrag:     NewTorqueAndDragService(
+			repos.Strings, 
+			repos.Common,  
+			client.NewTorqueAndDragClient(mlServiceClientUrl),
+		),
 		// CatalogCache: deps.CatalogCache,
 	}
 }
