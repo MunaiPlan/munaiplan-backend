@@ -31,6 +31,11 @@ func (s *fluidsService) GetFluids(ctx context.Context, input *requests.GetFluids
 	return s.repo.GetFluids(ctx, input.CaseID)
 }
 
+// GetFluidTypes retrieves all fluid types.
+func (s *fluidsService) GetFluidTypes(ctx context.Context) ([]*entities.FluidType, error) {
+	return s.repo.GetFluidTypes(ctx)
+}
+
 // GetFluidByID retrieves a fluid by its ID.
 func (s *fluidsService) GetFluidByID(ctx context.Context, input *requests.GetFluidByIDRequest) (*entities.Fluid, error) {
 	return s.repo.GetFluidByID(ctx, input.ID)

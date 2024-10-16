@@ -10,6 +10,8 @@ import (
 type FluidsRepository interface {
 	// GetFluids retrieves all fluids associated with a specific case.
 	GetFluids(ctx context.Context, caseID string) ([]*entities.Fluid, error)
+
+	GetFluidTypes(ctx context.Context) ([]*entities.FluidType, error)
 	
 	// GetFluidByID retrieves a fluid by its ID.
 	GetFluidByID(ctx context.Context, id string) (*entities.Fluid, error)

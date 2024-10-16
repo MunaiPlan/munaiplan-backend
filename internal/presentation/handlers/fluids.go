@@ -16,6 +16,7 @@ func (h *Handler) initFluidsRoutes(api *gin.RouterGroup) {
 	fluids := api.Group("/fluids", h.authMiddleware.UserIdentity)
 	{
 		fluids.GET("/", h.getFluids)
+		fluids.GET("/types", h.getFluidTypes)
 		fluids.POST("/", h.createFluid)
 		fluids.GET("/:id", h.getFluidByID)
 		fluids.PUT("/:id", h.updateFluid)
@@ -49,6 +50,28 @@ func (h *Handler) getFluids(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, fluids)
+}
+
+// getFluidTypes retrieves all fluid types from the database.
+// @Summary Get Fluid Types
+// @Tags fluids
+// @Description Retrieves all fluid types from the database
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {array} entities.FluidType
+// @Failure 500 {object} helpers.Response
+// @Router /api/v1/fluids/types [get]
+func (h *Handler) getFluidTypes(c *gin.Context) {
+	var err error
+	var fluidTypes []*entities.FluidType
+
+	if fluidTypes, err = h.services.Fluids.GetFluidTypes(c.Request.Context()); err != nil {
+		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, fluidTypes)
 }
 
 // createFluid creates a new fluid.

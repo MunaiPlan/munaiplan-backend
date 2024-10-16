@@ -106,3 +106,19 @@ func (r *fluidsRepository) DeleteFluid(ctx context.Context, id string) error {
 
 	return err
 }
+
+// GetFluidTypes retrieves all fluid types from the database.
+func (r *fluidsRepository) GetFluidTypes(ctx context.Context) ([]*entities.FluidType, error) {
+	var fluidTypes []*models.FluidType
+	var res []*entities.FluidType
+	result := r.db.WithContext(ctx).Find(&fluidTypes)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	for _, fluidType := range fluidTypes {
+		res = append(res, toDomainFluidType(fluidType))
+	}
+
+	return res, nil
+}

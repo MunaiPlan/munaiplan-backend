@@ -99,6 +99,7 @@ type Holes interface {
 
 type Fluids interface {
 	GetFluids(ctx context.Context, input *requests.GetFluidsRequest) ([]*entities.Fluid, error)
+	GetFluidTypes(ctx context.Context) ([]*entities.FluidType, error)
 	GetFluidByID(ctx context.Context, input *requests.GetFluidByIDRequest) (*entities.Fluid, error)
 	CreateFluid(ctx context.Context, input *requests.CreateFluidRequest) error
 	UpdateFluid(ctx context.Context, input *requests.UpdateFluidRequest) (*entities.Fluid, error)
