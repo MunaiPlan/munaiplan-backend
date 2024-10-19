@@ -26,6 +26,40 @@ func NewTorqueAndDragService(repo repository.StringsRepository, commonRepo repos
 }
 
 func (s *torqueAndDragService) CalculateEffectiveTensionFromMLModel(ctx context.Context, caseID string) (*responses.EffectiveTensionFromMLModelResponse, error) {
+	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Call the external client with the mapped data
+	response, err := s.client.CalculateEffectiveTension(*mappedData)
+	if err != nil {
+		return nil, err
+	}
+
+	response.Depth = mappedData.MD
+
+	return response, nil
+}
+
+// func (s *torqueAndDragService) WeightOnBitFromMlModel(ctx context.Context, caseID string) (*responses.WeightOnBitFromMlModel, error) {
+// 	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	// Call the external client with the mapped data
+// 	response, err := s.client.CalculateEffectiveTension(*mappedData)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	response.Depth = mappedData.MD
+
+// 	return response, nil
+// }
+
+func (s *torqueAndDragService) getMappedRequestForCase(ctx context.Context, caseID string) (*requests.EffectiveTensionFromMLModelRequest, error) {
 	// Fetch trajectory data by case ID
 	trajectory, err := s.commonRepo.GetTrajectoryByCaseID(ctx, caseID)
 	if err != nil {
@@ -41,15 +75,7 @@ func (s *torqueAndDragService) CalculateEffectiveTensionFromMLModel(ctx context.
 	// Map trajectory and string data to prepare for the client request
 	mappedData := s.mapTrajectoryToStringSections(trajectory, stringData[0])
 
-	// Call the external client with the mapped data
-	response, err := s.client.CalculateEffectiveTension(mappedData)
-	if err != nil {
-		return nil, err
-	}
-
-	response.Depth = mappedData.MD
-
-	return response, nil
+	return &mappedData, nil
 }
 
 /*

@@ -51,7 +51,6 @@ func (c *torqueAndDragClient) CalculateEffectiveTension(data requests.EffectiveT
 
 	// Execute the request with a timeout
 	client := &http.Client{Timeout: time.Duration(timeoutSeconds) * time.Second}
-	fmt.Println("Payload:", req)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %v", err)

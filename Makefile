@@ -14,6 +14,9 @@ down:
 rebuild:
 	docker-compose down && docker-compose build && docker-compose up
 
+run-model:
+	docker pull kabdulaset/munai-models && docker run -d -p 8001:80 kabdulaset/munai-models
+
 migrate-diff:
 	atlas migrate diff --env gorm
 
