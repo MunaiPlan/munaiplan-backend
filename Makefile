@@ -20,3 +20,9 @@ run-model:
 migrate-diff:
 	atlas migrate diff --env gorm
 
+swag:
+	@if ! [ -x "$$(command -v swag)" ]; then \
+	  echo "swag is not installed or not found in PATH. Install it with 'go install github.com/swaggo/swag/cmd/swag@latest'"; \
+	  exit 1; \
+	fi
+	swag init -g cmd/app/main.go
