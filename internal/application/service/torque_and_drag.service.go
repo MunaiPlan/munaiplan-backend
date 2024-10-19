@@ -21,10 +21,11 @@ func NewTorqueAndDragService(repo repository.StringsRepository, commonRepo repos
 	return &torqueAndDragService{
 		repo:       repo,
 		commonRepo: commonRepo,
-		client: client,
+		client:     client,
 	}
 }
 
+// CalculateEffectiveTensionFromMLModel calculates effective tension using ML model
 func (s *torqueAndDragService) CalculateEffectiveTensionFromMLModel(ctx context.Context, caseID string) (*responses.EffectiveTensionFromMLModelResponse, error) {
 	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
 	if err != nil {
@@ -42,24 +43,61 @@ func (s *torqueAndDragService) CalculateEffectiveTensionFromMLModel(ctx context.
 	return response, nil
 }
 
-// func (s *torqueAndDragService) WeightOnBitFromMlModel(ctx context.Context, caseID string) (*responses.WeightOnBitFromMlModel, error) {
-// 	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// CalculateWeightOnBitFromMlModel calculates weight on bit using ML model
+func (s *torqueAndDragService) CalculateWeightOnBitFromMlModel(ctx context.Context, caseID string) (*responses.WeightOnBitFromMLModelResponse, error) {
+	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
+	if err != nil {
+		return nil, err
+	}
 
-// 	// Call the external client with the mapped data
-// 	response, err := s.client.CalculateEffectiveTension(*mappedData)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	// Call the external client with the mapped data
+	response, err := s.client.CalculateWeightOnBit(*mappedData)
+	if err != nil {
+		return nil, err
+	}
 
-// 	response.Depth = mappedData.MD
+	response.Depth = mappedData.MD
 
-// 	return response, nil
-// }
+	return response, nil
+}
 
-func (s *torqueAndDragService) getMappedRequestForCase(ctx context.Context, caseID string) (*requests.EffectiveTensionFromMLModelRequest, error) {
+// CalculateSurfaceTorqueFromMlModel calculates surface torque using ML model
+func (s *torqueAndDragService) CalculateSurfaceTorqueFromMlModel(ctx context.Context, caseID string) (*responses.MomentFromMLModelResponse, error) {
+	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Call the external client with the mapped data
+	response, err := s.client.CalculateMoment(*mappedData)
+	if err != nil {
+		return nil, err
+	}
+
+	response.Depth = mappedData.MD
+
+	return response, nil
+}
+
+// CalculateMinWeightFromMlModel calculates minimum weight using ML model
+func (s *torqueAndDragService) CalculateMinWeightFromMLModel(ctx context.Context, caseID string) (*responses.MinWeightFromMLModelResponse, error) {
+	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Call the external client with the mapped data
+	response, err := s.client.CalculateMinWeight(*mappedData)
+	if err != nil {
+		return nil, err
+	}
+
+	response.Depth = mappedData.MD
+
+	return response, nil
+}
+
+func (s *torqueAndDragService) getMappedRequestForCase(ctx context.Context, caseID string) (*requests.TorqueAndDragFromMLModelRequest, error) {
 	// Fetch trajectory data by case ID
 	trajectory, err := s.commonRepo.GetTrajectoryByCaseID(ctx, caseID)
 	if err != nil {
@@ -78,23 +116,9 @@ func (s *torqueAndDragService) getMappedRequestForCase(ctx context.Context, case
 	return &mappedData, nil
 }
 
-/*
-func (s *torqueAndDragService) WeightOnBitFromMlModel(ctx context.Context, input *requests.WeightOnBitFromMlModelRequest) (*entities.WeightOnBitFromMlModel, error) {
-	return s.repo.WeightOnBitFromMlModel(ctx, input)
-}
-
-func (s *torqueAndDragService) HookLoadFromMlModel(ctx context.Context, input *requests.HookLoadFromMlModelRequest) (*entities.HookLoadFromMlModel, error) {
-	return s.repo.HookLoadFromMlModel(ctx, input)
-}
-
-func (s *torqueAndDragService) SurfaceTorqueFromMlModel(ctx context.Context, input *requests.SurfaceTorqueFromMlModelRequest) (*entities.SurfaceTorqueFromMlModel, error) {
-	return s.repo.SurfaceTorqueFromMlModel(ctx, input)
-}
-*/
-
 // MapTrajectoryToStringSections maps data from String sections to Trajectory units based on MD depth.
-func (s *torqueAndDragService) mapTrajectoryToStringSections(trajectory *entities.Trajectory, stringData *entities.String) requests.EffectiveTensionFromMLModelRequest {
-	var result requests.EffectiveTensionFromMLModelRequest
+func (s *torqueAndDragService) mapTrajectoryToStringSections(trajectory *entities.Trajectory, stringData *entities.String) requests.TorqueAndDragFromMLModelRequest {
+	var result requests.TorqueAndDragFromMLModelRequest
 	sort.Slice(stringData.Sections, func(i, j int) bool {
 		return stringData.Sections[i].BodyMD < stringData.Sections[j].BodyMD
 	})

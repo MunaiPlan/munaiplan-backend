@@ -140,6 +140,9 @@ type Strings interface {
 
 type TorqueAndDrag interface {
 	CalculateEffectiveTensionFromMLModel(ctx context.Context, caseID string) (*responses.EffectiveTensionFromMLModelResponse, error)
+	CalculateWeightOnBitFromMlModel(ctx context.Context, caseID string) (*responses.WeightOnBitFromMLModelResponse, error)
+	CalculateSurfaceTorqueFromMlModel(ctx context.Context, caseID string) (*responses.MomentFromMLModelResponse, error)
+	CalculateMinWeightFromMLModel(ctx context.Context, caseID string) (*responses.MinWeightFromMLModelResponse, error)
 }
 
 type Services struct {
@@ -182,9 +185,9 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt, mlServiceClientU
 		PorePressures:     NewPorePressuresService(repos.PorePressures, repos.Common),
 		FractureGradients: NewFractureGradientsService(repos.FractureGradients, repos.Common),
 		Strings:           NewStringsService(repos.Strings, repos.Common),
-		TorqueAndDrag:     NewTorqueAndDragService(
-			repos.Strings, 
-			repos.Common,  
+		TorqueAndDrag: NewTorqueAndDragService(
+			repos.Strings,
+			repos.Common,
 			client.NewTorqueAndDragClient(mlServiceClientUrl),
 		),
 		// CatalogCache: deps.CatalogCache,

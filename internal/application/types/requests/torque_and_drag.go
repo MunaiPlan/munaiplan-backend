@@ -1,6 +1,6 @@
 package requests
 
-type EffectiveTensionFromMLModelRequest struct {
+type TorqueAndDragFromMLModelRequest struct {
 	MD                    []float64 `json:"MD" binding:"required"`
 	Incl                  []float64 `json:"Incl" binding:"required"`
 	Azim                  []float64 `json:"Azim" binding:"required"`
