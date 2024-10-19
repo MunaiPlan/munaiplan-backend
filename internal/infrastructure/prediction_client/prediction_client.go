@@ -33,7 +33,7 @@ func NewTorqueAndDragClient(baseURL string) TorqueAndDragClient {
 
 // CalculateEffectiveTension sends a request to the FastAPI service to calculate effective tension
 func (c *torqueAndDragClient) CalculateEffectiveTension(data requests.EffectiveTensionFromMLModelRequest) (*responses.EffectiveTensionFromMLModelResponse, error) {
-	url := fmt.Sprintf("%s/predict/", c.baseURL)
+	url := fmt.Sprintf("%s/effect_na/", c.baseURL)
 
 	// Serialize the data to JSON
 	payload, err := json.Marshal(data)
@@ -51,6 +51,7 @@ func (c *torqueAndDragClient) CalculateEffectiveTension(data requests.EffectiveT
 
 	// Execute the request with a timeout
 	client := &http.Client{Timeout: time.Duration(timeoutSeconds) * time.Second}
+	fmt.Println("Payload:", req)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %v", err)

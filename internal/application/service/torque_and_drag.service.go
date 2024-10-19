@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"sort"
 
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/responses"
@@ -46,6 +47,8 @@ func (s *torqueAndDragService) CalculateEffectiveTensionFromMLModel(ctx context.
 		return nil, err
 	}
 
+	response.Depth = mappedData.MD
+
 	return response, nil
 }
 
@@ -66,8 +69,12 @@ func (s *torqueAndDragService) SurfaceTorqueFromMlModel(ctx context.Context, inp
 // MapTrajectoryToStringSections maps data from String sections to Trajectory units based on MD depth.
 func (s *torqueAndDragService) mapTrajectoryToStringSections(trajectory *entities.Trajectory, stringData *entities.String) requests.EffectiveTensionFromMLModelRequest {
 	var result requests.EffectiveTensionFromMLModelRequest
+	sort.Slice(stringData.Sections, func(i, j int) bool {
+		return stringData.Sections[i].BodyMD < stringData.Sections[j].BodyMD
+	})
 
 	for _, unit := range trajectory.Units {
+		var found bool = false
 		// Append TrajectoryUnit attributes
 		result.MD = append(result.MD, unit.MD)
 		result.Incl = append(result.Incl, unit.Incl)
@@ -85,6 +92,7 @@ func (s *torqueAndDragService) mapTrajectoryToStringSections(trajectory *entitie
 		for _, section := range stringData.Sections {
 			if unit.MD >= section.BodyMD-section.BodyLength && unit.MD <= section.BodyID {
 				// Map Section data
+				found = true
 				result.BodyOD = append(result.BodyOD, section.BodyOD)
 				result.BodyID = append(result.BodyID, section.BodyID)
 				result.BodyAvgJointLength = append(result.BodyAvgJointLength, *section.AvgJointLength)
@@ -95,6 +103,32 @@ func (s *torqueAndDragService) mapTrajectoryToStringSections(trajectory *entitie
 				result.CoefficientOfFriction = append(result.CoefficientOfFriction, *section.FrictionCoefficient)
 				result.MinimumYieldStrength = append(result.MinimumYieldStrength, *section.MinYieldStrength)
 				break
+			}
+		}
+
+		if !found {
+			if unit.MD < stringData.Sections[0].BodyMD {
+				// Map Section data
+				result.BodyOD = append(result.BodyOD, stringData.Sections[0].BodyOD)
+				result.BodyID = append(result.BodyID, stringData.Sections[0].BodyID)
+				result.BodyAvgJointLength = append(result.BodyAvgJointLength, *stringData.Sections[0].AvgJointLength)
+				result.StabilizerLength = append(result.StabilizerLength, *stringData.Sections[0].StabilizerLength)
+				result.StabilizerOD = append(result.StabilizerOD, *stringData.Sections[0].StabilizerOD)
+				result.StabilizerID = append(result.StabilizerID, *stringData.Sections[0].StabilizerID)
+				result.Weight = append(result.Weight, *stringData.Sections[0].Weight)
+				result.CoefficientOfFriction = append(result.CoefficientOfFriction, *stringData.Sections[0].FrictionCoefficient)
+				result.MinimumYieldStrength = append(result.MinimumYieldStrength, *stringData.Sections[0].MinYieldStrength)
+			} else {
+				// Map Section data
+				result.BodyOD = append(result.BodyOD, stringData.Sections[len(stringData.Sections)-1].BodyOD)
+				result.BodyID = append(result.BodyID, stringData.Sections[len(stringData.Sections)-1].BodyID)
+				result.BodyAvgJointLength = append(result.BodyAvgJointLength, *stringData.Sections[len(stringData.Sections)-1].AvgJointLength)
+				result.StabilizerLength = append(result.StabilizerLength, *stringData.Sections[len(stringData.Sections)-1].StabilizerLength)
+				result.StabilizerOD = append(result.StabilizerOD, *stringData.Sections[len(stringData.Sections)-1].StabilizerOD)
+				result.StabilizerID = append(result.StabilizerID, *stringData.Sections[len(stringData.Sections)-1].StabilizerID)
+				result.Weight = append(result.Weight, *stringData.Sections[len(stringData.Sections)-1].Weight)
+				result.CoefficientOfFriction = append(result.CoefficientOfFriction, *stringData.Sections[len(stringData.Sections)-1].FrictionCoefficient)
+				result.MinimumYieldStrength = append(result.MinimumYieldStrength, *stringData.Sections[len(stringData.Sections)-1].MinYieldStrength)
 			}
 		}
 	}

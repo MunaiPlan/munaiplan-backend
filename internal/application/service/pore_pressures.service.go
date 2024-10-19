@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	types "github.com/munaiplan/munaiplan-backend/internal/application/types/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
@@ -24,12 +23,6 @@ func NewPorePressuresService(porePressureRepo repository.PorePressuresRepository
 func (s *porePressuresService) CreatePorePressure(ctx context.Context, input *requests.CreatePorePressureRequest) error {
 	if err := s.commonRepo.CheckIfCaseExists(ctx, input.CaseID); err != nil {
 		return err
-	}
-
-	if exists, err := s.commonRepo.CheckIfPorePressureExists(ctx, input.CaseID); err != nil {
-		return err
-	} else if exists {
-		return types.ErrAlreadyExists
 	}
 
 	porePressure := &entities.PorePressure{

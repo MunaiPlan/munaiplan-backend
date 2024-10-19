@@ -2,7 +2,7 @@ package responses
 
 // EffectiveTensionResponse represents the response structure for the Effective Tension prediction.
 type EffectiveTensionFromMLModelResponse struct {
-	Depth                           []float64 `json:"depth"`
+	Depth                           []float64 `json:"Глубина"`
 	TowerLoadCapacity               []float64 `json:"Грузоподъёмность вышки"`
 	RotaryDrilling                  []float64 `json:"Бурение ротором"`
 	HelicalBucklingWithoutRotation  []float64 `json:"Спиральный изгиб(без вращения)"`
