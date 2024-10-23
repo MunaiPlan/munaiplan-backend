@@ -20,7 +20,7 @@ services:
       - .env
     environment:
       - DB_HOST=postgres
-      - PREDICTION_SERVICE_URL=http://model:8080/predict
+      - PREDICTION_SERVICE_URL=http://model:8080
 
   postgres:
     image: postgres:13
@@ -37,8 +37,9 @@ services:
   model:
     image: kabdulaset/munai-models
     container_name: munai-models
+    platform: linux/amd64  # Add this line to specify the platform
     ports:
-      - 8001:8080  # Mapping port 8080 inside container to 8001 on host
+      - 8001:8080  # Use 8080 since the model runs on 8080 inside the container
 
 volumes:
   pgdata:
