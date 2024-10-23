@@ -25,7 +25,7 @@ type TorqueAndDragClient interface {
 }
 
 type torqueAndDragClient struct {
-	client *http.Client
+	client  *http.Client
 	baseURL string
 }
 

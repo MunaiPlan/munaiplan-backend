@@ -11,6 +11,7 @@ services:
       - 8000:8000
     depends_on:
       - postgres
+      - model
     volumes:
       - ./.bin/:/root/
       - ./internal/infrastructure/configs:/root/internal/infrastructure/configs
@@ -19,6 +20,7 @@ services:
       - .env
     environment:
       - DB_HOST=postgres
+      - PREDICTION_SERVICE_URL=http://model:8080/predict
 
   postgres:
     image: postgres:13
@@ -31,6 +33,12 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  model:
+    image: kabdulaset/munai-models
+    container_name: munai-models
+    ports:
+      - 8001:8080  # Mapping port 8080 inside container to 8001 on host
 
 volumes:
   pgdata:
