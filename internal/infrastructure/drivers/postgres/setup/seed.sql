@@ -44,6 +44,7 @@ BEGIN
         BEGIN
 
             -- Insert Sections
+            IF NOT EXISTS (SELECT 1 FROM library_sections) THEN
             INSERT INTO library_sections (id, description, manufacturer, type, body_od, body_id, avg_joint_length, 
                                   stabilizer_length, stabilizer_od, stabilizer_id, weight, material, grade, class, 
                                   friction_coefficient, min_yield_strength, created_at, updated_at)
@@ -73,12 +74,20 @@ BEGIN
                 (uuid_generate_v4(), 'MWD section', 'ZMS', 'MWD', 172, 83, 10.4, NULL, NULL, NULL, 149.77, 'SS_15-15LC', '15-15LC MOD (1)', NULL, 0.3, 110, now(), now()),
                 (uuid_generate_v4(), 'Mud Motor section', 'ZMS', 'Mud Motor', 171.45, 76.2, 9.71, NULL, NULL, NULL, 103.53, 'CS_API 5D/7', '4145H MOD', NULL, 0.3, 110, now(), now()),
                 (uuid_generate_v4(), 'Bit section', 'ZMS', 'Bit', 776, 215.9, NULL, 0.4, NULL, NULL, 100, NULL, NULL, NULL, NULL, NULL, now(), now());
+            END IF;
 
+            BEGIN
+
+                IF NOT EXISTS (SELECT 1 FROM fluid_types WHERE name IN ('Oil', 'Water')) THEN
                 -- Insert Fluid Types
                 INSERT INTO fluid_types (id, name, created_at, updated_at)
                 VALUES
                 (uuid_generate_v4(), 'Oil', now(), now()),
                 (uuid_generate_v4(), 'Water', now(), now());
+                END IF;
+
+            END;
+                
         END;
     END;
 END
