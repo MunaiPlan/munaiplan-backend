@@ -99,7 +99,7 @@ type UpdateHoleRequestBody struct {
 
 // CreateHoleRequest represents the request for creating a hole.
 type CreateHoleRequest struct {
-	Body   CreateHoleRequestBody
+		Body   CreateHoleRequestBody
 	CaseID string
 }
 

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	"github.com/google/uuid"
@@ -26,6 +27,8 @@ func (r *holesRepository) CreateHole(ctx context.Context, caseID string, hole *e
 	if gormHole.CaseID, err = uuid.Parse(caseID); err != nil {
 		return err
 	}
+
+	fmt.Println("len of input.Body.Caisings at repo", len(hole.Caisings))
 
 	err = r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(gormHole).Error; err != nil {

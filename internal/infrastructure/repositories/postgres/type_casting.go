@@ -543,6 +543,10 @@ func toGormCase(caseEntity *entities.Case) *models.Case {
 
 // toDomainHole maps the GORM Hole model to the domain Hole entity.
 func toDomainHole(holeModel *models.Hole) *entities.Hole {
+	caisings := make([]*entities.Caising, len(holeModel.Caisings))
+	for i, caising := range holeModel.Caisings {
+		caisings[i] = toDomainCaising(&caising)
+	}
 	newHole := &entities.Hole{
 		ID:                        holeModel.ID.String(),
 		CreatedAt:                 holeModel.CreatedAt,
@@ -566,12 +570,7 @@ func toDomainHole(holeModel *models.Hole) *entities.Hole {
 		SlideDrillingOpenHole:     holeModel.SlideDrillingOpenHole,
 		BackReamingOpenHole:       holeModel.BackReamingOpenHole,
 		RotatingOffBottomOpenHole: holeModel.RotatingOffBottomOpenHole,
-		Caisings:                  make([]*entities.Caising, len(holeModel.Caisings)),
-	}
-
-	for _, caising := range holeModel.Caisings {
-		domainCaising := toDomainCaising(&caising)
-		newHole.Caisings = append(newHole.Caisings, domainCaising)
+		Caisings:                 caisings,
 	}
 
 	return newHole
@@ -582,6 +581,11 @@ func toGormHole(hole *entities.Hole) *models.Hole {
 	holeID, err := validateGormId(hole.ID)
 	if err != nil {
 		return nil
+	}
+
+	caisings := make([]models.Caising, len(hole.Caisings))
+	for i, caising := range hole.Caisings {
+		caisings[i] = *toGormCaising(caising)
 	}
 
 	newHole := &models.Hole{
@@ -606,12 +610,7 @@ func toGormHole(hole *entities.Hole) *models.Hole {
 		SlideDrillingOpenHole:     hole.SlideDrillingOpenHole,
 		BackReamingOpenHole:       hole.BackReamingOpenHole,
 		RotatingOffBottomOpenHole: hole.RotatingOffBottomOpenHole,
-		Caisings:                  make([]models.Caising, len(hole.Caisings)),
-	}
-
-	for _, caising := range hole.Caisings {
-		gormCaising := toGormCaising(caising)
-		newHole.Caisings = append(newHole.Caisings, *gormCaising)
+		Caisings:                  caisings,
 	}
 
 	return newHole

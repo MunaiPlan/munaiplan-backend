@@ -2,11 +2,12 @@ package service
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/munaiplan/munaiplan-backend/internal/application/types/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
-	"github.com/munaiplan/munaiplan-backend/internal/application/types/errors"
 )
 
 type holesService struct {
@@ -43,6 +44,8 @@ func (s *holesService) CreateHole(ctx context.Context, input *requests.CreateHol
 	} else if exists {
 		return types.ErrAlreadyExists
 	}
+
+	fmt.Println("len of input.Body.Caisings at service", len(input.Body.Caisings))
 
 	hole := s.CreateHoleRequestToEntity(&input.Body)
 	return s.repo.CreateHole(ctx, input.CaseID, hole)
