@@ -821,7 +821,6 @@ func toGormFractureGradient(entity *entities.FractureGradient) *models.FractureG
 
 	return &models.FractureGradient{
 		ID:                   gradientID,
-		CaseID:               gradientID,
 		TemperatureAtSurface: entity.TemperatureAtSurface,
 		TemperatureAtWellTVD: entity.TemperatureAtWellTVD,
 		TemperatureGradient:  entity.TemperatureGradient,

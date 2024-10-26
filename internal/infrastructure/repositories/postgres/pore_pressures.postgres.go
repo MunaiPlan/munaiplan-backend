@@ -79,9 +79,12 @@ func (r *porePressuresRepository) UpdatePorePressure(ctx context.Context, porePr
 
 // DeletePorePressure deletes a PorePressure entry from the database by its ID.
 func (r *porePressuresRepository) DeletePorePressure(ctx context.Context, id string) error {
-	err := r.db.WithContext(ctx).Where("id = ?", id).Delete(&models.PorePressure{}).Error
-	if err != nil {
-		return err
+	res := r.db.WithContext(ctx).Where("id = ?", id).Delete(&models.PorePressure{})
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
 	}
 
 	return nil

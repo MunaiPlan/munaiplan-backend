@@ -2,12 +2,10 @@ package postgres
 
 import (
 	"context"
-	"reflect"
 
 	"github.com/google/uuid"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
-	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/types"
 	"gorm.io/gorm"
 )
 
@@ -65,25 +63,17 @@ func (r *fractureGradientsRepository) GetFractureGradients(ctx context.Context, 
 
 // UpdateFractureGradient updates an existing FractureGradient record.
 func (r *fractureGradientsRepository) UpdateFractureGradient(ctx context.Context, fractureGradient *entities.FractureGradient) (*entities.FractureGradient, error) {
-	gormFractureGradient := toGormFractureGradient(fractureGradient)
-	oldFractureGradient := models.FractureGradient{}
+	var oldFractureGradient models.FractureGradient
 
-	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := tx.Where("id = ?", fractureGradient.ID).First(&oldFractureGradient).Error; err != nil {
-			return err
-		}
-
-		if reflect.DeepEqual(&gormFractureGradient, &oldFractureGradient) {
-			return types.ErrFractureGradientNotChanged
-		}
-
-		if err := tx.Model(&oldFractureGradient).Updates(gormFractureGradient).Error; err != nil {
-			return err
-		}
-
-		return nil
-	})
+	// Find the existing record
+	err := r.db.WithContext(ctx).Where("id = ?", fractureGradient.ID).First(&oldFractureGradient).Error
 	if err != nil {
+		return nil, err
+	}
+
+	// Update the record
+	gormFractureGradient := toGormFractureGradient(fractureGradient)
+	if err := r.db.WithContext(ctx).Model(&oldFractureGradient).Updates(gormFractureGradient).Error; err != nil {
 		return nil, err
 	}
 
