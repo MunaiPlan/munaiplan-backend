@@ -372,6 +372,7 @@ type FractureGradient struct {
 	UpdatedAt            time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt            gorm.DeletedAt `gorm:"index" json:"deleted_at"`
 	CaseID               uuid.UUID      `gorm:"type:uuid;not null" json:"case_id"`
+	Case                 Case           `gorm:"foreignKey:CaseID;constraint:OnDelete:CASCADE;" json:"-"`
 	TemperatureAtSurface float64        `gorm:"not null" json:"temperature_at_surface"`
 	TemperatureAtWellTVD float64        `gorm:"not null" json:"temperature_at_well_tvd"`
 	TemperatureGradient  float64        `gorm:"not null" json:"temperature_gradient"`
