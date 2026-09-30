@@ -4,7 +4,22 @@ There are two modes:
 - **public** (preview): Caddy serves HTTPS on a public address, and access is protected by admin-created accounts.
 - **tailscale** (private pilot): no public ports at all.
 
-## Oracle Cloud Always Free (chosen for the preview)
+## Small servers (1 GB, e.g. DigitalOcean $6 droplet): prebuilt images
+
+A 1 GB server can run the stack, which uses about 0.5 GB, but cannot build the images. Build them elsewhere for the server's architecture and load them there:
+
+```sh
+# On a build machine (from the workspace root):
+docker buildx build --platform linux/amd64 -t munaiplan-api:prod --load munaiplan-backend
+docker buildx build --platform linux/amd64 -t munaiplan-frontend:prod -f munaiplan-frontend/dockerfile --load munaiplan-frontend
+docker buildx build --platform linux/amd64 -t munaiplan-model:prod --load munai-models
+docker save munaiplan-api:prod munaiplan-frontend:prod munaiplan-model:prod | gzip | ssh root@<ip> 'gunzip | docker load'
+# On the server: add PREBUILT_IMAGES=1 to /opt/munaiplan/.env, then run deploy.sh as usual.
+```
+
+`bootstrap-server.sh` adds 2 GB of swap for TensorFlow's start-up peak.
+
+## Oracle Cloud Always Free (alternative)
 
 - Use an **Ampere A1** instance: `VM.Standard.A1.Flex`, 2–4 OCPU and 12–24 GB RAM, Ubuntu 24.04. This stays within the Always Free limits and runs arm64 natively.
 - **Log in as `ubuntu`, not root:** `ssh ubuntu@<ip>`. Run the scripts below with `sudo`.

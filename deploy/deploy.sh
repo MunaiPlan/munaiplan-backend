@@ -11,8 +11,13 @@ env=/opt/munaiplan/.env
 [ -r "$env" ] || { echo "missing $env; run deploy/init-env.sh first" >&2; exit 1; }
 mode=$(sed -n 's/^DEPLOY_MODE=//p' "$env"); mode=${mode:-tailscale}
 local_only=$(sed -n 's/^LOCAL_ONLY_REPOS=//p' "$env")
+# PREBUILT_IMAGES=1: images were built elsewhere and loaded with `docker load` (small servers
+# cannot build TensorFlow/Node/Go images); only this repository is needed for compose files.
+prebuilt=$(sed -n 's/^PREBUILT_IMAGES=//p' "$env")
+repos="munaiplan-backend munaiplan-frontend munai-models"
+[ "$prebuilt" = 1 ] && repos="munaiplan-backend"
 
-for repo in munaiplan-backend munaiplan-frontend munai-models; do
+for repo in $repos; do
   case " $local_only " in *" $repo "*)
     git -C "$src/$repo" checkout --quiet --detach "$ref"
     echo "$repo @ $(git -C "$src/$repo" rev-parse --short HEAD) (local)"; continue ;;
@@ -30,12 +35,20 @@ files="-f $src/munaiplan-backend/deploy/compose.prod.yaml"
 # shellcheck disable=SC2086
 compose() { docker compose -p munaiplan --env-file "$env" $files "$@"; }
 compose config --quiet
-compose build
-compose up -d postgres
-compose run --rm migrate
-compose up -d app model frontend
+nobuild=""
+if [ "$prebuilt" = 1 ]; then
+  nobuild="--no-build"
+  for image in munaiplan-api:prod munaiplan-frontend:prod munaiplan-model:prod; do
+    docker image inspect "$image" >/dev/null 2>&1 || { echo "missing prebuilt image $image (docker load it first)" >&2; exit 1; }
+  done
+else
+  compose build
+fi
+compose up -d $nobuild postgres
+compose run --rm $nobuild migrate
+compose up -d $nobuild app model frontend
 [ "$mode" = public ] && compose up -d caddy
-compose --profile tools run --rm create-admin
+compose --profile tools run --rm $nobuild create-admin
 
 echo "Waiting for services to become healthy (the model needs a few minutes)…"
 i=0
