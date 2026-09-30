@@ -26,6 +26,7 @@ main() {
   check() { code=$(curl -s -o /dev/null -w '%{http_code}' "$2" || true); echo "$1 $code"; [ "$code" = "$3" ] || fail=1; }
   check "health          " "https://$site/health" 200
   check "spa deep link   " "https://$site/cases/smoke" 200
+  check "user manual     " "https://$site/docs" 200
   check "anonymous api   " "https://$site/api/v1/companies/" 401
   check "public sign-up  " "https://$site/api/v1/auth/sign-up" 404
   [ $fail = 0 ] && echo "Release OK: https://$site" || { echo "smoke checks failed" >&2; exit 1; }
