@@ -60,7 +60,7 @@ done
 compose ps
 
 if [ "$mode" = public ]; then
-  echo "Open: https://$(sed -n 's/^SITE_ADDRESS=//p' "$env")"
+  echo "Open: https://$(sed -n 's/^SITE_ADDRESS=//p' "$env" | cut -d, -f1)"
 else
   # Publish the frontend to the tailnet over HTTPS (idempotent).
   tailscale serve --bg --https=443 http://127.0.0.1:8080 >/dev/null

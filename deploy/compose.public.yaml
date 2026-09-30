@@ -1,6 +1,7 @@
 # Public preview overlay: Caddy terminates HTTPS (Let's Encrypt) on 80/443 and proxies to the
 # frontend. Use with compose.prod.yaml when DEPLOY_MODE=public. SITE_ADDRESS is a hostname
-# that resolves to the server, e.g. 203-0-113-7.sslip.io (no domain purchase needed).
+# (or a comma-separated list) that resolves to the server, e.g. 203-0-113-7.sslip.io (no domain
+# purchase needed) or "munaiplan.com, www.munaiplan.com, 203-0-113-7.sslip.io".
 services:
   caddy:
     image: caddy:2.8-alpine
