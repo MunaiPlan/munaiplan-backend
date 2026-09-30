@@ -1,0 +1,107 @@
+# Production stack for a single server. Build contexts assume the three repositories are
+# cloned side by side (see deploy/README.md). Only the frontend listens, on 127.0.0.1;
+# Tailscale publishes it to the private tailnet over HTTPS.
+
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "5" }
+
+x-api-environment: &api-environment
+  APP_ENV: production
+  GIN_MODE: release
+  HTTP_HOST: 0.0.0.0
+  HTTP_PORT: "8000"
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_NAME: munaiplan
+  DB_USERNAME: munaiplan
+  DB_PASSWORD: ${DB_PASSWORD:?set in /opt/munaiplan/.env}
+  PASSWORD_SALT: ${PASSWORD_SALT:?set in /opt/munaiplan/.env}
+  USER_ACCESS_TOKEN_SECRET: ${USER_ACCESS_TOKEN_SECRET:?set in /opt/munaiplan/.env}
+  USER_REFRESH_TOKEN_SECRET: ${USER_REFRESH_TOKEN_SECRET:?set in /opt/munaiplan/.env}
+  ACCESS_TOKEN_LIFETIME_MINUTES: "480"
+  REFRESH_TOKEN_LIFETIME_MINUTES: "43200"
+  PREDICTION_SERVICE_URL: http://model:8080/predict
+
+x-api: &api
+  image: munaiplan-api:prod
+  build: { context: .., dockerfile: Dockerfile }
+  environment: *api-environment
+  logging: *logging
+
+services:
+  postgres:
+    image: postgres:17.11-alpine3.23
+    environment:
+      POSTGRES_USER: munaiplan
+      POSTGRES_DB: munaiplan
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set in /opt/munaiplan/.env}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U munaiplan -d munaiplan"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 60s
+    restart: unless-stopped
+    mem_limit: 768m
+    logging: *logging
+
+  migrate:
+    <<: *api
+    command: ["migrate"]
+    depends_on: { postgres: { condition: service_healthy } }
+    restart: "no"
+
+  create-admin:
+    <<: *api
+    profiles: ["tools"]
+    command: ["create-admin"]
+    environment:
+      <<: *api-environment
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?set in /opt/munaiplan/.env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set in /opt/munaiplan/.env}
+      ADMIN_ORGANIZATION: MunaiPlan Administration
+    depends_on: { postgres: { condition: service_healthy } }
+    restart: "no"
+
+  app:
+    <<: *api
+    command: ["serve"]
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8000/ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+    mem_limit: 384m
+
+  model:
+    image: munaiplan-model:prod
+    build: { context: ../../munai-models, dockerfile: Dockerfile }
+    environment:
+      OMP_NUM_THREADS: "1"
+      TF_NUM_INTEROP_THREADS: "1"
+      TF_NUM_INTRAOP_THREADS: "1"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/ready', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 300s
+    restart: unless-stopped
+    mem_limit: 2g
+    logging: *logging
+
+  frontend:
+    image: munaiplan-frontend:prod
+    build: { context: ../../munaiplan-frontend, dockerfile: dockerfile }
+    ports: ["127.0.0.1:${FRONTEND_PORT:-8080}:8080"]
+    depends_on: { app: { condition: service_healthy } }
+    restart: unless-stopped
+    mem_limit: 128m
+    logging: *logging
+
+volumes:
+  pgdata:

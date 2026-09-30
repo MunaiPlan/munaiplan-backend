@@ -9,7 +9,7 @@ FROM alpine:3.23
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
 COPY --from=build /out/app /app/app
-COPY internal/infrastructure/configs/main.yml /app/internal/infrastructure/configs/main.yml
+COPY internal/infrastructure/configs/*.yml /app/internal/infrastructure/configs/
 EXPOSE 8000
 ENTRYPOINT ["/app/app"]
 CMD ["serve"]

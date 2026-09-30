@@ -1,0 +1,5 @@
+# Production overrides merged over main.yml when APP_ENV=production.
+# Secrets and hosts come from environment variables, never from this file.
+http:
+  readTimeout: 30s
+  writeTimeout: 90s
