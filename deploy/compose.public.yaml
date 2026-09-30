@@ -1,0 +1,23 @@
+# Public preview overlay: Caddy terminates HTTPS (Let's Encrypt) on 80/443 and proxies to the
+# frontend. Use with compose.prod.yaml when DEPLOY_MODE=public. SITE_ADDRESS is a hostname
+# that resolves to the server, e.g. 203-0-113-7.sslip.io (no domain purchase needed).
+services:
+  caddy:
+    image: caddy:2.8-alpine
+    ports: ["80:80", "443:443"]
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?set in /opt/munaiplan/.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [frontend]
+    restart: unless-stopped
+    mem_limit: 128m
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+
+volumes:
+  caddy_data:
+  caddy_config:

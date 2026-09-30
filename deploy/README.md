@@ -1,4 +1,22 @@
-# Deploying MunaiPlan (private pilot)
+# Deploying MunaiPlan
+
+There are two modes:
+- **public** (preview): Caddy serves HTTPS on a public address, and access is protected by admin-created accounts.
+- **tailscale** (private pilot): no public ports at all.
+
+## Public preview in short
+
+```sh
+DEPLOY_MODE=public sh deploy/bootstrap-server.sh
+sh deploy/init-env.sh admin@your-company.kz 203-0-113-7.sslip.io   # <ip-with-dashes>.sslip.io needs no domain
+sh deploy/deploy.sh recovery/phase-2                                 # prints https://203-0-113-7.sslip.io
+sh deploy/install-backup-timer.sh
+```
+
+The Let's Encrypt certificate is issued on first start; ports 80 and 443 must be reachable. Anyone with the link sees the sign-in page. Only accounts created in **Администрирование** can sign in.
+
+The sections below describe the private (Tailscale) mode.
+
 
 One Ubuntu 24.04 server runs the same four containers as local development: Postgres, API, ML model and frontend. **No web port is public.** Tailscale publishes the frontend to your private tailnet over HTTPS, so only invited devices can open it.
 

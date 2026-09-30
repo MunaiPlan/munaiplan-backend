@@ -1,13 +1,22 @@
 #!/bin/sh
 # Builds and (re)starts the stack from the given git ref of all three repositories.
 # Usage (as root on the server): deploy.sh [git-ref]   default: recovery/phase-2
+# DEPLOY_MODE (in /opt/munaiplan/.env): "tailscale" (default, private) or "public" (Caddy HTTPS).
+# LOCAL_ONLY_REPOS: space-separated repos already present in /opt/munaiplan/src that must not be
+# fetched from GitHub (e.g. cloned from a git bundle).
 set -eu
 ref=${1:-recovery/phase-2}
 src=/opt/munaiplan/src
 env=/opt/munaiplan/.env
 [ -r "$env" ] || { echo "missing $env; run deploy/init-env.sh first" >&2; exit 1; }
+mode=$(sed -n 's/^DEPLOY_MODE=//p' "$env"); mode=${mode:-tailscale}
+local_only=$(sed -n 's/^LOCAL_ONLY_REPOS=//p' "$env")
 
 for repo in munaiplan-backend munaiplan-frontend munai-models; do
+  case " $local_only " in *" $repo "*)
+    git -C "$src/$repo" checkout --quiet --detach "$ref"
+    echo "$repo @ $(git -C "$src/$repo" rev-parse --short HEAD) (local)"; continue ;;
+  esac
   if [ ! -d "$src/$repo/.git" ]; then
     git clone --quiet "https://github.com/MunaiPlan/$repo.git" "$src/$repo"
   fi
@@ -16,12 +25,16 @@ for repo in munaiplan-backend munaiplan-frontend munai-models; do
   echo "$repo @ $(git -C "$src/$repo" rev-parse --short HEAD)"
 done
 
-compose() { docker compose -p munaiplan --env-file "$env" -f "$src/munaiplan-backend/deploy/compose.prod.yaml" "$@"; }
+files="-f $src/munaiplan-backend/deploy/compose.prod.yaml"
+[ "$mode" = public ] && files="$files -f $src/munaiplan-backend/deploy/compose.public.yaml"
+# shellcheck disable=SC2086
+compose() { docker compose -p munaiplan --env-file "$env" $files "$@"; }
 compose config --quiet
 compose build
 compose up -d postgres
 compose run --rm migrate
 compose up -d app model frontend
+[ "$mode" = public ] && compose up -d caddy
 compose --profile tools run --rm create-admin
 
 echo "Waiting for services to become healthy (the model needs a few minutes)…"
@@ -33,6 +46,10 @@ while [ $i -lt 90 ]; do
 done
 compose ps
 
-# Publish the frontend to the tailnet over HTTPS (idempotent).
-tailscale serve --bg --https=443 http://127.0.0.1:8080 >/dev/null
-tailscale serve status
+if [ "$mode" = public ]; then
+  echo "Open: https://$(sed -n 's/^SITE_ADDRESS=//p' "$env")"
+else
+  # Publish the frontend to the tailnet over HTTPS (idempotent).
+  tailscale serve --bg --https=443 http://127.0.0.1:8080 >/dev/null
+  tailscale serve status
+fi

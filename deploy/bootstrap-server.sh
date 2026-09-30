@@ -14,19 +14,26 @@ apt-get install -yq ca-certificates curl git ufw unattended-upgrades docker.io d
 systemctl enable --now docker
 dpkg-reconfigure -f noninteractive unattended-upgrades
 
-# Tailscale from its signed apt repository.
+# Tailscale from its signed apt repository (skipped for a public preview: DEPLOY_MODE=public).
+if [ "${DEPLOY_MODE:-tailscale}" != public ]; then
 curl -fsSL "https://pkgs.tailscale.com/stable/ubuntu/${VERSION_CODENAME}.noarmor.gpg" -o /usr/share/keyrings/tailscale-archive-keyring.gpg
 curl -fsSL "https://pkgs.tailscale.com/stable/ubuntu/${VERSION_CODENAME}.tailscale-keyring.list" -o /etc/apt/sources.list.d/tailscale.list
 apt-get update -q
 apt-get install -yq tailscale
 systemctl enable --now tailscaled
+fi
 
 # Firewall: nothing public except SSH (restrict SSH to the tailnet later, see README).
 # Docker-published ports bypass ufw, which is why the stack only binds 127.0.0.1.
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow OpenSSH
-ufw allow in on tailscale0
+if [ "${DEPLOY_MODE:-tailscale}" = public ]; then
+  ufw allow 80/tcp
+  ufw allow 443/tcp
+else
+  ufw allow in on tailscale0
+fi
 ufw --force enable
 
 # 2 GB swap: the ML image build and TensorFlow start-up peak above 4 GB RAM otherwise.
@@ -37,4 +44,4 @@ fi
 
 install -d -m 700 /opt/munaiplan /opt/munaiplan/backups
 install -d -m 755 /opt/munaiplan/src
-echo "Bootstrap complete. Next: tailscale up (log in with your Tailscale account), then deploy/deploy.sh."
+echo "Bootstrap complete (mode ${DEPLOY_MODE:-tailscale}). Next: init-env.sh, then deploy.sh."
