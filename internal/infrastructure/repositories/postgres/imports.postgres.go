@@ -18,6 +18,9 @@ import (
 
 const formatWellPlan = "wellplan"
 
+// importedLabel marks records created by an import (shown in the UI).
+const importedLabel = "Импортировано из отчёта"
+
 type importsRepository struct {
 	db *gorm.DB
 }
@@ -155,7 +158,7 @@ func findOrCreate[T any](h *hierarchy, level string, build func() *T, id func(*T
 func (h *hierarchy) company(org uuid.UUID, name string) uuid.UUID {
 	name = limit(name)
 	return findOrCreate(h, "company", func() *models.Company {
-		return &models.Company{OrganizationID: org, Name: name, Division: "Imported from WellPlan"}
+		return &models.Company{OrganizationID: org, Name: name, Division: importedLabel}
 	}, func(m *models.Company) uuid.UUID { return m.ID }, "organization_id = ? AND name = ?", org, name)
 }
 
@@ -201,7 +204,7 @@ func buildTrajectory(design uuid.UUID, rep *wellplan.Report) models.Trajectory {
 		files = append(files, f.Name)
 	}
 	t := models.Trajectory{DesignID: design, Name: limit(rep.Case.Design),
-		Description: "Imported from WellPlan: " + strings.Join(files, ", ")}
+		Description: importedLabel + ": " + strings.Join(files, ", ")}
 	sh := rep.SurveyInfo
 	header := models.TrajectoryHeader{
 		Customer: firstNonBlank(sh.Customer, rep.Case.Company), Project: sh.Project, ProfileType: sh.ProfileType,
@@ -224,7 +227,7 @@ func buildTrajectory(design uuid.UUID, rep *wellplan.Report) models.Trajectory {
 
 func buildCase(trajectory uuid.UUID, rep *wellplan.Report) models.Case {
 	c := models.Case{TrajectoryID: trajectory, CaseName: limit(rep.Case.Case),
-		CaseDescription: "Imported from WellPlan", IsComplete: len(rep.String) > 0 && len(rep.Survey) >= 2}
+		CaseDescription: importedLabel, IsComplete: len(rep.String) > 0 && len(rep.Survey) >= 2}
 	switch {
 	case rep.TorqueDrag != nil && rep.TorqueDrag.BitDepth != nil:
 		c.DrillDepth = *rep.TorqueDrag.BitDepth
@@ -241,7 +244,7 @@ func buildCase(trajectory uuid.UUID, rep *wellplan.Report) models.Case {
 
 func createCaseChildren(tx *gorm.DB, caseID uuid.UUID, rep *wellplan.Report) error {
 	if len(rep.String) > 0 {
-		str := models.String{CaseID: caseID, Name: "WellPlan work string", Depth: rep.String[len(rep.String)-1].Depth}
+		str := models.String{CaseID: caseID, Name: "Рабочая колонна (импорт)", Depth: rep.String[len(rep.String)-1].Depth}
 		for _, c := range rep.String {
 			sec := models.Section{Type: c.Type, BodyMD: c.Depth, BodyLength: c.Length, BodyOD: c.BodyOD, BodyID: val(c.BodyID),
 				AvgJointLength: c.AvgJointLength, StabilizerLength: c.JointLength, StabilizerOD: c.JointOD, StabilizerID: c.JointID,

@@ -17,7 +17,7 @@ const (
 )
 
 // ErrInvalidFile is returned for input that is not a readable WellPlan export.
-var ErrInvalidFile = errors.New("not a readable WellPlan export")
+var ErrInvalidFile = errors.New("not a readable report export")
 
 // block is a body-level paragraph (text) or table (rows of cell text), in document order.
 type block struct {

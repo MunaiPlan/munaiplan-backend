@@ -10,7 +10,7 @@ func TestEmbeddedMigrationsAreOrderedAndBaselineUnchanged(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(known) < 4 || known[0].Version != "0001_initial" || known[1].Version != "0002_user_roles" || known[2].Version != "0003_wellplan_import" || known[3].Version != "0004_foreign_key_indexes" {
+	if len(known) < 5 || known[0].Version != "0001_initial" || known[1].Version != "0002_user_roles" || known[2].Version != "0003_wellplan_import" || known[3].Version != "0004_foreign_key_indexes" || known[4].Version != "0005_neutral_import_labels" {
 		t.Fatalf("unexpected migration order: %+v", versions(known))
 	}
 	// Applied databases record this checksum; editing 0001 would strand them.

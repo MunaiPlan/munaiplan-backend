@@ -87,7 +87,7 @@ func (h *Handler) caseReference(c *gin.Context) {
 		return
 	}
 	if report == nil {
-		helpers.NewErrorResponse(c, http.StatusNotFound, "no imported WellPlan data for this case")
+		helpers.NewErrorResponse(c, http.StatusNotFound, "no imported report data for this case")
 		return
 	}
 	c.JSON(http.StatusOK, report)
@@ -116,7 +116,7 @@ func readWellPlanUpload(c *gin.Context) (service.WellPlanUpload, bool) {
 		return upload, false
 	}
 	if upload.Report == nil && upload.Survey == nil {
-		helpers.NewErrorResponse(c, http.StatusBadRequest, "attach a WellPlan report (.docx) and/or survey export (.txt)")
+		helpers.NewErrorResponse(c, http.StatusBadRequest, "attach a report (.docx) and/or survey export (.txt)")
 		return upload, false
 	}
 	return upload, true

@@ -90,7 +90,7 @@ func ParseReport(name string, data []byte) (*Report, error) {
 	r.resolveGrades()
 	r.fillStringDepths()
 	if r.Case.Company == "" && len(r.String) == 0 {
-		return nil, fmt.Errorf("%w: no WellPlan case information or string table found", ErrInvalidFile)
+		return nil, fmt.Errorf("%w: no case information or string table found", ErrInvalidFile)
 	}
 	return r, nil
 }

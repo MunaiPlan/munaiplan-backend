@@ -10,7 +10,7 @@ import (
 )
 
 // ErrNoSurvey means neither the report nor an attached survey file contains stations.
-var ErrNoSurvey = errors.New("no survey stations: attach the WellPlan survey export (.txt) for this case")
+var ErrNoSurvey = errors.New("no survey stations: attach the survey export (.txt) for this case")
 
 // Combine merges an optional report and an optional survey export into one validated case.
 // An attached survey replaces the report's survey table because it carries sub-sea and
@@ -125,7 +125,7 @@ func (r *Report) defaultNames() {
 		}
 	}
 	c := &r.Case
-	fill(&c.Company, "Imported (WellPlan)", "company")
+	fill(&c.Company, "Импортированные кейсы", "company")
 	fill(&c.Field, "Imported field", "field")
 	fill(&c.Site, c.Field, "site")
 	fill(&c.Well, base, "well")

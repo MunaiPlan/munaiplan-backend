@@ -12,10 +12,10 @@ import (
 )
 
 var comparisonNotes = []string{
-	"Hook load: WellPlan's measured weight at surface for the analysed bit depth, compared with the model's hook-load curve at the deepest station on the string.",
-	"Surface torque: WellPlan's torque at the rotary table, compared with the model's torque curve at the shallowest station.",
-	"WellPlan values are the reference tool's own calculation, not field measurements. Agreement here is a consistency check, not a validation.",
-	"The model's output units are not documented; the model columns are shown as returned.",
+	"Вес на крюке: значение из отчёта на поверхности для анализируемой глубины долота сравнивается с кривой модели в самой глубокой точке колонны.",
+	"Момент на поверхности: значение из отчёта на роторе сравнивается с кривой момента модели в самой верхней точке.",
+	"Эталон — это расчёт исходной инженерной программы, а не замеры на буровой. Совпадение — проверка согласованности, а не валидация.",
+	"Единицы выхода модели не документированы; значения модели показаны как есть.",
 }
 
 // modelSeries selects the model output that corresponds to a WellPlan operation.
