@@ -10,7 +10,7 @@ set -eu
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q
 apt-get upgrade -yq
-apt-get install -yq ca-certificates curl git unattended-upgrades docker.io docker-compose-v2
+apt-get install -yq ca-certificates curl git unattended-upgrades docker.io docker-compose-v2 docker-buildx
 systemctl enable --now docker
 dpkg-reconfigure -f noninteractive unattended-upgrades
 
