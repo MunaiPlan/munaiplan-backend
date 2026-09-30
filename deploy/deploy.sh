@@ -45,10 +45,10 @@ else
   compose build
 fi
 compose up -d $nobuild postgres
-compose run --rm $nobuild migrate
+compose run --rm migrate
 compose up -d $nobuild app model frontend
 [ "$mode" = public ] && compose up -d caddy
-compose --profile tools run --rm $nobuild create-admin
+compose --profile tools run --rm create-admin
 
 echo "Waiting for services to become healthy (the model needs a few minutes)…"
 i=0
