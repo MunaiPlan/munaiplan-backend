@@ -1,8 +1,8 @@
 http:
   port: 8000
   maxHeaderBytes: 1
-  readTimeout: 10s
-  writeTimeout: 10s
+  readTimeout: 30s # WellPlan uploads (up to 2 x 10 MB)
+  writeTimeout: 90s # predictions call the model service (client timeout 60 s)
 
 mongo:
   databaseName: munaiPlan

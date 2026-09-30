@@ -70,7 +70,7 @@ func (r *companiesRepository) GetCompaniesWithComponents(ctx context.Context, or
 			return db.Select("id, case_name, case_description, drill_depth, pipe_size, trajectory_id, created_at")
 		}).
 		Preload("Fields.Sites.Wells.Wellbores.Designs.Trajectories", func(db *gorm.DB) *gorm.DB {
-			return db.Preload("Headers").Preload("Units")
+			return db.Preload("Headers").Preload("Units", func(db *gorm.DB) *gorm.DB { return db.Order("md") })
 		}).
 		Preload("Fields.Sites.Wells.Wellbores.Designs").
 		Preload("Fields.Sites.Wells.Wellbores").

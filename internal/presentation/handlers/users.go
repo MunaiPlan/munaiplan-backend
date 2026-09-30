@@ -9,6 +9,7 @@ import (
 	domainErrors "github.com/munaiplan/munaiplan-backend/internal/domain/types"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
 	"github.com/munaiplan/munaiplan-backend/pkg/values"
+	"github.com/sirupsen/logrus"
 )
 
 // initUsersRoutes initializes the user routes.
@@ -16,42 +17,50 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	users := api.Group("/users")
 	{
 		users.POST("/sign-in", h.signIn)
-		users.POST("/sign-up", h.signUp)
+		users.GET("/me", h.authMiddleware.UserIdentity, h.me)
 	}
+	api.GET("/status", h.authMiddleware.UserIdentity, h.status)
 }
 
-// signUp handles the user sign up request.
-// @Summary User SignUp
+type meResponse struct {
+	ID             string `json:"id"`
+	OrganizationID string `json:"organization_id"`
+	Name           string `json:"name"`
+	Surname        string `json:"surname"`
+	Email          string `json:"email"`
+	Role           string `json:"role"`
+}
+
+// status reports service health for the UI status bar. "api" is always ok when this answers.
+// @Summary Service status
 // @Tags users-auth
-// @Description user sign up
-// @ModuleID userSignUp
-// @Accept  json
-// @Produce  json
-// @Param organizationId query string true "Organization ID"
-// @Param input body requests.UserSignUpRequest true "sign up info"
-// @Success 201 {object} helpers.Response
-// @Failure 400,500 {object} helpers.Response
-// @Failure default {object} helpers.Response
-// @Router /api/v1/users/sign-up [post]
-func (h *Handler) signUp(c *gin.Context) {
-	var inp requests.UserSignUpRequest
-	var err error
-	if inp.OrganizationID, err = h.validateQueryIDParam(c, values.OrganizationIdQueryParam); err != nil {		
-		return
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} map[string]string
+// @Router /api/v1/status [get]
+func (h *Handler) status(c *gin.Context) {
+	model := "ready"
+	if err := h.services.TorqueAndDrag.ModelReady(c.Request.Context()); err != nil {
+		model = "unavailable"
 	}
+	c.JSON(http.StatusOK, gin.H{"api": "ok", "model": model})
+}
 
-	if err := c.BindJSON(&inp.Body); err != nil {
-		helpers.NewErrorResponse(c, http.StatusBadRequest, "invalid input body")
-		return
-	}
-
-	err = h.services.Users.SignUp(c.Request.Context(), &inp)
+// me returns the signed-in account, including its role for the admin panel.
+// @Summary Current user
+// @Tags users-auth
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} meResponse
+// @Failure 401 {object} helpers.Response
+// @Router /api/v1/users/me [get]
+func (h *Handler) me(c *gin.Context) {
+	user, err := h.services.Users.GetByID(c.Request.Context(), c.GetString(values.UserIdCtx))
 	if err != nil {
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		h.respondError(c, err)
 		return
 	}
-
-	c.JSON(http.StatusCreated, helpers.NewResponse("user created"))
+	c.JSON(http.StatusOK, meResponse{ID: user.ID, OrganizationID: user.OrganizationID, Name: user.Name, Surname: user.Surname, Email: user.Email, Role: user.Role})
 }
 
 // signIn handles the user sign in request.
@@ -64,7 +73,7 @@ func (h *Handler) signUp(c *gin.Context) {
 // @Param organizationId query string true "Organization ID"
 // @Param input body requests.UserSignInRequest true "sign in info"
 // @Success 200 {object} responses.TokenResponse
-// @Failure 400,404 {object} helpers.Response
+// @Failure 400,401 {object} helpers.Response
 // @Failure 500 {object} helpers.Response
 // @Failure default {object} helpers.Response
 // @Router /api/v1/users/sign-in [post]
@@ -77,12 +86,13 @@ func (h *Handler) signIn(c *gin.Context) {
 
 	res, err := h.services.Users.SignIn(c.Request.Context(), &inp)
 	if err != nil {
-		if errors.Is(err, domainErrors.ErrUserNotFound) {
-			helpers.NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		if errors.Is(err, domainErrors.ErrInvalidCredentials) {
+			helpers.NewErrorResponse(c, http.StatusUnauthorized, err.Error())
 			return
 		}
 
-		helpers.NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		logrus.Errorf("sign-in failed: %v", err)
+		helpers.NewErrorResponse(c, http.StatusInternalServerError, "internal server error")
 		return
 	}
 

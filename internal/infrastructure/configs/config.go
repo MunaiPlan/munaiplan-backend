@@ -1,7 +1,10 @@
 package configs
 
 import (
+	"fmt"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -29,7 +32,6 @@ type (
 		Auth        AuthConfig
 		Catalog     CatalogConfig `mapstructure:"catalog"`
 	}
-
 
 	HTTPConfig struct {
 		Host               string        `mapstructure:"host"`
@@ -68,6 +70,9 @@ type (
 // Init populates Config struct with values from config file
 // located at filepath and environment variables.
 func Init(configsDir string) (*Config, error) {
+	if strings.TrimSpace(os.Getenv("APP_ENV")) == "" {
+		return nil, fmt.Errorf("required environment variable APP_ENV is empty")
+	}
 
 	viper.AutomaticEnv()
 	populateDefaults()
@@ -82,6 +87,30 @@ func Init(configsDir string) (*Config, error) {
 	}
 
 	setFromEnv(&cfg)
+	if port := os.Getenv("HTTP_PORT"); port != "" {
+		n, err := strconv.Atoi(port)
+		if err != nil || n < 1 || n > 65535 {
+			return nil, fmt.Errorf("HTTP_PORT must be an integer from 1 to 65535")
+		}
+		cfg.HTTP.Port = port
+	}
+	if host := os.Getenv("HTTP_HOST"); host != "" {
+		cfg.HTTP.Host = host
+	}
+	if cfg.HTTP.Host == "" {
+		cfg.HTTP.Host = "127.0.0.1"
+	}
+	for _, key := range []string{"USER_ACCESS_TOKEN_SECRET", "USER_REFRESH_TOKEN_SECRET", "PASSWORD_SALT"} {
+		if strings.TrimSpace(os.Getenv(key)) == "" {
+			return nil, fmt.Errorf("required environment variable %s is empty", key)
+		}
+	}
+	for _, key := range []string{"ACCESS_TOKEN_LIFETIME_MINUTES", "REFRESH_TOKEN_LIFETIME_MINUTES"} {
+		value, err := strconv.Atoi(os.Getenv(key))
+		if err != nil || value <= 0 {
+			return nil, fmt.Errorf("%s must be a positive integer", key)
+		}
+	}
 
 	return &cfg, nil
 }

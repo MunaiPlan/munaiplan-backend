@@ -6,182 +6,85 @@ import (
 
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/responses"
-	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
 	client "github.com/munaiplan/munaiplan-backend/internal/infrastructure/prediction_client"
 )
 
 type torqueAndDragService struct {
 	commonRepo repository.CommonRepository
-	repo       repository.StringsRepository
+	strings    repository.StringsRepository
+	holes      repository.HolesRepository
+	imports    repository.ImportsRepository
 	client     client.TorqueAndDragClient
 }
 
-func NewTorqueAndDragService(repo repository.StringsRepository, commonRepo repository.CommonRepository, client client.TorqueAndDragClient) *torqueAndDragService {
-	return &torqueAndDragService{
-		repo:       repo,
-		commonRepo: commonRepo,
-		client:     client,
-	}
+func NewTorqueAndDragService(strings repository.StringsRepository, holes repository.HolesRepository, imports repository.ImportsRepository, commonRepo repository.CommonRepository, client client.TorqueAndDragClient) *torqueAndDragService {
+	return &torqueAndDragService{strings: strings, holes: holes, imports: imports, commonRepo: commonRepo, client: client}
 }
 
-// CalculateEffectiveTensionFromMLModel calculates effective tension using ML model
 func (s *torqueAndDragService) CalculateEffectiveTensionFromMLModel(ctx context.Context, caseID string) (*responses.EffectiveTensionFromMLModelResponse, error) {
-	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Call the external client with the mapped data
-	response, err := s.client.CalculateEffectiveTension(*mappedData)
-	if err != nil {
-		return nil, err
-	}
-
-	response.Depth = mappedData.MD
-
-	return response, nil
+	var out responses.EffectiveTensionFromMLModelResponse
+	depth, err := s.predict(ctx, caseID, client.EffectiveTension, &out)
+	out.Depth = depth
+	return &out, err
 }
 
-// CalculateWeightOnBitFromMlModel calculates weight on bit using ML model
 func (s *torqueAndDragService) CalculateWeightOnBitFromMlModel(ctx context.Context, caseID string) (*responses.WeightOnBitFromMLModelResponse, error) {
-	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Call the external client with the mapped data
-	response, err := s.client.CalculateWeightOnBit(*mappedData)
-	if err != nil {
-		return nil, err
-	}
-
-	response.Depth = mappedData.MD
-
-	return response, nil
+	var out responses.WeightOnBitFromMLModelResponse
+	depth, err := s.predict(ctx, caseID, client.HookLoad, &out)
+	out.Depth = depth
+	return &out, err
 }
 
-// CalculateSurfaceTorqueFromMlModel calculates surface torque using ML model
 func (s *torqueAndDragService) CalculateSurfaceTorqueFromMlModel(ctx context.Context, caseID string) (*responses.MomentFromMLModelResponse, error) {
-	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Call the external client with the mapped data
-	response, err := s.client.CalculateMoment(*mappedData)
-	if err != nil {
-		return nil, err
-	}
-
-	response.Depth = mappedData.MD
-
-	return response, nil
+	var out responses.MomentFromMLModelResponse
+	depth, err := s.predict(ctx, caseID, client.Torque, &out)
+	out.Depth = depth
+	return &out, err
 }
 
-// CalculateMinWeightFromMlModel calculates minimum weight using ML model
 func (s *torqueAndDragService) CalculateMinWeightFromMLModel(ctx context.Context, caseID string) (*responses.MinWeightFromMLModelResponse, error) {
-	mappedData, err := s.getMappedRequestForCase(ctx, caseID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Call the external client with the mapped data
-	response, err := s.client.CalculateMinWeight(*mappedData)
-	if err != nil {
-		return nil, err
-	}
-
-	response.Depth = mappedData.MD
-
-	return response, nil
+	var out responses.MinWeightFromMLModelResponse
+	depth, err := s.predict(ctx, caseID, client.MinWeight, &out)
+	out.Depth = depth
+	return &out, err
 }
 
-func (s *torqueAndDragService) getMappedRequestForCase(ctx context.Context, caseID string) (*requests.TorqueAndDragFromMLModelRequest, error) {
-	// Fetch trajectory data by case ID
+// predict assembles the case's features, calls the model and returns the station depths.
+func (s *torqueAndDragService) predict(ctx context.Context, caseID string, family client.Family, out any) ([]float64, error) {
+	features, err := s.features(ctx, caseID)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.client.Predict(ctx, family, *features, out); err != nil {
+		return nil, err
+	}
+	return features.MD, nil
+}
+
+// features loads the trajectory, work string and hole sections of a case.
+// With several strings, the oldest is used so results are deterministic.
+func (s *torqueAndDragService) features(ctx context.Context, caseID string) (*requests.TorqueAndDragFromMLModelRequest, error) {
 	trajectory, err := s.commonRepo.GetTrajectoryByCaseID(ctx, caseID)
 	if err != nil {
 		return nil, err
 	}
-
-	// Fetch string data by case ID
-	stringData, err := s.repo.GetStrings(ctx, caseID)
+	strs, err := s.strings.GetStrings(ctx, caseID)
 	if err != nil {
 		return nil, err
 	}
-
-	// Map trajectory and string data to prepare for the client request
-	mappedData := s.mapTrajectoryToStringSections(trajectory, stringData[0])
-
-	return &mappedData, nil
+	if len(strs) == 0 {
+		return nil, &CaseDataError{[]string{"у кейса нет рабочей колонны"}}
+	}
+	sort.SliceStable(strs, func(i, j int) bool { return strs[i].CreatedAt.Before(strs[j].CreatedAt) })
+	holes, err := s.holes.GetHoles(ctx, caseID)
+	if err != nil {
+		return nil, err
+	}
+	return buildFeatures(trajectory.Units, strs[0].Sections, holes)
 }
 
-// MapTrajectoryToStringSections maps data from String sections to Trajectory units based on MD depth.
-func (s *torqueAndDragService) mapTrajectoryToStringSections(trajectory *entities.Trajectory, stringData *entities.String) requests.TorqueAndDragFromMLModelRequest {
-	var result requests.TorqueAndDragFromMLModelRequest
-	sort.Slice(stringData.Sections, func(i, j int) bool {
-		return stringData.Sections[i].BodyMD < stringData.Sections[j].BodyMD
-	})
-
-	for _, unit := range trajectory.Units {
-		var found bool = false
-		// Append TrajectoryUnit attributes
-		result.MD = append(result.MD, unit.MD)
-		result.Incl = append(result.Incl, unit.Incl)
-		result.Azim = append(result.Azim, unit.Azim)
-		result.SubSea = append(result.SubSea, unit.SubSea)
-		result.TVD = append(result.TVD, unit.TVD)
-		result.LocalNCoord = append(result.LocalNCoord, unit.LocalNCoord)
-		result.LocalECoord = append(result.LocalECoord, unit.LocalECoord)
-		result.GlobalNCoord = append(result.GlobalNCoord, unit.GlobalNCoord)
-		result.GlobalECoord = append(result.GlobalECoord, unit.GlobalECoord)
-		result.Dogleg = append(result.Dogleg, unit.Dogleg)
-		result.VerticalSection = append(result.VerticalSection, unit.VerticalSection)
-
-		// Find the matching section based on MD range
-		for _, section := range stringData.Sections {
-			if unit.MD >= section.BodyMD-section.BodyLength && unit.MD <= section.BodyID {
-				// Map Section data
-				found = true
-				result.BodyOD = append(result.BodyOD, section.BodyOD)
-				result.BodyID = append(result.BodyID, section.BodyID)
-				result.BodyAvgJointLength = append(result.BodyAvgJointLength, *section.AvgJointLength)
-				result.StabilizerLength = append(result.StabilizerLength, *section.StabilizerLength)
-				result.StabilizerOD = append(result.StabilizerOD, *section.StabilizerOD)
-				result.StabilizerID = append(result.StabilizerID, *section.StabilizerID)
-				result.Weight = append(result.Weight, *section.Weight)
-				result.CoefficientOfFriction = append(result.CoefficientOfFriction, *section.FrictionCoefficient)
-				result.MinimumYieldStrength = append(result.MinimumYieldStrength, *section.MinYieldStrength)
-				break
-			}
-		}
-
-		if !found {
-			if unit.MD < stringData.Sections[0].BodyMD {
-				// Map Section data
-				result.BodyOD = append(result.BodyOD, stringData.Sections[0].BodyOD)
-				result.BodyID = append(result.BodyID, stringData.Sections[0].BodyID)
-				result.BodyAvgJointLength = append(result.BodyAvgJointLength, *stringData.Sections[0].AvgJointLength)
-				result.StabilizerLength = append(result.StabilizerLength, *stringData.Sections[0].StabilizerLength)
-				result.StabilizerOD = append(result.StabilizerOD, *stringData.Sections[0].StabilizerOD)
-				result.StabilizerID = append(result.StabilizerID, *stringData.Sections[0].StabilizerID)
-				result.Weight = append(result.Weight, *stringData.Sections[0].Weight)
-				result.CoefficientOfFriction = append(result.CoefficientOfFriction, *stringData.Sections[0].FrictionCoefficient)
-				result.MinimumYieldStrength = append(result.MinimumYieldStrength, *stringData.Sections[0].MinYieldStrength)
-			} else {
-				// Map Section data
-				result.BodyOD = append(result.BodyOD, stringData.Sections[len(stringData.Sections)-1].BodyOD)
-				result.BodyID = append(result.BodyID, stringData.Sections[len(stringData.Sections)-1].BodyID)
-				result.BodyAvgJointLength = append(result.BodyAvgJointLength, *stringData.Sections[len(stringData.Sections)-1].AvgJointLength)
-				result.StabilizerLength = append(result.StabilizerLength, *stringData.Sections[len(stringData.Sections)-1].StabilizerLength)
-				result.StabilizerOD = append(result.StabilizerOD, *stringData.Sections[len(stringData.Sections)-1].StabilizerOD)
-				result.StabilizerID = append(result.StabilizerID, *stringData.Sections[len(stringData.Sections)-1].StabilizerID)
-				result.Weight = append(result.Weight, *stringData.Sections[len(stringData.Sections)-1].Weight)
-				result.CoefficientOfFriction = append(result.CoefficientOfFriction, *stringData.Sections[len(stringData.Sections)-1].FrictionCoefficient)
-				result.MinimumYieldStrength = append(result.MinimumYieldStrength, *stringData.Sections[len(stringData.Sections)-1].MinYieldStrength)
-			}
-		}
-	}
-
-	return result
+// ModelReady reports whether predictions can currently be served.
+func (s *torqueAndDragService) ModelReady(ctx context.Context) error {
+	return s.client.Ready(ctx)
 }

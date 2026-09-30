@@ -17,11 +17,28 @@ func (h *Handler) initCompaniesRoutes(api *gin.RouterGroup) {
 	{
 		companies.GET("/", h.getCompanies)
 		companies.GET("/all", h.getCompaniesWithComponents)
+		companies.GET("/tree", h.getTree)
 		companies.POST("/", h.createCompany)
 		companies.GET("/:id", h.getCompanyByID)
 		companies.PUT("/:id", h.updateCompany)
 		companies.DELETE("/:id", h.deleteCompany)
 	}
+}
+
+// getTree returns the organization's hierarchy with ids and names only (for navigation).
+// @Summary Navigation tree
+// @Tags companies
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {array} entities.TreeNode
+// @Router /api/v1/companies/tree [get]
+func (h *Handler) getTree(c *gin.Context) {
+	tree, err := h.services.Tree.Tree(c.Request.Context(), c.GetString(values.OrganizationIdCtx))
+	if err != nil {
+		h.respondError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, tree)
 }
 
 // getCompanies retrieves all companies.

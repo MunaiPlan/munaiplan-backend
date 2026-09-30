@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"errors"
+	"sync"
 
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/responses"
@@ -30,49 +32,29 @@ func NewUsersService(repo repository.UsersRepository, commonRepo repository.Comm
 	}
 }
 
-func (s *usersService) SignUp(ctx context.Context, input *requests.UserSignUpRequest) error {
-	if err := s.commonRepo.CheckIfUserExistsByEmail(ctx, input.Body.Email); err == nil {
-		return domainErrors.ErrUserAlreadyExists
-	}
-
-	// Hash the password
-	hashedPassword, err := helpers.HashPassword(input.Body.Password)
-	if err != nil {
-		logrus.Errorf("Error hashing password: %s", err)
-		return nil
-	}
-
-	// Create the user
-	user := entities.User{
-		Email:    input.Body.Email,
-		Password: hashedPassword,
-		Name:     input.Body.Name,
-		Surname:  input.Body.Surname,
-		Phone:    input.Body.Phone,
-		OrganizationID: input.OrganizationID,
-	}
-
-	// Save the user to the repository
-	err = s.repo.Create(ctx, input.OrganizationID, &user)
-	if err != nil {
-		logrus.Errorf("Error creating user: %s", err)
-		return err
-	}
-
-	return nil
+func (s *usersService) GetByID(ctx context.Context, userID string) (*entities.User, error) {
+	return s.repo.GetByID(ctx, userID)
 }
-func (s *usersService) SignIn(ctx context.Context, input *requests.UserSignInRequest) (*responses.TokenResponse, error) {
-	if err := s.commonRepo.CheckIfUserExistsByEmail(ctx, input.Email); err != nil {
-		return nil, err
-	}
 
-	user, err := s.repo.GetByEmail(ctx, input.Email)
+// dummyPasswordHash lets an unknown email cost the same bcrypt work as a real
+// account, so response time does not reveal which emails exist.
+var dummyPasswordHash = sync.OnceValue(func() string {
+	hash, _ := helpers.HashPassword("unused-timing-equalizer")
+	return hash
+})
+
+func (s *usersService) SignIn(ctx context.Context, input *requests.UserSignInRequest) (*responses.TokenResponse, error) {
+	user, err := s.repo.GetByEmail(ctx, normalizeEmail(input.Email))
+	if errors.Is(err, domainErrors.ErrUserNotFound) {
+		helpers.CheckPasswordHash(input.Password, dummyPasswordHash())
+		return nil, domainErrors.ErrInvalidCredentials
+	}
 	if err != nil {
 		return nil, err
 	}
 
 	if !helpers.CheckPasswordHash(input.Password, user.Password) {
-		return nil, domainErrors.ErrUserPasswordIncorrect
+		return nil, domainErrors.ErrInvalidCredentials
 	}
 
 	token, err := s.jwt.CreateAccessToken(helpers.UserAccessTokenClaims{

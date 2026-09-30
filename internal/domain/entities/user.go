@@ -13,6 +13,13 @@ type User struct {
 	Surname        string    `json:"surname"`
 	Email          string    `json:"email"`
 	Phone          string    `json:"phone"`
-	Password       string    `json:"password"`
+	Password       string    `json:"-"`
+	Role           string    `json:"role"`
 	CreatedAt      time.Time `json:"registeredAt"`
 }
+
+// Roles. Administrators provision organizations and accounts; users work within one organization.
+const (
+	RoleUser  = "user"
+	RoleAdmin = "admin"
+)

@@ -230,7 +230,7 @@ func (r *commonRepository) GetTrajectoryByCaseID(ctx context.Context, caseID str
 	var trajectory models.Trajectory
 	result := r.db.WithContext(ctx).
 		Preload("Headers").
-		Preload("Units").
+		Preload("Units", func(db *gorm.DB) *gorm.DB { return db.Order("md") }).
 		Where("id IN (?)",
 			r.db.Model(&models.Case{}).Select("trajectory_id").Where("id = ?", caseID)).
 		First(&trajectory)

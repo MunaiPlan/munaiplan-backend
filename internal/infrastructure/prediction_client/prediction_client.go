@@ -1,27 +1,52 @@
-// Create a new file named torque_and_drag_client.go under `internal/infrastructure/client`
-
 package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"math"
 	"net/http"
+	"reflect"
+	"strings"
 	"time"
 
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
-	"github.com/munaiplan/munaiplan-backend/internal/application/types/responses"
 )
 
+// Family selects one of the model service's prediction routes.
+type Family string
+
 const (
-	timeoutSeconds = 10
+	EffectiveTension Family = "effect_na"
+	HookLoad         Family = "ves_na_kru"
+	Torque           Family = "moment"
+	MinWeight        Family = "min_ves"
+)
+
+var (
+	// ErrUnavailable means the model service could not be reached or is not ready (HTTP 503).
+	ErrUnavailable = errors.New("the prediction service is unavailable; try again later")
+	// ErrInvalidResponse means the model service answered with something unusable (HTTP 502).
+	ErrInvalidResponse = errors.New("the prediction service returned an invalid response")
+)
+
+// depthKey is filled by the API from the request; the model does not return it.
+const depthKey = "Глубина"
+
+const (
+	requestTimeout   = 60 * time.Second
+	maxResponseBytes = 32 << 20
 )
 
 type TorqueAndDragClient interface {
-	CalculateEffectiveTension(data requests.TorqueAndDragFromMLModelRequest) (*responses.EffectiveTensionFromMLModelResponse, error)
-	CalculateWeightOnBit(data requests.TorqueAndDragFromMLModelRequest) (*responses.WeightOnBitFromMLModelResponse, error)
-	CalculateMoment(data requests.TorqueAndDragFromMLModelRequest) (*responses.MomentFromMLModelResponse, error)
-	CalculateMinWeight(data requests.TorqueAndDragFromMLModelRequest) (*responses.MinWeightFromMLModelResponse, error)
+	// Predict posts one feature request and decodes a validated response into out, a pointer
+	// to a struct whose json tags name the expected series.
+	Predict(ctx context.Context, family Family, data requests.TorqueAndDragFromMLModelRequest, out any) error
+	// Ready reports whether the model service has loaded and smoke-tested its artifacts.
+	Ready(ctx context.Context) error
 }
 
 type torqueAndDragClient struct {
@@ -30,146 +55,93 @@ type torqueAndDragClient struct {
 }
 
 func NewTorqueAndDragClient(baseURL string) TorqueAndDragClient {
-	return &torqueAndDragClient{
-		client: &http.Client{
-			Timeout: time.Duration(timeoutSeconds) * time.Second,
-		},
-		baseURL: baseURL,
-	}
+	return &torqueAndDragClient{client: &http.Client{Timeout: requestTimeout}, baseURL: strings.TrimRight(baseURL, "/")}
 }
 
-// CalculateEffectiveTension sends a request to the FastAPI service to calculate effective tension
-func (c *torqueAndDragClient) CalculateEffectiveTension(data requests.TorqueAndDragFromMLModelRequest) (*responses.EffectiveTensionFromMLModelResponse, error) {
-	url := fmt.Sprintf("%s/effect_na/", c.baseURL)
-
-	req, err := preparePostRequest(url, data)
-	if err != nil {
-		return nil, fmt.Errorf("failed to prepare request: %v", err)
-	}
-
-	// Execute the request with a timeout
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected response status: %v", resp.Status)
-	}
-
-	// Decode the response
-	var effectiveTensionResponse responses.EffectiveTensionFromMLModelResponse
-	if err := json.NewDecoder(resp.Body).Decode(&effectiveTensionResponse); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %v", err)
-	}
-
-	return &effectiveTensionResponse, nil
-}
-
-// CalculateWeightOnBit sends a request to the FastAPI service to calculate weight on bit
-func (c *torqueAndDragClient) CalculateWeightOnBit(data requests.TorqueAndDragFromMLModelRequest) (*responses.WeightOnBitFromMLModelResponse, error) {
-	url := fmt.Sprintf("%s/ves_na_kru/", c.baseURL)
-
-	req, err := preparePostRequest(url, data)
-	if err != nil {
-		return nil, fmt.Errorf("failed to prepare request: %v", err)
-	}
-
-	// Execute the request with a timeout
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected response status: %v", resp.Status)
-	}
-
-	// Decode the response
-	var response responses.WeightOnBitFromMLModelResponse
-	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %v", err)
-	}
-
-	return &response, nil
-}
-
-// // CalculateMoment sends a request to the FastAPI service to calculate moment
-func (c *torqueAndDragClient) CalculateMoment(data requests.TorqueAndDragFromMLModelRequest) (*responses.MomentFromMLModelResponse, error) {
-	url := fmt.Sprintf("%s/moment/", c.baseURL)
-
-	req, err := preparePostRequest(url, data)
-	if err != nil {
-		return nil, fmt.Errorf("failed to prepare request: %v", err)
-	}
-
-	// Execute the request with a timeout
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected response status: %v", resp.Status)
-	}
-
-	// Decode the response
-	var response responses.MomentFromMLModelResponse
-	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %v", err)
-	}
-
-	return &response, nil
-}
-
-// CalculateMinWeight sends a request to the FastAPI service to calculate minimum weight
-func (c *torqueAndDragClient) CalculateMinWeight(data requests.TorqueAndDragFromMLModelRequest) (*responses.MinWeightFromMLModelResponse, error) {
-	url := fmt.Sprintf("%s/min_ves/", c.baseURL)
-
-	req, err := preparePostRequest(url, data)
-	if err != nil {
-		return nil, fmt.Errorf("failed to prepare request: %v", err)
-	}
-
-	// Execute the request with a timeout
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("request failed: %v", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected response status: %v", resp.Status)
-	}
-
-	// Decode the response
-	var response responses.MinWeightFromMLModelResponse
-	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %v", err)
-	}
-
-	return &response, nil
-}
-
-// preparePostRequest prepares an HTTP POST request with the given URL and data, setting the appropriate headers.
-func preparePostRequest(url string, data requests.TorqueAndDragFromMLModelRequest) (*http.Request, error) {
-	// Serialize the data to JSON
+func (c *torqueAndDragClient) Predict(ctx context.Context, family Family, data requests.TorqueAndDragFromMLModelRequest, out any) error {
 	payload, err := json.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal data: %v", err)
+		return fmt.Errorf("encode prediction request: %w", err)
 	}
-
-	// Set up the HTTP request
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s/%s/", c.baseURL, family), bytes.NewReader(payload))
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %v", err)
+		return fmt.Errorf("build prediction request: %w", err)
 	}
-
-	// Set headers
 	req.Header.Set("Content-Type", "application/json")
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("%w: %v", ErrUnavailable, err)
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseBytes))
+	if err != nil {
+		return fmt.Errorf("%w: read body: %v", ErrUnavailable, err)
+	}
+	switch {
+	case resp.StatusCode == http.StatusServiceUnavailable:
+		return fmt.Errorf("%w: model artifacts are not ready", ErrUnavailable)
+	case resp.StatusCode != http.StatusOK:
+		return fmt.Errorf("%w: %s: %.300s", ErrInvalidResponse, resp.Status, body)
+	}
+	return decodeValidated(body, len(data.MD), out)
+}
 
-	return req, nil
+func (c *torqueAndDragClient) Ready(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	// The prediction routes live under /predict; readiness is at the service root.
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, strings.TrimSuffix(c.baseURL, "/predict")+"/ready", nil)
+	if err != nil {
+		return err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("%w: %v", ErrUnavailable, err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%w: readiness returned %s", ErrUnavailable, resp.Status)
+	}
+	return nil
+}
+
+// decodeValidated requires every expected series, one finite value per station, before decoding.
+func decodeValidated(body []byte, stations int, out any) error {
+	var series map[string][]float64
+	if err := json.Unmarshal(body, &series); err != nil {
+		return fmt.Errorf("%w: %v", ErrInvalidResponse, err)
+	}
+	for _, key := range expectedSeries(out) {
+		values, ok := series[key]
+		if !ok {
+			return fmt.Errorf("%w: series %q is missing", ErrInvalidResponse, key)
+		}
+		if len(values) != stations {
+			return fmt.Errorf("%w: series %q has %d values for %d stations", ErrInvalidResponse, key, len(values), stations)
+		}
+		for _, v := range values {
+			if math.IsNaN(v) || math.IsInf(v, 0) {
+				return fmt.Errorf("%w: series %q contains a non-finite value", ErrInvalidResponse, key)
+			}
+		}
+	}
+	if err := json.Unmarshal(body, out); err != nil {
+		return fmt.Errorf("%w: %v", ErrInvalidResponse, err)
+	}
+	return nil
+}
+
+func expectedSeries(out any) []string {
+	t := reflect.TypeOf(out)
+	for t.Kind() == reflect.Pointer {
+		t = t.Elem()
+	}
+	var keys []string
+	for i := 0; i < t.NumField(); i++ {
+		tag := strings.Split(t.Field(i).Tag.Get("json"), ",")[0]
+		if tag != "" && tag != "-" && tag != depthKey {
+			keys = append(keys, tag)
+		}
+	}
+	return keys
 }

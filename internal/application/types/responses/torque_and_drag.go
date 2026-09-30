@@ -44,3 +44,25 @@ type MinWeightFromMLModelResponse struct {
 	MinWeightOnBitForSinusoidalBucklingRotaryDrilling []float64 `json:"Мин. вес на долоте до синусоидального изгиба (бурение ротором)"`
 	MinWeightOnBitForHelicalBucklingGZDDrilling       []float64 `json:"Мин. вес на долоте до спирального изгиба (бурение ГЗД)"`
 }
+
+// ReferenceComparison sets MunaiPlan's model output beside WellPlan's own results for an
+// imported case. It is a consistency check against one reference tool, not a validation.
+type ReferenceComparison struct {
+	CaseID   string          `json:"case_id"`
+	BitDepth float64         `json:"bit_depth"`
+	Rows     []ComparisonRow `json:"rows"`
+	Notes    []string        `json:"notes"`
+	Warnings []string        `json:"source_warnings"`
+}
+
+// ComparisonRow compares one WellPlan load-summary value with the model's matching value.
+type ComparisonRow struct {
+	Operation          string   `json:"operation"`
+	Metric             string   `json:"metric"` // "hook_load" or "surface_torque"
+	Unit               string   `json:"unit"`
+	WellPlan           *float64 `json:"wellplan"`
+	Model              *float64 `json:"model"`
+	Difference         *float64 `json:"difference,omitempty"`
+	RelativeDifference *float64 `json:"relative_difference,omitempty"`
+	ModelPoint         string   `json:"model_point"` // where on the model's curve the value was read
+}

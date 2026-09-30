@@ -1,0 +1,15 @@
+.git
+.bin
+.data
+.env
+*.zip
+.DS_Store
+vendor
+migrations
+atlas.hcl
+cmd/schema-gen
+Dockerfile
+docker-compose.yml
+Makefile
+README.md
+data

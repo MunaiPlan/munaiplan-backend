@@ -7,6 +7,10 @@ import (
 
 type Repository struct {
 	Common               CommonRepository
+	Admin                AdminRepository
+	Imports              ImportsRepository
+	Ownership            OwnershipRepository
+	Tree                 TreeRepository
 	Users                UsersRepository
 	Companies            CompaniesRepository
 	Organizations        OrganizationsRepository
@@ -28,6 +32,10 @@ type Repository struct {
 func NewRepositories(db *gorm.DB) *Repository {
 	return &Repository{
 		Common:               postgres.NewCommonRepository(db),
+		Admin:                postgres.NewAdminRepository(db),
+		Imports:              postgres.NewImportsRepository(db),
+		Ownership:            postgres.NewOwnershipRepository(db),
+		Tree:                 postgres.NewTreeRepository(db),
 		Users:                postgres.NewUsersRepository(db),
 		Companies:            postgres.NewCompaniesRepository(db),
 		Organizations:        postgres.NewOrganizationsRepository(db),

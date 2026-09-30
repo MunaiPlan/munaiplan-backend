@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/errors"
 	"github.com/munaiplan/munaiplan-backend/internal/application/types/requests"
@@ -45,7 +44,6 @@ func (s *holesService) CreateHole(ctx context.Context, input *requests.CreateHol
 		return types.ErrAlreadyExists
 	}
 
-	fmt.Println("len of input.Body.Caisings at service", len(input.Body.Caisings))
 
 	hole := s.CreateHoleRequestToEntity(&input.Body)
 	return s.repo.CreateHole(ctx, input.CaseID, hole)
@@ -70,6 +68,7 @@ func (s *holesService) CreateHoleRequestToEntity(input *requests.CreateHoleReque
 			Length:                caising.Length,
 			ShoeMD:                caising.ShoeMD,
 			OD:                    caising.OD,
+			InnerDiameter:         caising.InnerDiameter,
 			VD:                    caising.VD,
 			DriftID:               caising.DriftID,
 			EffectiveHoleDiameter: caising.EffectiveHoleDiameter,
@@ -124,6 +123,7 @@ func (s *holesService) UpdateHoleRequestToEntity(input *requests.UpdateHoleReque
 			Length:                caising.Length,
 			ShoeMD:                caising.ShoeMD,
 			OD:                    caising.OD,
+			InnerDiameter:         caising.InnerDiameter,
 			VD:                    caising.VD,
 			DriftID:               caising.DriftID,
 			EffectiveHoleDiameter: caising.EffectiveHoleDiameter,

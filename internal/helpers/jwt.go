@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -54,15 +55,18 @@ type UserAccessTokenClaims struct {
 }
 
 func NewJwt() (*jwtStructure, error) {
+	for _, key := range []string{userAccessTokenSecretKey, refreshTokenSecretKey} {
+		if strings.TrimSpace(os.Getenv(key)) == "" {
+			return nil, fmt.Errorf("required environment variable %s is empty", key)
+		}
+	}
 	accessTokenLifetimeMinutes, err := strconv.Atoi(os.Getenv(accessTokenLifetimeMinutesKey))
-	if err != nil {
-		logrus.Fatalf("Error parsing access token lifetime minutes: %s", err)
-		return nil, err
+	if err != nil || accessTokenLifetimeMinutes <= 0 {
+		return nil, fmt.Errorf("%s must be a positive integer", accessTokenLifetimeMinutesKey)
 	}
 	refreshTokenLifetimeMinutes, err := strconv.Atoi(os.Getenv(refreshTokenLifetimeMinutesKey))
-	if err != nil {
-		logrus.Fatalf("Error parsing refresh token lifetime minutes: %s", err)
-		return nil, err
+	if err != nil || refreshTokenLifetimeMinutes <= 0 {
+		return nil, fmt.Errorf("%s must be a positive integer", refreshTokenLifetimeMinutesKey)
 	}
 	return &jwtStructure{
 		userAccessTokenSecret:       os.Getenv(userAccessTokenSecretKey),

@@ -10,6 +10,7 @@ import (
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/drivers/postgres/models"
 	"github.com/munaiplan/munaiplan-backend/internal/infrastructure/types"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type holesRepository struct {
@@ -78,7 +79,7 @@ func (r *holesRepository) UpdateHole(ctx context.Context, hole *entities.Hole) (
 		}
 
 		gormHole := toGormHole(hole)
-		if err := tx.Model(&existingHole).Updates(gormHole).Error; err != nil {
+		if err := tx.Model(&existingHole).Select("*").Omit("id", "created_at", "case_id", "deleted_at", clause.Associations).Updates(gormHole).Error; err != nil {
 			return err
 		}
 
@@ -95,7 +96,8 @@ func (r *holesRepository) UpdateHole(ctx context.Context, hole *entities.Hole) (
 				}
 			} else if existingCaising, exists := existingCaisingsMap[newCaising.ID]; exists {
 				if !reflect.DeepEqual(existingCaising, newCaising) {
-					if err := tx.Model(&existingCaising).Updates(newCaising).Error; err != nil {
+					// Select("*") so edits to zero/empty values are written too.
+					if err := tx.Model(&existingCaising).Select("*").Omit("id", "created_at", "hole_id", "deleted_at").Updates(newCaising).Error; err != nil {
 						return err
 					}
 				}

@@ -40,7 +40,7 @@ func (r *trajectoriesRepository) CreateTrajectory(ctx context.Context, designID 
 // GetTrajectoryByID retrieves a trajectory by its ID from the database.
 func (r *trajectoriesRepository) GetTrajectoryByID(ctx context.Context, id string) (*entities.Trajectory, error) {
 	var trajectory models.Trajectory
-	result := r.db.WithContext(ctx).Preload("Headers").Preload("Units").Where("id = ?", id).First(&trajectory)
+	result := r.db.WithContext(ctx).Preload("Headers").Preload("Units", func(db *gorm.DB) *gorm.DB { return db.Order("md") }).Where("id = ?", id).First(&trajectory)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -52,7 +52,7 @@ func (r *trajectoriesRepository) GetTrajectoryByID(ctx context.Context, id strin
 func (r *trajectoriesRepository) GetTrajectories(ctx context.Context, designID string) ([]*entities.Trajectory, error) {
 	var trajectories []*models.Trajectory
 	var res []*entities.Trajectory
-	result := r.db.WithContext(ctx).Preload("Headers").Preload("Units").Where("design_id = ?", designID).Find(&trajectories)
+	result := r.db.WithContext(ctx).Preload("Headers").Preload("Units", func(db *gorm.DB) *gorm.DB { return db.Order("md") }).Where("design_id = ?", designID).Find(&trajectories)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -70,7 +70,7 @@ func (r *trajectoriesRepository) UpdateTrajectory(ctx context.Context, trajector
 
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var existingTrajectory models.Trajectory
-		if err := tx.Preload("Headers").Preload("Units").Where("id = ?", trajectory.ID).First(&existingTrajectory).Error; err != nil {
+		if err := tx.Preload("Headers").Preload("Units", func(db *gorm.DB) *gorm.DB { return db.Order("md") }).Where("id = ?", trajectory.ID).First(&existingTrajectory).Error; err != nil {
 			return err
 		}
 
@@ -97,7 +97,8 @@ func (r *trajectoriesRepository) UpdateTrajectory(ctx context.Context, trajector
 				}
 			} else if existingHeader, exists := existingHeadersMap[newHeader.ID]; exists {
 				if !reflect.DeepEqual(existingHeader, newHeader) {
-					if err := tx.Model(&existingHeader).Updates(newHeader).Error; err != nil {
+					// Select("*") so that edits to zero or empty values are written too.
+					if err := tx.Model(&existingHeader).Select("*").Omit("id", "created_at", "trajectory_id").Updates(newHeader).Error; err != nil {
 						return err
 					}
 				}
@@ -121,7 +122,7 @@ func (r *trajectoriesRepository) UpdateTrajectory(ctx context.Context, trajector
 				}
 			} else if existingUnit, exists := existingUnitsMap[newUnit.ID]; exists {
 				if !reflect.DeepEqual(existingUnit, newUnit) {
-					if err := tx.Model(&existingUnit).Updates(newUnit).Error; err != nil {
+					if err := tx.Model(&existingUnit).Select("*").Omit("id", "created_at", "trajectory_id").Updates(newUnit).Error; err != nil {
 						return err
 					}
 				}
@@ -137,7 +138,7 @@ func (r *trajectoriesRepository) UpdateTrajectory(ctx context.Context, trajector
 			}
 		}
 
-		if err := tx.Preload("Headers").Preload("Units").Where("id = ?", trajectory.ID).First(&updatedTrajectory).Error; err != nil {
+		if err := tx.Preload("Headers").Preload("Units", func(db *gorm.DB) *gorm.DB { return db.Order("md") }).Where("id = ?", trajectory.ID).First(&updatedTrajectory).Error; err != nil {
 			return err
 		}
 

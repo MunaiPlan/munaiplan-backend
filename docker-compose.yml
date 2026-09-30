@@ -35,12 +35,11 @@ services:
       - 5432:5432
 
   model:
-    image: kabdulaset/munai-models:amd64
+    image: kabdulaset/munai-models
     container_name: munai-models
     ports:
       - 8001:8080  # Mapping port 8080 inside container to 8001 on host
 
-    platform: linux/amd64
 
 volumes:
   pgdata:

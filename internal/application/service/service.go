@@ -8,20 +8,33 @@ import (
 	"github.com/munaiplan/munaiplan-backend/internal/domain/entities"
 	"github.com/munaiplan/munaiplan-backend/internal/domain/repository"
 	"github.com/munaiplan/munaiplan-backend/internal/helpers"
+	"github.com/munaiplan/munaiplan-backend/internal/importers/wellplan"
 	client "github.com/munaiplan/munaiplan-backend/internal/infrastructure/prediction_client"
 )
 
 type Users interface {
 	SignIn(ctx context.Context, input *requests.UserSignInRequest) (*responses.TokenResponse, error)
-	SignUp(ctx context.Context, input *requests.UserSignUpRequest) error
+	GetByID(ctx context.Context, userID string) (*entities.User, error)
 }
 
-type Organizations interface {
-	CreateOrganization(ctx context.Context, input *requests.CreateOrganizationRequest) error
-	UpdateOrganization(ctx context.Context, input *requests.UpdateOrganizationRequest) (*entities.Organization, error)
-	DeleteOrganization(ctx context.Context, input *requests.DeleteOrganizationRequest) error
-	GetOrganizations(ctx context.Context) ([]*entities.Organization, error)
-	GetOrganizationByName(ctx context.Context, input *requests.GetOrganizationByNameRequest) (*entities.Organization, error)
+// Admin provisions tenants and accounts. There is no public registration (B2B).
+type Admin interface {
+	ListOrganizations(ctx context.Context) ([]*entities.OrganizationSummary, error)
+	CreateOrganization(ctx context.Context, input *requests.AdminCreateOrganizationRequest) (*entities.Organization, *entities.User, error)
+	ListUsers(ctx context.Context, organizationID string) ([]*entities.User, error)
+	CreateUser(ctx context.Context, organizationID string, input *requests.AdminUserInput) (*entities.User, error)
+}
+
+// Imports turns WellPlan exports into cases inside the caller's organization.
+type Imports interface {
+	PreviewWellPlan(ctx context.Context, organizationID string, upload WellPlanUpload) (*ImportPreview, error)
+	ImportWellPlan(ctx context.Context, organizationID, userID string, upload WellPlanUpload) (*entities.ImportResult, error)
+	CaseReference(ctx context.Context, organizationID, caseID string) (*wellplan.Report, error)
+}
+
+// Tree is the navigation hierarchy for the explorer sidebar.
+type Tree interface {
+	Tree(ctx context.Context, organizationID string) ([]*entities.TreeNode, error)
 }
 
 type Companies interface {
@@ -143,14 +156,18 @@ type TorqueAndDrag interface {
 	CalculateWeightOnBitFromMlModel(ctx context.Context, caseID string) (*responses.WeightOnBitFromMLModelResponse, error)
 	CalculateSurfaceTorqueFromMlModel(ctx context.Context, caseID string) (*responses.MomentFromMLModelResponse, error)
 	CalculateMinWeightFromMLModel(ctx context.Context, caseID string) (*responses.MinWeightFromMLModelResponse, error)
+	CompareWithReference(ctx context.Context, organizationID, caseID string) (*responses.ReferenceComparison, error)
+	ModelReady(ctx context.Context) error
 }
 
 type Services struct {
 	// TODO() Implement cache
 	// CatalogCache *catalog.CatalogCache
 	Users
+	Admin
+	Imports
+	Tree
 	Companies
-	Organizations
 	Fields
 	Sites
 	Wells
@@ -171,7 +188,9 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt, mlServiceClientU
 	return &Services{
 		Users:             NewUsersService(repos.Users, repos.Common, jwt),
 		Companies:         NewCompaniesService(repos.Companies, repos.Common),
-		Organizations:     NewOrganizationsService(repos.Organizations),
+		Admin:             NewAdminService(repos.Admin),
+		Imports:           NewImportsService(repos.Imports),
+		Tree:              repos.Tree,
 		Fields:            NewFieldsService(repos.Fields, repos.Common),
 		Sites:             NewSitesService(repos.Sites, repos.Common),
 		Wells:             NewWellsService(repos.Wells, repos.Common),
@@ -187,6 +206,8 @@ func NewServices(repos *repository.Repository, jwt helpers.Jwt, mlServiceClientU
 		Strings:           NewStringsService(repos.Strings, repos.Common),
 		TorqueAndDrag: NewTorqueAndDragService(
 			repos.Strings,
+			repos.Holes,
+			repos.Imports,
 			repos.Common,
 			client.NewTorqueAndDragClient(mlServiceClientUrl),
 		),

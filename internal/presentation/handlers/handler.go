@@ -22,7 +22,8 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 	v1 := api.Group("/v1")
 	{
 		h.initUsersRoutes(v1)
-		h.initOrganizationsRoutes(v1)
+		h.initAdminRoutes(v1)
+		h.initImportRoutes(v1)
 		h.initCompaniesRoutes(v1)
 		h.initFieldsRoutes(v1)
 		h.initSitesRoutes(v1)

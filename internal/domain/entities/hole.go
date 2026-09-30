@@ -41,6 +41,7 @@ type Caising struct {
 	Length                float64  `json:"length"`
 	ShoeMD                *float64 `json:"shoe_md,omitempty"`
 	OD                    float64  `json:"od"`
+	InnerDiameter         *float64 `json:"inner_diameter,omitempty"`
 	VD                    float64  `json:"vd"`
 	DriftID               float64  `json:"drift_id"`
 	EffectiveHoleDiameter float64  `json:"effective_hole_diameter"`

@@ -33,6 +33,7 @@ type User struct {
 	Email          string         `gorm:"type:varchar(255);not null" json:"email"`
 	Password       string         `gorm:"type:varchar(70);not null" json:"password"`
 	Phone          string         `gorm:"type:varchar(20)" json:"phone"`
+	Role           string         `gorm:"type:text;not null;default:user" json:"role"`
 }
 
 // Company model with UUID primary key and foreign key.
@@ -250,6 +251,7 @@ type Caising struct {
 	Length                float64        `json:"length"`
 	ShoeMD                *float64       `json:"shoe_md,omitempty"`
 	OD                    float64        `json:"od"`
+	InnerDiameter         *float64       `json:"inner_diameter,omitempty"`
 	VD                    float64        `json:"vd"`
 	DriftID               float64        `json:"drift_id"`
 	EffectiveHoleDiameter float64        `json:"effective_hole_diameter"`
@@ -404,4 +406,17 @@ type Rig struct {
 	PumpDischargeLineInternalDiameter *float64       `json:"pump_discharge_line_internal_diameter,omitempty"`
 	TopDriveStackupLength             *float64       `json:"top_drive_stackup_length,omitempty"`
 	TopDriveStackupInternalDiameter   *float64       `json:"top_drive_stackup_internal_diameter,omitempty"`
+}
+
+// CaseImport records one imported case: its source files and the full parsed report.
+type CaseImport struct {
+	ID             uuid.UUID  `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	CreatedAt      time.Time  `gorm:"autoCreateTime" json:"created_at"`
+	OrganizationID uuid.UUID  `gorm:"type:uuid;not null" json:"organization_id"`
+	CaseID         uuid.UUID  `gorm:"type:uuid;not null" json:"case_id"`
+	CreatedBy      *uuid.UUID `gorm:"type:uuid" json:"created_by"`
+	Format         string     `gorm:"type:text;not null" json:"format"`
+	Fingerprint    string     `gorm:"type:text;not null" json:"fingerprint"`
+	// JSON text: the driver runs in simple-protocol mode, where []byte would be sent as bytea.
+	Report         string     `gorm:"type:jsonb;not null" json:"report"`
 }

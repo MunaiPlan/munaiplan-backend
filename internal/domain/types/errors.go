@@ -6,6 +6,14 @@ var (
 	ErrUserNotFound          = errors.New("user doesn't exists")
 	ErrUserAlreadyExists     = errors.New("user with such email already exists")
 	ErrUserPasswordIncorrect = errors.New("password incorrect")
+	// ErrInvalidCredentials deliberately does not say whether the email exists.
+	ErrInvalidCredentials = errors.New("invalid email or password")
+	ErrEmailTaken         = errors.New("an account or organization with this email already exists")
+	ErrForbidden          = errors.New("administrator access required")
+)
+
+var (
+	ErrOrganizationNotFound = errors.New("organization not found")
 )
 
 

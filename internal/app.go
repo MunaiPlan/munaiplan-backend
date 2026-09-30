@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -27,18 +28,39 @@ import (
 // @host localhost:8000
 // @BasePath /api/v1/
 
-func Run(configPath string) {
-	cfg, err := configs.Init(configPath)
-	if err != nil {
-		logrus.Error(err)
-		return
+func Run(command, configPath string) error {
+	switch command {
+	case "serve", "migrate", "dev-seed", "create-admin":
+	default:
+		return fmt.Errorf("unknown command %q (expected serve, migrate, dev-seed or create-admin)", command)
 	}
-
-	// Dependencies
-	db := postgres.NewDatabase()
-	if db == nil {
-		logrus.Error("failed to initialize database connection")
-		return
+	var cfg *configs.Config
+	var err error
+	if command == "serve" {
+		cfg, err = configs.Init(configPath)
+		if err != nil {
+			return err
+		}
+	}
+	if command == "dev-seed" && os.Getenv("APP_ENV") != configs.EnvLocal {
+		return fmt.Errorf("dev-seed requires APP_ENV=local")
+	}
+	db, err := postgres.Open()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	if command == "migrate" {
+		return postgres.Migrate(db.Conn)
+	}
+	if err := postgres.RequireSchema(db.Conn); err != nil {
+		return err
+	}
+	if command == "dev-seed" {
+		return postgres.SeedLocalUser(db.Conn)
+	}
+	if command == "create-admin" {
+		return postgres.BootstrapAdmin(db.Conn)
 	}
 
 	// fmt.Println(cfg.Catalog.ApiDrillCollar)
@@ -53,18 +75,17 @@ func Run(configPath string) {
 
 	jwt, err := helpers.NewJwt()
 	if err != nil {
-		logrus.Error(err)
-		return
+		return err
 	}
 
 	// Initializing repositories
 	repos := repository.NewRepositories(db.Conn)
 
 	// Initializing services
-	services := service.NewServices(repos, jwt, helpers.GetEnv("PREDICTION_SERVICE_URL", "http://localhost:8001"))
+	services := service.NewServices(repos, jwt, helpers.GetEnv("PREDICTION_SERVICE_URL", "http://localhost:8001/predict"))
 
 	// Initializing middleware
-	authMiddleware := middleware.NewAuthMiddleware(jwt)
+	authMiddleware := middleware.NewAuthMiddleware(jwt, services.Users, repos.Ownership)
 
 	// Initializing router and handlers
 	router := infrastructure.NewRouter(services, authMiddleware)
@@ -72,11 +93,8 @@ func Run(configPath string) {
 	// HTTP Server
 	srv := infrastructure.NewServer(cfg, router.Init(cfg))
 
-	go func() {
-		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
-			logrus.Errorf("error occurred while running http server: %s\n", err.Error())
-		}
-	}()
+	serverErrors := make(chan error, 1)
+	go func() { serverErrors <- srv.Run() }()
 
 	logrus.Info("Server started")
 
@@ -84,7 +102,14 @@ func Run(configPath string) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 
-	<-quit
+	select {
+	case err := <-serverErrors:
+		if errors.Is(err, http.ErrServerClosed) {
+			return nil
+		}
+		return fmt.Errorf("HTTP server stopped: %w", err)
+	case <-quit:
+	}
 
 	const timeout = 5 * time.Second
 
@@ -92,15 +117,7 @@ func Run(configPath string) {
 	defer shutdown()
 
 	if err := srv.Stop(ctx); err != nil {
-		logrus.Errorf("failed to stop server: %v", err)
+		return fmt.Errorf("stop HTTP server: %w", err)
 	}
-
-	sqlDB, err := db.Conn.DB()
-	if err != nil {
-		logrus.Error(err.Error())
-	}
-
-	if err := sqlDB.Close(); err != nil {
-		logrus.Error(err.Error())
-	}
+	return nil
 }

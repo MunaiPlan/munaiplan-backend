@@ -90,7 +90,8 @@ func (r *stringsRepository) UpdateString(ctx context.Context, stringEntity *enti
 				}
 			} else if existingSection, exists := existingSectionsMap[newSection.ID]; exists {
 				if !reflect.DeepEqual(existingSection, newSection) {
-					if err := tx.Model(&existingSection).Updates(newSection).Error; err != nil {
+					// Select("*") so edits to zero/empty values are written too.
+					if err := tx.Model(&existingSection).Select("*").Omit("id", "created_at", "string_id", "deleted_at").Updates(newSection).Error; err != nil {
 						return err
 					}
 				}
