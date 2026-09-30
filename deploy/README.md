@@ -4,6 +4,15 @@ There are two modes:
 - **public** (preview): Caddy serves HTTPS on a public address, and access is protected by admin-created accounts.
 - **tailscale** (private pilot): no public ports at all.
 
+## Oracle Cloud Always Free (chosen for the preview)
+
+- Use an **Ampere A1** instance: `VM.Standard.A1.Flex`, 2–4 OCPU and 12–24 GB RAM, Ubuntu 24.04. This stays within the Always Free limits and runs arm64 natively.
+- **Log in as `ubuntu`, not root:** `ssh ubuntu@<ip>`. Run the scripts below with `sudo`.
+- **Open ports 80 and 443 in two places:**
+  - the VCN security list: Networking → VCN → Security Lists → Ingress, TCP 80 and 443 from `0.0.0.0/0`;
+  - the host firewall, which `bootstrap-server.sh` handles automatically (Oracle images ship their own iptables rules).
+- Let's Encrypt HTTPS works on `<ip-with-dashes>.sslip.io`.
+
 ## Public preview in short
 
 ```sh

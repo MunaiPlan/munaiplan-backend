@@ -10,7 +10,7 @@ set -eu
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q
 apt-get upgrade -yq
-apt-get install -yq ca-certificates curl git ufw unattended-upgrades docker.io docker-compose-v2
+apt-get install -yq ca-certificates curl git unattended-upgrades docker.io docker-compose-v2
 systemctl enable --now docker
 dpkg-reconfigure -f noninteractive unattended-upgrades
 
@@ -23,18 +23,34 @@ apt-get install -yq tailscale
 systemctl enable --now tailscaled
 fi
 
-# Firewall: nothing public except SSH (restrict SSH to the tailnet later, see README).
-# Docker-published ports bypass ufw, which is why the stack only binds 127.0.0.1.
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow OpenSSH
-if [ "${DEPLOY_MODE:-tailscale}" = public ]; then
-  ufw allow 80/tcp
-  ufw allow 443/tcp
+# Firewall: nothing public except SSH (and 80/443 in public mode).
+# Docker-published ports bypass host firewalls, which is why the stack only binds 127.0.0.1.
+if [ -f /etc/iptables/rules.v4 ] && grep -q 'REJECT' /etc/iptables/rules.v4; then
+  # Oracle Cloud Ubuntu images ship their own iptables rules (ufw conflicts with them): open
+  # the web ports ahead of the final REJECT and persist. Also allow 80/443 in the VCN security list.
+  if [ "${DEPLOY_MODE:-tailscale}" = public ]; then
+    for port in 443 80; do
+      iptables -C INPUT -p tcp --dport "$port" -m state --state NEW -j ACCEPT 2>/dev/null ||
+        iptables -I INPUT 6 -p tcp --dport "$port" -m state --state NEW -j ACCEPT
+    done
+  else
+    iptables -C INPUT -i tailscale0 -j ACCEPT 2>/dev/null || iptables -I INPUT 6 -i tailscale0 -j ACCEPT
+  fi
+  apt-get install -yq iptables-persistent
+  netfilter-persistent save
 else
-  ufw allow in on tailscale0
+  apt-get install -yq ufw
+  ufw default deny incoming
+  ufw default allow outgoing
+  ufw allow OpenSSH
+  if [ "${DEPLOY_MODE:-tailscale}" = public ]; then
+    ufw allow 80/tcp
+    ufw allow 443/tcp
+  else
+    ufw allow in on tailscale0
+  fi
+  ufw --force enable
 fi
-ufw --force enable
 
 # 2 GB swap: the ML image build and TensorFlow start-up peak above 4 GB RAM otherwise.
 if ! swapon --show | grep -q /swapfile; then
