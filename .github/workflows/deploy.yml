@@ -1,0 +1,45 @@
+# Manual release to the preview server (Actions → Deploy → Run workflow). Runs deploy/update.sh
+# on the server, then smoke-checks the site. Required repository secrets:
+#   DEPLOY_HOST         server address (159.89.10.247)
+#   DEPLOY_SSH_KEY      private key allowed to log in as root (a dedicated key, not the owner's)
+#   DEPLOY_KNOWN_HOSTS  output of `ssh-keyscan -t ed25519 <host>`
+# While munai-models is not on GitHub, the server deploys the last uploaded models bundle;
+# release model changes with deploy/remote-update.sh from a workstation instead.
+name: Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch or tag to deploy (all three repositories)
+        default: recovery/phase-2
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: deploy-preview
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: preview
+    timeout-minutes: 45
+    steps:
+      - name: Release
+        env:
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          REF: ${{ inputs.ref }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/id_deploy && chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          case "$REF" in *[!A-Za-z0-9._/-]*) echo "invalid ref" >&2; exit 1;; esac
+          B=/opt/munaiplan/src/munaiplan-backend
+          ssh -i ~/.ssh/id_deploy "root@$HOST" "git -C $B fetch -q origin && git -C $B checkout -q --detach origin/$REF 2>/dev/null || git -C $B checkout -q --detach $REF"
+          ssh -i ~/.ssh/id_deploy "root@$HOST" "sh $B/deploy/update.sh '$REF'"
+      - name: Smoke checks
+        run: |
+          test "$(curl -s -o /dev/null -w '%{http_code}' https://munaiplan.com/health)" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' https://munaiplan.com/cases/smoke)" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' https://munaiplan.com/api/v1/companies/)" = 401

@@ -1,135 +1,171 @@
 # Deploying MunaiPlan
 
-There are two modes:
-- **public** (preview): Caddy serves HTTPS on a public address, and access is protected by admin-created accounts.
-- **tailscale** (private pilot): no public ports at all.
+This is the single runbook for releases, CI/CD, first installs and operations. The server facts for the live preview, such as its address and accounts, are in the workspace handoff (`docs/recovery/handoff/START_HERE.md` §6).
 
-## Live preview (30 September 2026)
+## The live preview
 
-- **https://munaiplan.com** runs on a DigitalOcean $6 droplet (1 GB, FRA1).
-- The workspace handoff (`docs/recovery/handoff/START_HERE.md` §6) has the server facts and the update procedure.
+| | |
+|---|---|
+| URL | **https://munaiplan.com**; `www.munaiplan.com` and `https://159-89-10-247.sslip.io` serve the same app |
+| Server | DigitalOcean $6 droplet: 1 vCPU, 1 GB RAM plus 2 GB swap, FRA1, Ubuntu 24.04, `root@159.89.10.247` |
+| SSH | Key `~/.ssh/munaiplan_do` on the owner's Mac |
+| DNS | GoDaddy: `A @ → 159.89.10.247`, `CNAME www → munaiplan.com` |
+| Mode | `DEPLOY_MODE=public` (Caddy with Let's Encrypt), `PREBUILT_IMAGES=1` (images built on the server one at a time) |
+| Branch | `recovery/phase-2` in all three repositories |
 
-## Small servers (1 GB, e.g. DigitalOcean $6 droplet): prebuilt images
+## How a release flows
 
-A 1 GB server can run the stack, which uses about 0.6 GB plus some swap. It cannot build the images in parallel. Two options:
-- **Build on the server, one image at a time**, then deploy with `PREBUILT_IMAGES=1`. This is what the live droplet does:
-  ```sh
-  docker build -t munaiplan-api:prod /opt/munaiplan/src/munaiplan-backend
-  docker build -t munaiplan-frontend:prod -f /opt/munaiplan/src/munaiplan-frontend/dockerfile /opt/munaiplan/src/munaiplan-frontend
-  docker build -t munaiplan-model:prod /opt/munaiplan/src/munai-models   # about 8 min, 4.7 GB image
-  ```
-- **Build elsewhere** for the server's architecture and load the images there. This needs a fast uplink; the model image is several GB.
-
-```sh
-# On a build machine (from the workspace root):
-docker buildx build --platform linux/amd64 -t munaiplan-api:prod --load munaiplan-backend
-docker buildx build --platform linux/amd64 -t munaiplan-frontend:prod -f munaiplan-frontend/dockerfile --load munaiplan-frontend
-docker buildx build --platform linux/amd64 -t munaiplan-model:prod --load munai-models
-docker save munaiplan-api:prod munaiplan-frontend:prod munaiplan-model:prod | gzip | ssh root@<ip> 'gunzip | docker load'
-# On the server: add PREBUILT_IMAGES=1 to /opt/munaiplan/.env, then run deploy.sh as usual.
+```
+push to GitHub ──► CI (GitHub Actions: tests, lint, image build)
+      │
+      └─► release: remote-update.sh (workstation)  or  Actions → Deploy (manual)
+                 └─► server: update.sh
+                        1. fetch backend, frontend, models (origin/<ref>)
+                        2. backup.sh        (pg_dump into /opt/munaiplan/backups)
+                        3. build-images.sh  (sequential docker builds, about 10 min)
+                        4. deploy.sh        (migrate, start, create-admin, wait for health)
+                 └─► smoke checks: /health 200, SPA deep link 200, anonymous API 401, sign-up 404
 ```
 
-`bootstrap-server.sh` adds 2 GB of swap for TensorFlow's start-up peak.
+A release is manual on purpose. CI runs on every push, but nothing deploys automatically: this is a single server with real data, and every release takes a backup first.
 
-## Oracle Cloud Always Free (alternative)
+### Release from a workstation (recommended)
 
-- Use an **Ampere A1** instance: `VM.Standard.A1.Flex`, 2–4 OCPU and 12–24 GB RAM, Ubuntu 24.04. This stays within the Always Free limits and runs arm64 natively.
-- **Log in as `ubuntu`, not root:** `ssh ubuntu@<ip>`. Run the scripts below with `sudo`.
-- **Open ports 80 and 443 in two places:**
-  - the VCN security list: Networking → VCN → Security Lists → Ingress, TCP 80 and 443 from `0.0.0.0/0`;
-  - the host firewall, which `bootstrap-server.sh` handles automatically (Oracle images ship their own iptables rules).
-- Let's Encrypt HTTPS works on `<ip-with-dashes>.sslip.io`.
+From the workspace root, after pushing your commits:
+```sh
+sh munaiplan-backend/deploy/remote-update.sh                 # branch recovery/phase-2
+sh munaiplan-backend/deploy/remote-update.sh v0.3.0          # or a tag present in all three repositories
+```
+
+The script:
+- refuses to run if the backend or frontend `ref` is not pushed;
+- uploads a `munai-models` bundle while that repository is not on GitHub;
+- runs `update.sh` on the server and prints the smoke-check results.
+
+It takes about 12 minutes, most of it the model image. The site stays up during the build. There is a short restart only when the containers are replaced.
+
+### Release from GitHub Actions
+
+`munaiplan-backend` → Actions → **Deploy** → Run workflow (input: `ref`). It needs three repository secrets, which the owner adds:
+- `DEPLOY_HOST`;
+- `DEPLOY_SSH_KEY`: a **dedicated** key; add its public half to the server's `/root/.ssh/authorized_keys`;
+- `DEPLOY_KNOWN_HOSTS`: the output of `ssh-keyscan -t ed25519 159.89.10.247`.
+
+It also needs a GitHub environment named `preview`, where a required reviewer can be added.
+
+Until `MunaiPlan/munai-models` exists, the Actions deploy reuses the last uploaded models bundle. Release model changes with `remote-update.sh`.
+
+### CI
+
+| Repository | Workflow | Checks |
+|---|---|---|
+| munaiplan-backend | `.github/workflows/ci.yml` | `go vet`, `go test` (real-report tests are skipped without `WELLPLAN_REPORTS_DIR`), deploy scripts parse, production image builds |
+| munaiplan-frontend | `.github/workflows/ci.yml` | `npm ci`, lint (0 warnings), build, unit tests, production image builds |
+| munai-models | `.github/workflows/ci.yml` | Runtime image builds, then the unit tests run inside it. Active once the repository is on GitHub |
+
+**Local note:** Go 1.21.1 test binaries do not start on recent macOS (`dyld: missing LC_UUID`). Run the tests in Linux instead:
+```sh
+docker run --rm -v "$PWD":/src -w /src golang:1.21.1-alpine3.18 go test ./...
+```
+
+### Rollback
+
+Redeploy the previous commit or tag with `remote-update.sh <previous-ref>`. Migrations only move forward. If a release contained a migration, restore the backup that `update.sh` took just before it (see "Backups and restore" below).
+
+## Scripts
+
+| Script | Runs on | Purpose |
+|---|---|---|
+| `remote-update.sh [ref]` | workstation | Push check, models bundle, `update.sh`, smoke checks |
+| `update.sh [ref]` | server | Fetch, back up, build, deploy |
+| `build-images.sh` | server | Sequential image builds; log in `/opt/munaiplan/build.log` |
+| `deploy.sh [ref]` | server | Migrate, start, create the admin, wait for health. Builds images itself when `PREBUILT_IMAGES` is not 1 |
+| `bootstrap-server.sh` | server, once | Docker, `docker-buildx`, firewall, unattended upgrades, 2 GB swap; Tailscale only in private mode |
+| `init-env.sh EMAIL [SITE]` | server, once | Generates `/opt/munaiplan/.env` (mode 0600); a site address selects public mode |
+| `backup.sh`, `install-backup-timer.sh` | server | `pg_dump`, and its nightly systemd timer at 02:30 with 14-day retention |
+
+All server scripts keep their body in a `main` function, because they check out new versions of themselves while running.
+
+**Compose files:**
+- `compose.prod.yaml`: Postgres, API, model and frontend (bound to `127.0.0.1:8080`), plus `migrate` and `create-admin` jobs;
+- `compose.public.yaml`: Caddy on ports 80 and 443; see `Caddyfile`.
+
+## `/opt/munaiplan/.env` (server only, never printed or committed)
+
+| Key | Notes |
+|---|---|
+| `DB_PASSWORD`, `USER_ACCESS_TOKEN_SECRET`, `USER_REFRESH_TOKEN_SECRET` | Generated. Changing the token secrets signs everyone out |
+| `PASSWORD_SALT` | **Never change it.** Every stored password hash depends on it. The live server uses the same salt as the owner's local stack, because local data was copied there |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | The bootstrap admin, created by `create-admin` if missing. The owner reads the password over SSH themselves |
+| `DEPLOY_MODE`, `SITE_ADDRESS` | `public`; a comma-separated list of hostnames, the first being the canonical one |
+| `PREBUILT_IMAGES` | `1` on small servers: `update.sh` builds the images and `deploy.sh` does not |
+| `LOCAL_ONLY_REPOS` | Optional. Repositories `deploy.sh` must not fetch |
 
 ## Custom domain
 
-Point the domain's DNS at the server: `A @ → <ip>` and `CNAME www → <domain>` (at GoDaddy: My Products → DNS). Then list every hostname in `.env` and redeploy:
-```
-SITE_ADDRESS=munaiplan.com, www.munaiplan.com, 159-89-10-247.sslip.io
-```
-Caddy gets a certificate for each hostname. Keep the sslip.io name as a fallback.
+1. At the registrar (GoDaddy: My Products → DNS), set `A @ → <ip>` and `CNAME www → <domain>`.
+2. List every hostname: `SITE_ADDRESS=munaiplan.com, www.munaiplan.com, 159-89-10-247.sslip.io`.
+3. Run `deploy.sh` again. Caddy obtains and renews a certificate for each hostname.
 
-## Public preview in short
+## First install on a new server
 
-```sh
-DEPLOY_MODE=public sh deploy/bootstrap-server.sh
-sh deploy/init-env.sh admin@your-company.kz 203-0-113-7.sslip.io   # <ip-with-dashes>.sslip.io needs no domain
-sh deploy/deploy.sh recovery/phase-2                                 # prints https://203-0-113-7.sslip.io
-sh deploy/install-backup-timer.sh
-```
-
-The Let's Encrypt certificate is issued on first start; ports 80 and 443 must be reachable. Anyone with the link sees the sign-in page. Only accounts created in **Администрирование** can sign in.
-
-The sections below describe the private (Tailscale) mode.
-
-
-One Ubuntu 24.04 server runs the same four containers as local development: Postgres, API, ML model and frontend. **No web port is public.** Tailscale publishes the frontend to your private tailnet over HTTPS, so only invited devices can open it.
-
-Rehearsed locally on 30 September 2026:
-- build → migrate (4 migrations) → four healthy services;
-- `create-admin` run twice creates one admin;
-- admin sign-in works; `/api/v1/status` reports the model ready;
-- the public sign-up route returns 404, and `dev-seed` is refused in production;
-- `pg_dump` → `pg_restore` into a fresh database gives identical table, user and migration counts.
-
-## Requirements
-
-- A VPS: 1 GB works with the prebuilt-image flow above; **4 GB RAM, 2 vCPU** or more lets `deploy.sh` build everything itself. Ubuntu 24.04 (`bootstrap-server.sh` installs `docker-buildx`), Ubuntu 24.04, SSH-key login. (A Kazakhstan provider was chosen so the data stays in Kazakhstan.)
-- A free [Tailscale](https://tailscale.com) account. Every pilot user installs the Tailscale app and is invited to the tailnet.
-- The three repositories on GitHub under `MunaiPlan`: `munaiplan-backend`, `munaiplan-frontend`, `munai-models`. If any is private, give the server a read-only deploy key.
-
-## First deployment
+For a 1 GB server, keep `PREBUILT_IMAGES=1`. With 4 GB or more you can leave it out, and `deploy.sh` builds with compose.
 
 ```sh
-# On the server, as root:
-git clone https://github.com/MunaiPlan/munaiplan-backend.git /opt/munaiplan/src/munaiplan-backend
-cd /opt/munaiplan/src/munaiplan-backend && git checkout recovery/phase-2
-sh deploy/bootstrap-server.sh          # Docker, Tailscale, firewall, security updates, swap
-tailscale up                           # open the printed link and log in to your Tailscale account
-sh deploy/init-env.sh admin@your-company.kz   # generates /opt/munaiplan/.env (0600)
-sh deploy/deploy.sh recovery/phase-2   # clones, builds, migrates, starts, creates the admin
-sh deploy/install-backup-timer.sh      # nightly database backup at 02:30
+# From the workspace root (IP=a.b.c.d, SITE=a-b-c-d.sslip.io or a domain pointing at the server):
+SSH="ssh -i ~/.ssh/munaiplan_do root@$IP"
+$SSH 'git clone -q -b recovery/phase-2 https://github.com/MunaiPlan/munaiplan-backend.git /opt/munaiplan/src/munaiplan-backend'
+$SSH 'DEPLOY_MODE=public sh /opt/munaiplan/src/munaiplan-backend/deploy/bootstrap-server.sh'
+$SSH 'git clone -q -b recovery/phase-2 https://github.com/MunaiPlan/munaiplan-frontend.git /opt/munaiplan/src/munaiplan-frontend'
+git -C munai-models bundle create /tmp/m.bundle recovery/phase-2          # until MunaiPlan/munai-models exists
+scp -i ~/.ssh/munaiplan_do /tmp/m.bundle root@$IP:/opt/munaiplan/munai-models.bundle
+$SSH 'git clone -q -b recovery/phase-2 /opt/munaiplan/munai-models.bundle /opt/munaiplan/src/munai-models'
+$SSH "sh /opt/munaiplan/src/munaiplan-backend/deploy/init-env.sh admin@your-company.kz $SITE && echo PREBUILT_IMAGES=1 >> /opt/munaiplan/.env"
+$SSH 'sh /opt/munaiplan/src/munaiplan-backend/deploy/update.sh && sh /opt/munaiplan/src/munaiplan-backend/deploy/install-backup-timer.sh'
 ```
 
-- `deploy.sh` ends by printing the private HTTPS address, for example `https://munaiplan.tailXXXX.ts.net`.
-- **Admin password:** read `ADMIN_PASSWORD` from `/opt/munaiplan/.env` yourself over SSH. Sign in and create organizations and users in **Администрирование**, then change nothing else in `.env`: the database password, salt and token secrets must stay stable.
-- **Harden SSH** once Tailscale works: `ufw delete allow OpenSSH && ufw allow in on tailscale0 to any port 22`. After that, SSH works only over the tailnet (`ssh root@<tailscale-name>`).
-
-## Updates
-
+When `MunaiPlan/munai-models` exists, point the server at GitHub:
 ```sh
-sh /opt/munaiplan/src/munaiplan-backend/deploy/deploy.sh <branch-or-tag>
+git -C /opt/munaiplan/src/munai-models remote set-url origin https://github.com/MunaiPlan/munai-models.git
 ```
+`remote-update.sh` then stops uploading bundles, and the Actions deploy covers models too.
 
-The deploy is safe to repeat. Migrations apply once and existing data is kept. Take a backup first when a release contains new migrations: `sh deploy/backup.sh`.
+**Private pilot instead of public:**
+- Omit the site address in `init-env.sh`. Bootstrap installs Tailscale; run `tailscale up`.
+- `deploy.sh` publishes the frontend to the tailnet only.
+- Harden SSH afterwards: `ufw delete allow OpenSSH && ufw allow in on tailscale0 to any port 22`.
 
-## Backups and restore
-
-- Dumps go to `/opt/munaiplan/backups/munaiplan-<UTC>.dump` and are kept for 14 days.
-- **Copy them off the server regularly**, for example with `scp` from your machine. A backup stored on the same disk does not survive losing the server.
-
-To restore:
-
-```sh
-cd /opt/munaiplan/src/munaiplan-backend
-docker compose -p munaiplan --env-file /opt/munaiplan/.env -f deploy/compose.prod.yaml stop app frontend
-docker exec -i munaiplan-postgres-1 pg_restore -U munaiplan -d munaiplan --clean --if-exists --no-owner < /opt/munaiplan/backups/<file>.dump
-docker compose -p munaiplan --env-file /opt/munaiplan/.env -f deploy/compose.prod.yaml up -d app frontend
-```
+**Oracle Cloud Always Free (Ampere A1):**
+- Log in as `ubuntu` and use `sudo`.
+- Open ports 80 and 443 in the VCN security list. The bootstrap script handles Oracle's host iptables.
 
 ## Operations
 
 ```sh
-C="docker compose -p munaiplan --env-file /opt/munaiplan/.env -f /opt/munaiplan/src/munaiplan-backend/deploy/compose.prod.yaml"
-$C ps              # health
-$C logs -f app     # API logs (also: model, frontend, postgres)
+C="docker compose -p munaiplan --env-file /opt/munaiplan/.env -f /opt/munaiplan/src/munaiplan-backend/deploy/compose.prod.yaml -f /opt/munaiplan/src/munaiplan-backend/deploy/compose.public.yaml"
+$C ps                 # health of every service
+$C logs -f app        # also: model, frontend, caddy, postgres
 $C restart model
+free -m; docker stats --no-stream
 ```
 
-- The in-app status bar shows API and model health to every user.
-- Access tokens last 8 hours; there is no refresh flow yet, so users sign in again after that.
+- The in-app status bar shows API and model health.
+- Access tokens last 8 hours; there is no refresh flow yet.
 
-## Before any wider rollout
+## Backups and restore
 
-- Predictions are **not validated**; see `docs/recovery/model-validation.md` in the workspace.
-- Decide the pending units questions: yield in ksi, and missing coordinates.
-- Add off-server backup copies, uptime monitoring and a documented rollback (redeploy the previous tag).
+- `update.sh` and the nightly timer write `/opt/munaiplan/backups/munaiplan-<UTC>.dump`, kept for 14 days.
+- **They stay on the same disk.** Copy them off regularly, for example: `scp -i ~/.ssh/munaiplan_do 'root@159.89.10.247:/opt/munaiplan/backups/*.dump' ~/munaiplan-backups/`.
+
+To restore:
+```sh
+$C stop app frontend
+docker exec -i munaiplan-postgres-1 pg_restore -U munaiplan -d munaiplan --clean --if-exists --no-owner < /opt/munaiplan/backups/<file>.dump
+$C up -d app frontend
+```
+
+## Known limits
+
+- Predictions are **not validated**; see `docs/recovery/model-validation.md`.
+- There is no uptime monitoring and no off-server backup copy yet.
+- The server is in Frankfurt; the owner accepted this for the preview on 30 September 2026.
