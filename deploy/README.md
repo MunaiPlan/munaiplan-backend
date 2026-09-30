@@ -4,9 +4,21 @@ There are two modes:
 - **public** (preview): Caddy serves HTTPS on a public address, and access is protected by admin-created accounts.
 - **tailscale** (private pilot): no public ports at all.
 
+## Live preview (30 September 2026)
+
+- **https://munaiplan.com** runs on a DigitalOcean $6 droplet (1 GB, FRA1).
+- The workspace handoff (`docs/recovery/handoff/START_HERE.md` §6) has the server facts and the update procedure.
+
 ## Small servers (1 GB, e.g. DigitalOcean $6 droplet): prebuilt images
 
-A 1 GB server can run the stack, which uses about 0.5 GB, but cannot build the images. Build them elsewhere for the server's architecture and load them there:
+A 1 GB server can run the stack, which uses about 0.6 GB plus some swap. It cannot build the images in parallel. Two options:
+- **Build on the server, one image at a time**, then deploy with `PREBUILT_IMAGES=1`. This is what the live droplet does:
+  ```sh
+  docker build -t munaiplan-api:prod /opt/munaiplan/src/munaiplan-backend
+  docker build -t munaiplan-frontend:prod -f /opt/munaiplan/src/munaiplan-frontend/dockerfile /opt/munaiplan/src/munaiplan-frontend
+  docker build -t munaiplan-model:prod /opt/munaiplan/src/munai-models   # about 8 min, 4.7 GB image
+  ```
+- **Build elsewhere** for the server's architecture and load the images there. This needs a fast uplink; the model image is several GB.
 
 ```sh
 # On a build machine (from the workspace root):
@@ -27,6 +39,14 @@ docker save munaiplan-api:prod munaiplan-frontend:prod munaiplan-model:prod | gz
   - the VCN security list: Networking → VCN → Security Lists → Ingress, TCP 80 and 443 from `0.0.0.0/0`;
   - the host firewall, which `bootstrap-server.sh` handles automatically (Oracle images ship their own iptables rules).
 - Let's Encrypt HTTPS works on `<ip-with-dashes>.sslip.io`.
+
+## Custom domain
+
+Point the domain's DNS at the server: `A @ → <ip>` and `CNAME www → <domain>` (at GoDaddy: My Products → DNS). Then list every hostname in `.env` and redeploy:
+```
+SITE_ADDRESS=munaiplan.com, www.munaiplan.com, 159-89-10-247.sslip.io
+```
+Caddy gets a certificate for each hostname. Keep the sslip.io name as a fallback.
 
 ## Public preview in short
 
@@ -53,7 +73,7 @@ Rehearsed locally on 30 September 2026:
 
 ## Requirements
 
-- A VPS: **4 GB RAM, 2 vCPU, 60 GB SSD** or more, Ubuntu 24.04, SSH-key login. (A Kazakhstan provider was chosen so the data stays in Kazakhstan.)
+- A VPS: 1 GB works with the prebuilt-image flow above; **4 GB RAM, 2 vCPU** or more lets `deploy.sh` build everything itself. Ubuntu 24.04 (`bootstrap-server.sh` installs `docker-buildx`), Ubuntu 24.04, SSH-key login. (A Kazakhstan provider was chosen so the data stays in Kazakhstan.)
 - A free [Tailscale](https://tailscale.com) account. Every pilot user installs the Tailscale app and is invited to the tailnet.
 - The three repositories on GitHub under `MunaiPlan`: `munaiplan-backend`, `munaiplan-frontend`, `munai-models`. If any is private, give the server a read-only deploy key.
 
