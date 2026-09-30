@@ -4,7 +4,7 @@
 .data
 vendor
 .DS_Store
-migrations
+/migrations
 atlas.hcl
 
 # Visual Studio Settings
