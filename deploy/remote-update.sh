@@ -1,8 +1,8 @@
 #!/bin/sh
 # Release from a developer machine: push your commits first, then run from the workspace root:
 #   sh munaiplan-backend/deploy/remote-update.sh [git-ref]
-# Uploads a munai-models bundle (while that repo is not on GitHub under MunaiPlan), runs
-# update.sh on the server and smoke-checks the public site.
+# Checks that all three repositories are pushed, runs update.sh on the server and smoke-checks
+# the public site.
 # Environment: DEPLOY_HOST (default 159.89.10.247), DEPLOY_KEY (default ~/.ssh/munaiplan_do),
 # SITE (default munaiplan.com).
 set -eu
@@ -13,21 +13,11 @@ main() {
   site=${SITE:-munaiplan.com}
   ssh_() { ssh -i "$key" -o BatchMode=yes "root@$host" "$@"; }
 
-  for repo in munaiplan-backend munaiplan-frontend; do
+  for repo in munaiplan-backend munaiplan-frontend munai-models; do
     git -C "$repo" fetch --quiet origin
     [ "$(git -C "$repo" rev-parse "$ref")" = "$(git -C "$repo" rev-parse "origin/$ref")" ] \
       || { echo "$repo: $ref is not pushed (or is behind origin); push first" >&2; exit 1; }
   done
-  models_remote=$(ssh_ "git -C /opt/munaiplan/src/munai-models remote get-url origin")
-  case "$models_remote" in
-    *.bundle)
-      bundle=$(mktemp -t munai-models.XXXXXX)
-      git -C munai-models bundle create "$bundle" "$ref" 2>/dev/null
-      scp -q -i "$key" "$bundle" "root@$host:$models_remote"
-      rm -f "$bundle"
-      echo "munai-models bundle uploaded" ;;
-  esac
-
   # Refresh the deploy scripts themselves first, so the server runs this release's update.sh.
   ssh_ "git -C /opt/munaiplan/src/munaiplan-backend fetch --quiet origin && git -C /opt/munaiplan/src/munaiplan-backend checkout --quiet --detach 'origin/$ref' 2>/dev/null || git -C /opt/munaiplan/src/munaiplan-backend checkout --quiet --detach '$ref'"
   ssh_ "sh /opt/munaiplan/src/munaiplan-backend/deploy/update.sh '$ref'"

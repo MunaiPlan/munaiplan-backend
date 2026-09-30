@@ -3,9 +3,8 @@
 # PREBUILT_IMAGES=1) and deploy. Safe to repeat.
 # Usage (as root on the server): update.sh [git-ref]   default: recovery/phase-2
 #
-# Every repository is updated from its `origin` remote. For munai-models that remote may be a git
-# bundle file (/opt/munaiplan/munai-models.bundle) until MunaiPlan/munai-models exists on GitHub;
-# deploy/remote-update.sh uploads a fresh bundle before calling this script.
+# Every repository is updated from its `origin` remote. munai-models is private and is fetched
+# with a read-only deploy key (ssh host alias github-munai-models, see deploy/README.md).
 set -eu
 main() {
   ref=${1:-recovery/phase-2}

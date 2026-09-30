@@ -3,7 +3,7 @@
 # Usage (as root on the server): deploy.sh [git-ref]   default: recovery/phase-2
 # DEPLOY_MODE (in /opt/munaiplan/.env): "tailscale" (default, private) or "public" (Caddy HTTPS).
 # LOCAL_ONLY_REPOS: space-separated repos already present in /opt/munaiplan/src that must not be
-# fetched from GitHub (e.g. cloned from a git bundle).
+# fetched from GitHub (e.g. a local copy under test).
 set -eu
 # The body is a function so that sh parses it completely before running: deploy.sh checks out
 # new versions of itself, and sh would otherwise read the rest of the changed file.

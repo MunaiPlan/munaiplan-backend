@@ -39,7 +39,7 @@ sh munaiplan-backend/deploy/remote-update.sh v0.3.0          # or a tag present 
 
 The script:
 - refuses to run if the backend or frontend `ref` is not pushed;
-- uploads a `munai-models` bundle while that repository is not on GitHub;
+- checks that `munai-models` is pushed too;
 - runs `update.sh` on the server and prints the smoke-check results.
 
 It takes about 12 minutes, most of it the model image. The site stays up during the build. There is a short restart only when the containers are replaced.
@@ -53,7 +53,7 @@ It takes about 12 minutes, most of it the model image. The site stays up during 
 
 It also needs a GitHub environment named `preview`, where a required reviewer can be added.
 
-Until `MunaiPlan/munai-models` exists, the Actions deploy reuses the last uploaded models bundle. Release model changes with `remote-update.sh`.
+The deploy covers all three repositories, `munai-models` included.
 
 ### CI
 
@@ -61,7 +61,7 @@ Until `MunaiPlan/munai-models` exists, the Actions deploy reuses the last upload
 |---|---|---|
 | munaiplan-backend | `.github/workflows/ci.yml` | `go vet`, `go test` (real-report tests are skipped without `WELLPLAN_REPORTS_DIR`), deploy scripts parse, production image builds |
 | munaiplan-frontend | `.github/workflows/ci.yml` | `npm ci`, lint (0 warnings), build, unit tests, production image builds |
-| munai-models | `.github/workflows/ci.yml` | Runtime image builds, then the unit tests run inside it. Active once the repository is on GitHub |
+| munai-models | `.github/workflows/ci.yml` | Runtime image builds, then the unit tests run inside it. The repository is **private** |
 
 **Local note:** Go 1.21.1 test binaries do not start on recent macOS (`dyld: missing LC_UUID`). Run the tests in Linux instead:
 ```sh
@@ -76,7 +76,7 @@ Redeploy the previous commit or tag with `remote-update.sh <previous-ref>`. Migr
 
 | Script | Runs on | Purpose |
 |---|---|---|
-| `remote-update.sh [ref]` | workstation | Push check, models bundle, `update.sh`, smoke checks |
+| `remote-update.sh [ref]` | workstation | Push check (all three repositories), `update.sh`, smoke checks |
 | `update.sh [ref]` | server | Fetch, back up, build, deploy |
 | `build-images.sh` | server | Sequential image builds; log in `/opt/munaiplan/build.log` |
 | `deploy.sh [ref]` | server | Migrate, start, create the admin, wait for health. Builds images itself when `PREBUILT_IMAGES` is not 1 |
@@ -117,18 +117,14 @@ SSH="ssh -i ~/.ssh/munaiplan_do root@$IP"
 $SSH 'git clone -q -b recovery/phase-2 https://github.com/MunaiPlan/munaiplan-backend.git /opt/munaiplan/src/munaiplan-backend'
 $SSH 'DEPLOY_MODE=public sh /opt/munaiplan/src/munaiplan-backend/deploy/bootstrap-server.sh'
 $SSH 'git clone -q -b recovery/phase-2 https://github.com/MunaiPlan/munaiplan-frontend.git /opt/munaiplan/src/munaiplan-frontend'
-git -C munai-models bundle create /tmp/m.bundle recovery/phase-2          # until MunaiPlan/munai-models exists
-scp -i ~/.ssh/munaiplan_do /tmp/m.bundle root@$IP:/opt/munaiplan/munai-models.bundle
-$SSH 'git clone -q -b recovery/phase-2 /opt/munaiplan/munai-models.bundle /opt/munaiplan/src/munai-models'
+# munai-models is private: give the server a read-only deploy key (the live server's is
+# /root/.ssh/munai_models_deploy, registered in GitHub → munai-models → Settings → Deploy keys).
+$SSH 'ssh-keygen -q -t ed25519 -N "" -f /root/.ssh/munai_models_deploy && cat /root/.ssh/munai_models_deploy.pub'   # add as a read-only deploy key
+$SSH 'ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts && printf "Host github-munai-models\n  HostName github.com\n  User git\n  IdentityFile /root/.ssh/munai_models_deploy\n  IdentitiesOnly yes\n" >> /root/.ssh/config'
+$SSH 'git clone -q -b recovery/phase-2 git@github-munai-models:MunaiPlan/munai-models.git /opt/munaiplan/src/munai-models'
 $SSH "sh /opt/munaiplan/src/munaiplan-backend/deploy/init-env.sh admin@your-company.kz $SITE && echo PREBUILT_IMAGES=1 >> /opt/munaiplan/.env"
 $SSH 'sh /opt/munaiplan/src/munaiplan-backend/deploy/update.sh && sh /opt/munaiplan/src/munaiplan-backend/deploy/install-backup-timer.sh'
 ```
-
-When `MunaiPlan/munai-models` exists, point the server at GitHub:
-```sh
-git -C /opt/munaiplan/src/munai-models remote set-url origin https://github.com/MunaiPlan/munai-models.git
-```
-`remote-update.sh` then stops uploading bundles, and the Actions deploy covers models too.
 
 **Private pilot instead of public:**
 - Omit the site address in `init-env.sh`. Bootstrap installs Tailscale; run `tailscale up`.

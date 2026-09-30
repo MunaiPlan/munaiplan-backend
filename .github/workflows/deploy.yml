@@ -3,8 +3,6 @@
 #   DEPLOY_HOST         server address (159.89.10.247)
 #   DEPLOY_SSH_KEY      private key allowed to log in as root (a dedicated key, not the owner's)
 #   DEPLOY_KNOWN_HOSTS  output of `ssh-keyscan -t ed25519 <host>`
-# While munai-models is not on GitHub, the server deploys the last uploaded models bundle;
-# release model changes with deploy/remote-update.sh from a workstation instead.
 name: Deploy
 on:
   workflow_dispatch:
